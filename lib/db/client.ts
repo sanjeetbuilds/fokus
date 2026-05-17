@@ -10,7 +10,7 @@ import type { Child, Observation, Parent, Session } from "@/types";
  *   sessions:     'id, childId, date, activityId, [childId+date]'
  *   observations: 'id, childId, date'
  *
- * Bumping the version (this.version(N)) requires writing a migration —
+ * Bumping the version (this.version(N)) requires writing a migration.
  * see https://dexie.org/docs/Tutorial/Design#database-versioning.
  */
 export class FokusDB extends Dexie {
@@ -31,7 +31,7 @@ export class FokusDB extends Dexie {
 }
 
 /**
- * Dexie's constructor doesn't actually touch IndexedDB — that happens lazily
+ * Dexie's constructor doesn't actually touch IndexedDB; that happens lazily
  * on first query. The try/catch here is defensive: it surfaces a clear log if
  * Dexie itself fails to construct (corrupt bundle, etc.). Real "no IDB
  * available" / "storage full" errors only fire when a table operation runs;
@@ -43,7 +43,7 @@ function createDb(): FokusDB {
   } catch (err) {
     if (typeof console !== "undefined") {
       console.error(
-        "[fokus_db] Failed to construct Dexie database — IndexedDB may be unavailable (private browsing, no storage, or Dexie bundle problem).",
+        "[fokus_db] Failed to construct Dexie database. IndexedDB may be unavailable (private browsing, no storage, or Dexie bundle problem).",
         err,
       );
     }
@@ -55,7 +55,7 @@ export const db: FokusDB = createDb();
 
 /**
  * Run a Dexie operation and rewrite open/storage failures into a single,
- * unambiguous error message. Optional — callers may also let raw Dexie
+ * unambiguous error message. Optional; callers may also let raw Dexie
  * errors propagate.
  */
 export async function withDbErrorContext<T>(
@@ -69,7 +69,7 @@ export async function withDbErrorContext<T>(
     if (name === "OpenFailedError" || name === "QuotaExceededError") {
       console.error(`[fokus_db] ${context}: storage unavailable`, err);
       throw new Error(
-        "Fokus can't save right now — your device may be in private browsing or out of storage.",
+        "Fokus can't save right now. Your device may be in private browsing or out of storage.",
       );
     }
     throw err;

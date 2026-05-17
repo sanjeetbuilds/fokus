@@ -25,7 +25,7 @@ export function daysSince(isoDate: string, fromDate?: Date): number {
 /**
  * Compute whole-year age + remainder months from a YYYY-MM-DD date of birth,
  * relative to `fromDate` (defaults to now). Returns null if the DOB is in the
- * future or unparseable. Calendar-month math — DST and tz aren't relevant for
+ * future or unparseable. Calendar-month math; DST and tz aren't relevant for
  * an integer age count.
  */
 export function ageFromDob(
@@ -50,7 +50,7 @@ export function ageFromDob(
   return { years, months };
 }
 
-/** "Wed · 6 Nov" — short, calm, app-wide date label. */
+/** "Wed · 6 Nov": short, calm, app-wide date label. */
 export function formatDate(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";

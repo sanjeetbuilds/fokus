@@ -36,7 +36,7 @@ export default function MainSegmentError({
         Something didn&apos;t work.
       </h1>
       <p className="mt-3 text-body text-ink-secondary">
-        Try refreshing. If it keeps happening, your data is safe — sessions
+        Try refreshing. If it keeps happening, your data is safe. Sessions
         are stored on your device.
       </p>
 

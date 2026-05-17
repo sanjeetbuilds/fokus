@@ -1,11 +1,11 @@
 import type { ActivityExample } from "@/types";
 
 /**
- * Worked examples — one short, real dialogue per activity. Indian-parent
+ * Worked examples: one short, real dialogue per activity. Indian-parent
  * voice, English first language. `{childName}` is interpolated at render
- * time. 2–5 exchanges, 50–100 words.
+ * time. 2 to 5 exchanges, 50 to 100 words.
  *
- * The example is the thing that makes Fokus actually useful — it shows the
+ * The example is the thing that makes Fokus actually useful. It shows the
  * parent what the activity *looks like* in their kitchen, not in a textbook.
  */
 export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
@@ -88,7 +88,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
   cu7: {
     setup: "About to cut an apple for snack.",
     exchange: [
-      { speaker: "you", line: "Before I cut — what does it look like inside?" },
+      { speaker: "you", line: "Before I cut, what does it look like inside?" },
       { speaker: "child", line: "White, with brown bits in the middle." },
       { speaker: "you", line: "What are the brown bits?" },
       { speaker: "child", line: "Seeds." },
@@ -107,7 +107,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
       { speaker: "child", line: "To see better when they walk?" },
       { speaker: "you", line: "Closer than you think. Let's look it up after." },
     ],
-    closing: "Their eyes can't move like ours — the head bob is the focus. {childName} almost had it.",
+    closing: "Their eyes can't move like ours, so the head bob is how they focus. {childName} almost had it.",
   },
 
   // -------------------- LANGUAGE --------------------
@@ -122,7 +122,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
       { speaker: "you", line: "And what did you say to him?" },
       { speaker: "child", line: "I said thank you. And I gave him a chocolate." },
     ],
-    closing: "Four full sentences in English. Don't correct grammar — just keep them talking.",
+    closing: "Four full sentences in English. Don't correct grammar. Just keep them talking.",
   },
 
   la2: {
@@ -145,7 +145,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
       { speaker: "child", line: "A dragon!" },
       { speaker: "you", line: "What did the dragon say?" },
       { speaker: "child", line: "He said his cave was being too cold." },
-      { speaker: "you", line: "Was being too cold — or was getting too cold?" },
+      { speaker: "you", line: "Was being too cold, or was getting too cold?" },
       { speaker: "child", line: "Was getting too cold." },
     ],
     closing: "One tiny grammar fix, mid-story. They kept the thread going. That's the win.",
@@ -158,7 +158,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
       { speaker: "child", line: "Like when I have to do homework?" },
       { speaker: "you", line: "Use it in a sentence." },
       { speaker: "child", line: "I am reluctant about homework." },
-      { speaker: "you", line: "Close — 'I am reluctant to do homework.' Try once more." },
+      { speaker: "you", line: "Close. Try 'I am reluctant to do homework.' One more time." },
       { speaker: "child", line: "I am reluctant to do homework." },
     ],
     closing: "By dinner, ask them to use it again. That's how a word actually sticks.",
@@ -219,10 +219,10 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
     exchange: [
       { speaker: "you", line: "What's going on?" },
       { speaker: "child", line: "Aryan didn't sit with me at lunch." },
-      { speaker: "you", line: "How did that feel — sad? Or more left-out?" },
+      { speaker: "you", line: "How did that feel? Sad? Or more left-out?" },
       { speaker: "child", line: "Left-out. Like… invisible." },
     ],
-    closing: "Invisible is a specific word for a real feeling. Just name it — don't fix it.",
+    closing: "Invisible is a specific word for a real feeling. Just name it. Don't fix it.",
   },
 
   em2: {
@@ -318,7 +318,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
       { speaker: "you", line: "Could there be another explanation?" },
       { speaker: "child", line: "Maybe it's so far away that it looks like it's moving with us?" },
     ],
-    closing: "Two explanations is better than one. Don't say which is right — let it sit.",
+    closing: "Two explanations is better than one. Don't say which is right. Let it sit.",
   },
 
   th2: {
@@ -344,7 +344,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
       { speaker: "you", line: "One more way." },
       { speaker: "child", line: "By favorite?" },
     ],
-    closing: "That's a real category — just a subjective one. Don't correct it.",
+    closing: "That's a real category, just a subjective one. Don't correct it.",
   },
 
   th4: {
@@ -356,7 +356,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
       { speaker: "child", line: "Someone ate his birthday cake?" },
       { speaker: "you", line: "Both work. The story never said. You filled in the missing piece." },
     ],
-    closing: "Inferring the unstated middle — that's reading comprehension and detective work.",
+    closing: "Inferring the unstated middle: that's reading comprehension and detective work.",
   },
 
   th5: {
@@ -487,7 +487,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
       { speaker: "you", line: "Twenty seconds cold at the end. I'll do it with you." },
       { speaker: "child", line: "NO." },
       { speaker: "you", line: "Twenty seconds. I'll count out loud." },
-      { speaker: "child", line: "(under cold) OH NO NO NO—" },
+      { speaker: "child", line: "(under cold) OH NO NO NO!" },
       { speaker: "you", line: "Five. Four. Three. Two. One. Done." },
       { speaker: "child", line: "(laughing) That was the WORST." },
     ],
@@ -714,7 +714,7 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
     setup: "Three movies to choose from. Sunday night.",
     exchange: [
       { speaker: "you", line: "Three options. Sixty seconds. Then we go with whatever you say." },
-      { speaker: "child", line: "But what if I—" },
+      { speaker: "child", line: "But what if I..." },
       { speaker: "you", line: "Forty seconds." },
       { speaker: "child", line: "…okay, the second one." },
     ],

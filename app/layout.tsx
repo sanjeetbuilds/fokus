@@ -5,7 +5,7 @@ import { OnboardingGate } from "@/components/shared/OnboardingGate";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 
-// Display serif — Fraunces variable, with the optical-size axis so we get
+// Display serif: Fraunces variable, with the optical-size axis so we get
 // the right cut at every headline size. Loaded as a CSS variable so we can
 // opt-in per-element via the Tailwind `font-display` utility; body text
 // continues to use Inter via --font-body.
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  // Intentionally omit maximumScale — pinch-to-zoom must stay enabled for
+  // Intentionally omit maximumScale, since pinch-to-zoom must stay enabled for
   // low-vision accessibility (WCAG 2.5.4). Lighthouse fails meta-viewport
   // when maximum-scale < 5 or user-scalable=no.
   viewportFit: "cover",

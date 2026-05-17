@@ -2,7 +2,7 @@ import type { Session } from "@/types";
 import { responseValue } from "./types";
 
 /**
- * Map insights — small derived stats kept here (rather than inside
+ * Map insights: small derived stats kept here (rather than inside
  * /lib/engine) so the Map view can pull them with one import.
  *
  * Pure functions: no DB, no clock outside `today` (which the caller passes
@@ -72,7 +72,7 @@ export interface TrendSummary {
  *   1 engaged + 1 neutral + 1 strgl (5+1-2 = 4) → steady
  *   2 frustrated + 1 neutral (-5-5+1 = -9)      → needs-attention
  *
- * Empty input returns "steady" — no data, no judgment.
+ * Empty input returns "steady": no data, no judgment.
  */
 export function computeTrend(
   sessions: Session[],

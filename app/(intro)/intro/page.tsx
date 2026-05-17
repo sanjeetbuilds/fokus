@@ -93,7 +93,7 @@ function Slide1() {
 function Slide2() {
   return (
     <SlideShell
-      illustration={<Silhouettes />}
+      illustration={<WindingPath />}
       headline="The people who do well in life share a different list of skills."
       body={
         <p>
@@ -108,12 +108,12 @@ function Slide2() {
 function Slide3() {
   return (
     <SlideShell
-      illustration={<ScatteredMoments />}
+      illustration={<DoorwayLight />}
       headline="These aren't taught anywhere."
       body={
         <>
           <p>
-            They&apos;re built at home — in small moments, between ages 5 and
+            They&apos;re built at home, in small moments, between ages 5 and
             15.
           </p>
           <p className="mt-4">
@@ -129,7 +129,7 @@ function Slide3() {
 function Slide4() {
   return (
     <SlideShell
-      illustration={<HandWithDot />}
+      illustration={<DotInRing />}
       headline="One thing each day. Ten minutes."
       body={
         <>
@@ -147,7 +147,7 @@ function Slide4() {
 function Slide5() {
   return (
     <SlideShell
-      illustration={<TwoFigures />}
+      illustration={<PalmCradle />}
       headline="This is for you, not for them."
       body={
         <>
@@ -179,7 +179,7 @@ const SVG_BASE: SVGProps<SVGSVGElement> = {
 };
 
 function Ruler() {
-  // Hint at "measurement" — a ruler with tick marks under a small data pulse.
+  // Hint at measurement: a ruler with tick marks under a small data pulse.
   return (
     <svg {...SVG_BASE} role="img" aria-label="A ruler measuring small marks">
       <rect x={18} y={56} width={84} height={26} rx={3} />
@@ -201,81 +201,70 @@ function Ruler() {
   );
 }
 
-function Silhouettes() {
-  // Three abstract figures, centered slightly taller — "a different list".
-  return (
-    <svg {...SVG_BASE} role="img" aria-label="Three figures">
-      {[26, 60, 94].map((cx, i) => {
-        const headR = i === 1 ? 9 : 7;
-        const shoulderW = i === 1 ? 26 : 22;
-        return (
-          <g key={cx}>
-            <circle cx={cx} cy={48} r={headR} />
-            <path
-              d={`M ${cx - shoulderW / 2} ${100} Q ${cx} ${64}, ${cx + shoulderW / 2} ${100}`}
-            />
-          </g>
-        );
-      })}
-      <line x1={14} x2={106} y1={110} y2={110} strokeDasharray="2 4" />
-    </svg>
-  );
-}
-
-function ScatteredMoments() {
-  // A scattered arc of dots — small moments along a gentle curve, not a
-  // ruler. One dot in the accent colour to suggest the moment you're in.
-  const dots: Array<{ x: number; y: number; r: number; accent?: boolean }> = [
-    { x: 18, y: 78, r: 2 },
-    { x: 28, y: 64, r: 2.5 },
-    { x: 38, y: 54, r: 2 },
-    { x: 48, y: 47, r: 3 },
-    { x: 58, y: 44, r: 2.5 },
-    { x: 64, y: 50, r: 2 },
-    { x: 72, y: 44, r: 3.5, accent: true },
-    { x: 82, y: 50, r: 2 },
-    { x: 90, y: 60, r: 2.5 },
-    { x: 100, y: 74, r: 2 },
-  ];
+function WindingPath() {
+  // A trail meandering left to right, ending in a filled dot. Suggests the
+  // journey through life skills without depicting a person.
   return (
     <svg
       {...SVG_BASE}
       role="img"
-      aria-label="A scattered arc of small moments"
+      aria-label="A path winding to a destination"
     >
-      {dots.map((d, i) => (
-        <circle
-          key={i}
-          cx={d.x}
-          cy={d.y}
-          r={d.r}
-          fill={d.accent ? "var(--accent)" : "currentColor"}
-          stroke="none"
-        />
-      ))}
+      <path d="M 14 86 Q 30 56, 48 70 T 80 50 Q 92 44, 100 38" />
+      <circle cx={100} cy={38} r={3.5} fill="currentColor" stroke="none" />
     </svg>
   );
 }
 
-function HandWithDot() {
+function DoorwayLight() {
+  // A doorway shape with a soft glow inside: home, small light. The glow is
+  // a single filled accent circle behind the doorway rectangle.
   return (
-    <svg {...SVG_BASE} role="img" aria-label="A cupped hand holding a small moment">
-      <path d="M 22 72 Q 60 110, 98 72" />
-      <line x1={22} y1={72} x2={22} y2={58} />
-      <line x1={98} y1={72} x2={98} y2={58} />
-      <circle cx={60} cy={36} r={3.5} fill="currentColor" stroke="none" />
+    <svg
+      {...SVG_BASE}
+      role="img"
+      aria-label="A doorway with a soft glow inside"
+    >
+      <circle
+        cx={60}
+        cy={68}
+        r={16}
+        fill="var(--accent)"
+        fillOpacity={0.22}
+        stroke="none"
+      />
+      <path d="M 40 96 V 50 Q 40 36, 60 36 Q 80 36, 80 50 V 96" />
+      <line x1={32} y1={96} x2={88} y2={96} />
     </svg>
   );
 }
 
-function TwoFigures() {
+function DotInRing() {
+  // A small filled circle held within a thin-outlined larger circle.
+  // One moment held within time.
   return (
-    <svg {...SVG_BASE} role="img" aria-label="A parent and child, abstract">
-      <circle cx={44} cy={46} r={9} />
-      <path d="M 28 98 Q 44 62, 60 98" />
-      <circle cx={80} cy={58} r={7} />
-      <path d="M 68 98 Q 80 72, 92 98" />
-      <line x1={18} x2={102} y1={108} y2={108} strokeDasharray="2 4" />
+    <svg
+      {...SVG_BASE}
+      role="img"
+      aria-label="A small moment held within a larger circle"
+    >
+      <circle cx={60} cy={60} r={32} />
+      <circle cx={60} cy={60} r={4.5} fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function PalmCradle() {
+  // An open cradling palm shape (no fingers) holding a single dot above.
+  // No face, no body, just the gesture of holding.
+  return (
+    <svg
+      {...SVG_BASE}
+      role="img"
+      aria-label="An open palm holding a small dot"
+    >
+      <path d="M 18 70 Q 60 110, 102 70" />
+      <circle cx={60} cy={50} r={4} fill="currentColor" stroke="none" />
     </svg>
   );
 }

@@ -85,7 +85,7 @@ export default function DbDevPage() {
       setDbError(
         err instanceof Error
           ? err.message
-          : "Could not read database — see browser console.",
+          : "Could not read database. See browser console.",
       );
     }
   }, []);
@@ -105,7 +105,7 @@ export default function DbDevPage() {
       await refresh();
     } catch (err) {
       console.error(`[/dev/db] ${label} failed:`, err);
-      toast(`${label} failed — see console.`, { tone: "danger" });
+      toast(`${label} failed. See console.`, { tone: "danger" });
     } finally {
       setBusy(false);
     }

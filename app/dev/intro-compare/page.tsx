@@ -38,7 +38,7 @@ export default function IntroCompareDevPage() {
         Internal · Intro variants
       </p>
       <h1 className="mt-1 text-display text-ink">
-        Compare intro versions — pick the one that feels right.
+        Compare intro versions. Pick the one that feels right.
       </h1>
       <p className="mt-3 text-body text-ink-secondary">
         Each opens the full carousel. Use Esc / browser back to return.

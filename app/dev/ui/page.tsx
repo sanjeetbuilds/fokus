@@ -213,7 +213,7 @@ export default function UIDevPage() {
             <Input
               label="With hint"
               placeholder="20:00"
-              hint="Reminder time — optional"
+              hint="Reminder time, optional"
             />
             <Input
               label="With error"

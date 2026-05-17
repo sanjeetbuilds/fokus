@@ -1,6 +1,6 @@
 /**
  * Root route. The OnboardingGate (mounted in app/layout.tsx) handles the
- * actual redirect for "/" — either to /intro (no parent), /onboarding/child
+ * actual redirect for "/", either to /intro (no parent), /onboarding/child
  * (parent but no kids), or /today (fully onboarded). This page just renders
  * a calm loading state during the half-tick between hydration and redirect.
  */

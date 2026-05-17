@@ -13,10 +13,10 @@ const BASE = process.env.BASE ?? "http://localhost:3009";
 const OUT = "screenshots";
 
 async function seed(page: import("puppeteer-core").Page) {
-  // Open Dexie inside the page context and put one parent + one child + one
-  // active-child pointer in. Mirrors what real onboarding would create.
   await page.evaluate(async () => {
-    const Dexie = (await import("https://cdn.jsdelivr.net/npm/dexie@4.4.2/+esm")).default;
+    const Dexie = (
+      await import("https://cdn.jsdelivr.net/npm/dexie@4.4.2/+esm")
+    ).default;
     const db = new Dexie("fokus_db");
     db.version(1).stores({
       parents: "id, updatedAt",
@@ -27,6 +27,7 @@ async function seed(page: import("puppeteer-core").Page) {
     const now = new Date().toISOString();
     const parentId = "demo-parent";
     const childId = "demo-child";
+
     await db.parents.put({
       id: parentId,
       name: "Priya",
@@ -55,6 +56,47 @@ async function seed(page: import("puppeteer-core").Page) {
       updatedAt: now,
       _syncStatus: "local",
     });
+
+    // Seed 12 sessions across the last 28 days for the heatmap + focus areas
+    // + recent moments to all have real data to render.
+    const seeds: Array<{
+      offset: number;
+      activityId: string;
+      response: string;
+      note?: string;
+    }> = [
+      { offset: 0, activityId: "cu1", response: "loved", note: "He kept asking 'but why'. Surprised me." },
+      { offset: 1, activityId: "la1", response: "engaged" },
+      { offset: 2, activityId: "em1", response: "neutral" },
+      { offset: 3, activityId: "cu5", response: "engaged" },
+      { offset: 5, activityId: "th1", response: "loved" },
+      { offset: 7, activityId: "la4", response: "neutral" },
+      { offset: 9, activityId: "cu3", response: "engaged" },
+      { offset: 11, activityId: "re1", response: "struggled" },
+      { offset: 14, activityId: "cr1", response: "loved" },
+      { offset: 17, activityId: "em4", response: "engaged" },
+      { offset: 21, activityId: "cu1", response: "engaged" },
+      { offset: 25, activityId: "ob1", response: "loved" },
+    ];
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    for (const s of seeds) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - s.offset);
+      const iso = d.toISOString().slice(0, 10);
+      await db.sessions.put({
+        id: `sess-${s.offset}-${s.activityId}`,
+        childId,
+        activityId: s.activityId,
+        date: iso,
+        response: s.response,
+        ...(s.note ? { note: s.note } : {}),
+        context: { timeAvailable: "medium", childMood: "normal" },
+        createdAt: d.toISOString(),
+        _syncStatus: "local",
+      });
+    }
+
     window.localStorage.setItem(
       "fokus_app_state",
       JSON.stringify({
@@ -76,72 +118,68 @@ async function main() {
     const page = await browser.newPage();
     await page.setViewport({ width: 412, height: 900, deviceScaleFactor: 2 });
 
-    // Seed first via /intro (any route — we just need the page to exist so
-    // we can run a script in the same origin).
     await page.goto(`${BASE}/intro`, { waitUntil: "networkidle0" });
     await seed(page);
 
-    // ---------- /intro (round-2) ----------
+    // ---------- /intro slide 3 (new doorway/glow illustration) ----------
     await page.goto(`${BASE}/intro`, { waitUntil: "networkidle0" });
     await page.waitForSelector("[aria-roledescription='slide']");
-    await page.screenshot({
-      path: `${OUT}/v2-intro-slide-1.png`,
-      type: "png",
-    });
-
-    // Advance to slide 3 (where the age axis lives)
     await page.evaluate(() => {
       const btns = Array.from(
-        document.querySelectorAll<HTMLButtonElement>("[aria-label^='Go to slide 3']"),
+        document.querySelectorAll<HTMLButtonElement>(
+          "[aria-label^='Go to slide 3']",
+        ),
       );
       btns[0]?.click();
     });
     await new Promise((r) => setTimeout(r, 400));
     await page.screenshot({
-      path: `${OUT}/v2-intro-slide-3.png`,
+      path: `${OUT}/v3-intro-slide-3.png`,
       type: "png",
     });
 
-    // ---------- /today ----------
-    await page.goto(`${BASE}/today`, { waitUntil: "networkidle0" });
-    await page.waitForSelector("h1");
-    await new Promise((r) => setTimeout(r, 300));
-    await page.screenshot({
-      path: `${OUT}/v2-today.png`,
-      type: "png",
-    });
-
-    // ---------- /library ----------
+    // ---------- /library (new white cards + bold icon squares) ----------
     await page.goto(`${BASE}/library`, { waitUntil: "networkidle0" });
     await page.waitForSelector("h1");
     await new Promise((r) => setTimeout(r, 300));
     await page.screenshot({
-      path: `${OUT}/v2-library.png`,
+      path: `${OUT}/v3-library.png`,
       type: "png",
     });
 
-    // ---------- /activity/cu1 (shows new EXAMPLE block) ----------
-    await page.goto(`${BASE}/activity/cu1?from=today&time=medium&mood=normal`, {
-      waitUntil: "networkidle0",
-    });
+    // ---------- /map = Track, top half (stats + calendar + focus areas) ----------
+    await page.goto(`${BASE}/map`, { waitUntil: "networkidle0" });
     await page.waitForSelector("h1");
     await new Promise((r) => setTimeout(r, 400));
     await page.screenshot({
-      path: `${OUT}/v2-activity-detail.png`,
+      path: `${OUT}/v3-track-top.png`,
+      type: "png",
+    });
+
+    // ---------- Track, bottom (recent moments) ----------
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await new Promise((r) => setTimeout(r, 300));
+    await page.screenshot({
+      path: `${OUT}/v3-track-bottom.png`,
+      type: "png",
+    });
+
+    // ---------- bonus: activity detail (sanity check no em-dashes leaked) ----------
+    await page.goto(
+      `${BASE}/activity/cu1?from=today&time=medium&mood=normal`,
+      { waitUntil: "networkidle0" },
+    );
+    await page.waitForSelector("h1");
+    await new Promise((r) => setTimeout(r, 300));
+    await page.screenshot({
+      path: `${OUT}/v3-activity-detail.png`,
       type: "png",
       fullPage: true,
     });
 
-    // ---------- /profile ----------
-    await page.goto(`${BASE}/profile`, { waitUntil: "networkidle0" });
-    await page.waitForSelector("h1");
-    await new Promise((r) => setTimeout(r, 300));
-    await page.screenshot({
-      path: `${OUT}/v2-profile.png`,
-      type: "png",
-    });
-
-    console.log("✓ Captured: v2-intro-slide-1, v2-intro-slide-3, v2-today, v2-library, v2-activity-detail, v2-profile");
+    console.log(
+      "Captured: v3-intro-slide-3, v3-library, v3-track-top, v3-track-bottom, v3-activity-detail",
+    );
   } finally {
     await browser.close();
   }

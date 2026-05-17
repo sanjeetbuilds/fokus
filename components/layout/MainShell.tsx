@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Home, Map, User } from "lucide-react";
+import { Activity, BookOpen, Home, User } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -19,7 +19,7 @@ interface TabDef extends Omit<TabItem, "onClick"> {
 const TABS: TabDef[] = [
   { key: "today", label: "Today", icon: Home, path: "/today" },
   { key: "library", label: "Library", icon: BookOpen, path: "/library" },
-  { key: "map", label: "Map", icon: Map, path: "/map" },
+  { key: "map", label: "Track", icon: Activity, path: "/map" },
   { key: "profile", label: "Profile", icon: User, path: "/profile" },
 ];
 

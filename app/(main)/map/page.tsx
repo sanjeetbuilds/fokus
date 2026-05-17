@@ -1,11 +1,12 @@
 "use client";
 
-import { CalendarDays, Flame, Sparkles } from "lucide-react";
+import { CalendarDays, Flame } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import CalendarHeatmap from "@/components/map/CalendarHeatmap";
 import SessionCard from "@/components/map/SessionCard";
-import SkillBar from "@/components/map/SkillBar";
+import SkillFrequencyRow from "@/components/map/SkillFrequencyRow";
 import StatCard from "@/components/map/StatCard";
 import Wordmark from "@/components/shared/Wordmark";
 import Button from "@/components/ui/Button";
@@ -15,7 +16,7 @@ import { db, getChild } from "@/lib/db";
 import { computeMapStats, skillCoverage } from "@/lib/engine";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { today as todayIso } from "@/lib/utils/dates";
-import type { Child, Session } from "@/types";
+import type { Child, Session, SkillKey } from "@/types";
 
 export default function MapPage() {
   const router = useRouter();
@@ -58,8 +59,18 @@ export default function MapPage() {
   );
   const coverage = useMemo(() => skillCoverage(sessions), [sessions]);
 
-  // Most recent 5 sessions (sessions already insertion-ordered; sort by
-  // date desc, then by createdAt desc as a tiebreaker for same-day ones).
+  // Focus Areas: sort by session count desc, zero-count skills at the bottom.
+  const sortedSkills = useMemo<SkillKey[]>(() => {
+    return [...SKILL_KEYS].sort((a, b) => {
+      const ca = coverage[a].sessions;
+      const cb = coverage[b].sessions;
+      if (ca === 0 && cb === 0) return SKILL_KEYS.indexOf(a) - SKILL_KEYS.indexOf(b);
+      if (ca === 0) return 1;
+      if (cb === 0) return -1;
+      return cb - ca;
+    });
+  }, [coverage]);
+
   const recent = useMemo(() => {
     const sorted = [...sessions].sort((a, b) => {
       if (a.date !== b.date) return a.date < b.date ? 1 : -1;
@@ -67,8 +78,6 @@ export default function MapPage() {
     });
     return sorted.slice(0, 5);
   }, [sessions]);
-
-  // ---------- render ----------
 
   if (!loaded) {
     return (
@@ -85,21 +94,24 @@ export default function MapPage() {
       <div className="flex items-center justify-between">
         <Wordmark size="sm" />
       </div>
+
       <header className="mt-6">
         <h1
           className="font-display text-[36px] font-semibold tracking-[-0.02em] text-ink"
           style={{ lineHeight: 1.1 }}
         >
-          {childName}&apos;s map
+          Track
         </h1>
+        <p className="mt-3 text-footnote text-ink-tertiary">
+          What you&apos;ve done with {childName} so far.
+        </p>
       </header>
 
       {sessions.length === 0 ? (
         <div className="mt-16">
           <EmptyState
-            icon={<Sparkles size={28} strokeWidth={1.5} />}
-            title={`When you start, ${childName}'s map will build itself here.`}
-            description="One moment a day. Five to twenty-five minutes. The picture forms over weeks, not days."
+            title={`When you start, ${childName}'s record will build itself here.`}
+            description="One moment a day. Five to twenty-five minutes. The picture forms over weeks."
             cta={
               <Button size="lg" onClick={() => router.push("/today")}>
                 Pick today&apos;s moment
@@ -121,15 +133,23 @@ export default function MapPage() {
 
           <section className="mt-10">
             <p className="text-caption uppercase tracking-[0.12em] font-medium text-ink-tertiary">
-              Skill development
+              Daily
+            </p>
+            <div className="mt-4">
+              <CalendarHeatmap sessions={sessions} today={new Date()} />
+            </div>
+          </section>
+
+          <section className="mt-10">
+            <p className="text-caption uppercase tracking-[0.12em] font-medium text-ink-tertiary">
+              Focus areas
             </p>
             <ul className="mt-3 -mx-3 flex flex-col">
-              {SKILL_KEYS.map((k) => (
+              {sortedSkills.map((k) => (
                 <li key={k}>
-                  <SkillBar
+                  <SkillFrequencyRow
                     skillKey={k}
                     sessionsCount={coverage[k].sessions}
-                    confidence={coverage[k].confidence}
                   />
                 </li>
               ))}

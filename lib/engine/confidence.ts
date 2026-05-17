@@ -3,7 +3,7 @@ import { SKILL_KEYS } from "@/lib/content/skills";
 import { activityIdToSkill, responseValue } from "./types";
 
 /**
- * 0–100 confidence in one skill — formula from SPEC §7:
+ * 0 to 100 confidence in one skill, formula from SPEC §7:
  *   no sessions      → 0
  *   else             → clamp(30 + sum(responseValue) * 2, 0, 100)
  *

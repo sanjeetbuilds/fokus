@@ -14,11 +14,11 @@ export const INTRO_SCREENS: IntroScreen[] = [
   },
   {
     id: 2,
-    body: "But the people who do well in life — not just careers, life — usually share a different list of skills. How to think. How to recover. How to read other people. How to start something hard. How to lose. How to keep going.",
+    body: "But the people who do well in life, not just careers, life, usually share a different list of skills. How to think. How to recover. How to read other people. How to start something hard. How to lose. How to keep going.",
   },
   {
     id: 3,
-    body: "These aren't taught anywhere. They're built at home, in small moments, between ages 5 and 15. Most parents miss them — not because they don't care, but because nobody told them what the moments are.",
+    body: "These aren't taught anywhere. They're built at home, in small moments, between ages 5 and 15. Most parents miss them. Not because they don't care, but because nobody told them what the moments are.",
   },
   {
     id: 4,

@@ -43,7 +43,7 @@ export async function updateChild(
 
 /**
  * Delete a child and cascade to its sessions + observations.
- * Wrapped in a Dexie 'rw' transaction so the three deletes are atomic —
+ * Wrapped in a Dexie 'rw' transaction so the three deletes are atomic.
  * either the child and all of its data go, or nothing changes.
  */
 export async function deleteChild(id: string): Promise<void> {

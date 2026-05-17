@@ -17,7 +17,7 @@ const SWIPE_VELOCITY_THRESHOLD = 240;
 export interface IntroCarouselProps {
   slides: ReactNode[];
   onComplete: () => void;
-  /** Label for the final advance — shown as aria-label on the arrow button. */
+  /** Label for the final advance; shown as aria-label on the arrow button. */
   finishLabel?: string;
   asMain?: boolean;
 }
@@ -30,7 +30,7 @@ export interface IntroCarouselProps {
  *   - Bottom row: Skip on the left, a single circular arrow on the right
  *     that advances or, on the final slide, calls onComplete.
  *
- * Each slide is rendered by the caller — content layout (illustration +
+ * Each slide is rendered by the caller; content layout (illustration +
  * type) lives on the page that owns the carousel, not here.
  */
 export function IntroCarousel({

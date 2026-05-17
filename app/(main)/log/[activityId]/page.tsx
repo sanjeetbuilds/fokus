@@ -116,7 +116,7 @@ function LogSessionBody() {
       router.push("/today");
     } catch (err) {
       console.error("[/log] createSession:", err);
-      toast("Couldn't save — try again.", { tone: "danger" });
+      toast("Couldn't save. Try again.", { tone: "danger" });
       setBusy(false);
     }
   }, [
@@ -151,7 +151,7 @@ function LogSessionBody() {
     response === "skipped" ? "Why skipped?" : "Anything to remember?";
   const notePlaceholder =
     response === "skipped"
-      ? "A few words on why today didn't happen — for your own records."
+      ? "A few words on why today didn't happen, for your own records."
       : "A surprising thing, a moment you want to remember, an idea for next time…";
 
   return (

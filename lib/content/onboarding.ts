@@ -16,7 +16,7 @@ export const GRADE_OPTIONS = [
   "5th",
 ] as const;
 
-// Step 2 — What do they love doing? (soft hint: top 3-5)
+// Step 2: What do they love doing? (soft hint: top 3-5)
 export const GOES_DEEP_ON_OPTIONS = [
   "Drawing",
   "Building/Lego",
@@ -31,8 +31,8 @@ export const GOES_DEEP_ON_OPTIONS = [
   "Outdoor exploring",
 ] as const;
 
-// Step 3 — What do they avoid? (any, can skip)
-// "Speaking in English" and "Reading aloud" removed — covered by Step 4 (language)
+// Step 3: What do they avoid? (any, can skip)
+// "Speaking in English" and "Reading aloud" removed (covered by Step 4 language)
 // and Step 7 (Reading struggles) respectively, so we don't double-count.
 export const FLEES_FROM_OPTIONS = [
   "Studying / homework",
@@ -45,7 +45,7 @@ export const FLEES_FROM_OPTIONS = [
   "Meeting new people",
 ] as const;
 
-// Step 4 — Language
+// Step 4: Language
 export interface EnglishConfidenceOption {
   value: EnglishConfidence;
   label: string;
@@ -85,7 +85,7 @@ export const PRIMARY_LANGUAGE_OPTIONS = [
   "Other",
 ] as const;
 
-// Step 5 — What lights them up? (purely thematic interests)
+// Step 5: What lights them up? (purely thematic interests)
 // Stripped of activity categories (Stories, Music, Drawing) which moved to Step 2.
 // Step 5 + "Add your own" lets parents type custom interests.
 export const INTEREST_OPTIONS = [
@@ -102,7 +102,7 @@ export const INTEREST_OPTIONS = [
   "Dancing",
 ] as const;
 
-// Step 6 — What are they good at? (soft hint: top 3-5)
+// Step 6: What are they good at? (soft hint: top 3-5)
 export const STRENGTH_OPTIONS = [
   "Curious",
   "Talkative",
@@ -118,8 +118,8 @@ export const STRENGTH_OPTIONS = [
   "Independent",
 ] as const;
 
-// Step 7 — Where do they get stuck? (any, can skip)
-// "Asking questions" removed — activities themselves build question-asking,
+// Step 7: Where do they get stuck? (any, can skip)
+// "Asking questions" removed because activities themselves build question-asking,
 // no point flagging it as a struggle.
 export const STRUGGLE_OPTIONS = [
   "Speaking English",
@@ -137,7 +137,7 @@ export const STRUGGLE_OPTIONS = [
 /**
  * Recommended (NOT enforced) ranges for the chip multi-selects. Used to
  * render a gentle hint below each step's chip group. Continue is never
- * disabled by these counts — only Step 1 (name + DOB + grade) is hard-required.
+ * disabled by these counts. Only Step 1 (name + DOB + grade) is hard-required.
  */
 export const ONBOARDING_RECOMMENDED = {
   goesDeepOn: { min: 3, max: 5 },

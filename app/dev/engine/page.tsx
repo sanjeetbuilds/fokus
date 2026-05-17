@@ -142,7 +142,7 @@ export default function EngineDevPage() {
         setResult(null);
       } else {
         console.error(err);
-        toast("Engine error — see console.", { tone: "danger" });
+        toast("Engine error. See console.", { tone: "danger" });
       }
     } finally {
       setBusy(false);
@@ -424,7 +424,7 @@ function Row({
           <td colSpan={7} className="px-4 py-3">
             {scored.reasons.length === 0 ? (
               <p className="text-footnote text-ink-tertiary">
-                No rule fired — starts at 100 with no adjustments.
+                No rule fired. Starts at 100 with no adjustments.
               </p>
             ) : (
               <ul className="space-y-1">

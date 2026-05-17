@@ -13,8 +13,8 @@ import EmptyState from "@/components/ui/EmptyState";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
 import { SKILLS, SKILL_KEYS } from "@/lib/content/skills";
 import { db } from "@/lib/db";
-import { computeTrend, skillConfidence, type TrendSummary } from "@/lib/engine";
 import { useAppStore } from "@/lib/store/useAppStore";
+import { daysSince } from "@/lib/utils/dates";
 import type { Session, SkillKey } from "@/types";
 
 function isSkillKey(value: string | undefined): value is SkillKey {
@@ -75,20 +75,15 @@ export default function SkillDetailPage() {
     return sorted;
   }, [skillSessions]);
 
-  const confidence = useMemo(
-    () => (skillKey ? skillConfidence(skillKey, sessions) : 0),
-    [sessions, skillKey],
-  );
-
-  // Trend reads from chronological order (oldest → newest) so the *last 3*
-  // are the most recent.
-  const trend: TrendSummary = useMemo(() => {
-    const chrono = [...skillSessions].sort((a, b) => {
-      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-      return a.createdAt < b.createdAt ? -1 : 1;
-    });
-    return computeTrend(chrono);
-  }, [skillSessions]);
+  // "Last moment" stat: days since the most recent session in this skill.
+  // We report frequency / recency, never a level.
+  const lastDoneLabel = useMemo(() => {
+    if (recent.length === 0) return "not yet";
+    const days = daysSince(recent[0].date, new Date());
+    if (days <= 0) return "today";
+    if (days === 1) return "1d ago";
+    return `${days}d ago`;
+  }, [recent]);
 
   const skillActivities = useMemo(
     () => (skillKey ? ACTIVITIES.filter((a) => a.skill === skillKey) : []),
@@ -119,12 +114,6 @@ export default function SkillDetailPage() {
   }
 
   const skill = SKILLS[skillKey];
-  const trendColor =
-    trend.direction === "improving"
-      ? "var(--success)"
-      : trend.direction === "needs-attention"
-        ? "var(--warning)"
-        : "var(--ink-tertiary)";
 
   return (
     <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+12px)] pb-[calc(env(safe-area-inset-bottom)+48px)]">
@@ -154,21 +143,9 @@ export default function SkillDetailPage() {
         <p className="mt-3 text-body text-ink-secondary">{skill.description}</p>
       </header>
 
-      <section className="mt-8 grid grid-cols-3 gap-3">
-        <StatCard label="Sessions" value={skillSessions.length} />
-        <StatCard label="Confidence" value={Math.round(confidence)} />
-        <StatCard
-          label="Trend"
-          value={
-            <span
-              className="inline-flex items-center gap-1 text-headline"
-              style={{ color: trendColor }}
-            >
-              <span aria-hidden>{trend.arrow}</span>
-              <span>{trend.label}</span>
-            </span>
-          }
-        />
+      <section className="mt-8 grid grid-cols-2 gap-3">
+        <StatCard label="Moments" value={skillSessions.length} />
+        <StatCard label="Last done" value={lastDoneLabel} />
       </section>
 
       <section className="mt-10">

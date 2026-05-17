@@ -17,9 +17,9 @@ import { today as todayIso } from "@/lib/utils/dates";
 import type { Child, ChildMood, Session, TimeAvailable } from "@/types";
 
 const TIME_CHIPS: { value: TimeAvailable; label: string }[] = [
-  { value: "short", label: "5–10 min" },
-  { value: "medium", label: "10–20 min" },
-  { value: "long", label: "20–30 min" },
+  { value: "short", label: "5-10 min" },
+  { value: "medium", label: "10-20 min" },
+  { value: "long", label: "20-30 min" },
 ];
 
 const MOOD_CHIPS: { value: ChildMood; label: string }[] = [
@@ -100,7 +100,7 @@ export default function TodayPage() {
         setRestDay(true);
       } else {
         console.error("[/today] pickActivity:", err);
-        toast("Couldn't pick — see console.", { tone: "danger" });
+        toast("Couldn't pick. See console.", { tone: "danger" });
       }
     } finally {
       setBusy(false);
@@ -114,7 +114,7 @@ export default function TodayPage() {
       <main className="flex min-h-[100svh] flex-col items-center justify-center px-6 text-center">
         <p className="text-body text-ink-secondary">No active child.</p>
         <p className="mt-2 text-footnote text-ink-tertiary">
-          The gate should redirect — try /profile to switch children.
+          The gate should redirect. Try /profile to switch children.
         </p>
       </main>
     );
@@ -229,13 +229,13 @@ export default function TodayPage() {
       {todaysSessions.length > 0 ? (
         <Card className="mt-8">
           <p className="text-callout text-ink">
-            One moment is plenty. If you want another, pick one — but there&apos;s
+            One moment is plenty. If you want another, pick one, but there&apos;s
             no streak to keep.
           </p>
         </Card>
       ) : null}
 
-      {/* Sticky bottom CTA — sits above the TabBar */}
+      {/* Sticky bottom CTA, sits above the TabBar */}
       <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+56px)] left-0 right-0 z-30 border-t border-line-subtle bg-bg px-5 pb-4 pt-4">
         <div className="mx-auto max-w-[640px]">
           <Button
@@ -255,7 +255,7 @@ export default function TodayPage() {
 // ---------- date formatting ----------
 
 /**
- * "Wednesday, 14 May" — long weekday + day + short month. The new identity
+ * "Wednesday, 14 May": long weekday + day + short month. The new identity
  * uses normal case for the date stamp (caption above the big title) instead
  * of the previous ALL-CAPS treatment.
  */

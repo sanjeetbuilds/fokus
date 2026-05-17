@@ -5,7 +5,7 @@ import type { Child, Observation, Parent, Session } from "@/types";
 /**
  * Versioned shape of a Fokus export. Bumping `schemaVersion` is a heads-up
  * to future importers that the layout has changed. The four record arrays
- * are the entire IndexedDB state — there is no derived data we need to
+ * are the entire IndexedDB state; there is no derived data we need to
  * include, since everything else can be recomputed from these.
  */
 export interface FokusExport {
@@ -44,7 +44,7 @@ export async function exportAllData(): Promise<Blob> {
   });
 }
 
-/** "fokus-export-2026-05-17.json" — today's calendar date in the filename. */
+/** "fokus-export-2026-05-17.json": today's calendar date in the filename. */
 export function exportFilename(date: string = today()): string {
   return `fokus-export-${date}.json`;
 }

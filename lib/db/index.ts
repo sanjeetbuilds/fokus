@@ -12,7 +12,7 @@ export {
 } from "./export";
 
 /**
- * Wipe every record from every Fokus table — atomic via a single rw transaction.
+ * Wipe every record from every Fokus table. Atomic via a single rw transaction.
  * Reserved for the dev page and the "Delete all data" Settings action.
  */
 export async function wipeAllData(): Promise<void> {

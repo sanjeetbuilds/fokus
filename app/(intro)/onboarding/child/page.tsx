@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronLeft, Plus } from "lucide-react";
+import { ChevronLeft, Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
@@ -143,7 +143,7 @@ function ChildOnboardingBody() {
       if (!parentId) {
         const parent = await getCurrentParent();
         if (!parent) {
-          toast("No parent profile — restart onboarding.", { tone: "danger" });
+          toast("No parent profile. Restart onboarding.", { tone: "danger" });
           router.replace("/intro");
           return;
         }
@@ -174,7 +174,7 @@ function ChildOnboardingBody() {
       router.replace(returnTo);
     } catch (err) {
       console.error("[/onboarding/child] createChild:", err);
-      toast("Couldn't save — try again.", { tone: "danger" });
+      toast("Couldn't save. Try again.", { tone: "danger" });
       setBusy(false);
     }
   }, [
@@ -289,11 +289,11 @@ function StepBody({ step, data, set, toggleArray }: StepBodyProps) {
       return (
         <ChipStep
           header="What do they avoid?"
-          subtext="Honest answer — this is where we'll be gentle."
+          subtext="Honest answer. This is where we'll be gentle."
           options={FLEES_FROM_OPTIONS}
           selected={data.fleesFrom}
           onToggle={(v) => toggleArray("fleesFrom", v)}
-          hint="Select all that apply — or skip if none fit."
+          hint="Select all that apply, or skip if none fit."
         />
       );
     case 4:
@@ -325,7 +325,7 @@ function StepBody({ step, data, set, toggleArray }: StepBodyProps) {
           options={STRUGGLE_OPTIONS}
           selected={data.struggles}
           onToggle={(v) => toggleArray("struggles", v)}
-          hint="Select all that apply — or skip if none fit."
+          hint="Select all that apply, or skip if none fit."
         />
       );
     case 8:
@@ -350,7 +350,7 @@ function Step1({
   }, []);
   // Sensible max bound on the DOB input so the native picker doesn't let
   // the user pick "tomorrow." Min bound is generous (20 years ago) so it
-  // doesn't fight legitimate input — we error post-hoc if age is out of range.
+  // doesn't fight legitimate input; we error post-hoc if age is out of range.
   const minDob = useMemo(() => {
     const d = new Date();
     d.setFullYear(d.getFullYear() - 20);
@@ -362,10 +362,10 @@ function Step1({
     if (!data.dateOfBirth) return null;
     if (!ageInfo) return "Pick a date in the past.";
     if (ageInfo.years < SUPPORTED_AGE_RANGE.min) {
-      return `Fokus is built for ages ${SUPPORTED_AGE_RANGE.min}–${SUPPORTED_AGE_RANGE.max}. Come back when they're a little older.`;
+      return `Fokus is built for ages ${SUPPORTED_AGE_RANGE.min}-${SUPPORTED_AGE_RANGE.max}. Come back when they're a little older.`;
     }
     if (ageInfo.years > SUPPORTED_AGE_RANGE.max) {
-      return `Fokus is built for ages ${SUPPORTED_AGE_RANGE.min}–${SUPPORTED_AGE_RANGE.max}. We don't yet cover older kids.`;
+      return `Fokus is built for ages ${SUPPORTED_AGE_RANGE.min}-${SUPPORTED_AGE_RANGE.max}. We don't yet cover older kids.`;
     }
     return null;
   })();
@@ -519,7 +519,7 @@ function Step5({
 }) {
   const [draft, setDraft] = useState("");
   const presets = INTEREST_OPTIONS as readonly string[];
-  // Anything in data.interests that isn't a preset is a custom entry —
+  // Anything in data.interests that isn't a preset is a custom entry;
   // render those as additional chips so the user sees what they typed.
   const customInterests = useMemo(
     () => data.interests.filter((i) => !presets.includes(i)),
@@ -601,35 +601,26 @@ function Step5({
 function Step8({ data }: { data: Draft }) {
   const name = data.name.trim() || "your child";
   return (
-    <div className="flex flex-col items-center gap-8 pt-6 text-center">
-      <div
-        className="flex h-14 w-14 items-center justify-center rounded-full"
-        style={{ backgroundColor: "var(--accent)" }}
-      >
-        <Check size={28} strokeWidth={2.25} aria-hidden className="text-white" />
-      </div>
+    <div className="flex flex-col gap-6 pt-8">
+      <h1 className="font-display text-title-1 leading-[1.15] text-ink">
+        You&apos;re ready.
+      </h1>
 
-      <header>
-        <h1 className="font-display text-title-1 leading-[1.15] text-ink">
-          You&apos;re ready.
-        </h1>
-        <p className="mt-4 text-body-large text-ink-secondary">
-          Each day, Fokus gives you one moment to share with{" "}
-          <span className="text-ink">{name}</span>. Five to twenty-five minutes,
-          whatever you have. After, log how it went — the app learns.
-        </p>
-      </header>
+      <p className="text-body-large text-ink-secondary">
+        Each day, Fokus gives you one moment to share with{" "}
+        <span className="text-ink">{name}</span>. Five to twenty-five minutes.
+        Whatever you have.
+      </p>
 
-      <div className="w-full rounded-lg border-l-4 border-accent bg-accent-bg/40 p-5 text-left">
-        <p className="text-footnote uppercase tracking-[0.08em] text-ink-tertiary">
-          One promise
-        </p>
-        <p className="mt-2 text-body italic text-ink">
-          This is for you, not for {name}. No streaks shown to them, no scores,
-          no levels. The work is the relationship — we just help you focus on
-          the right things.
-        </p>
-      </div>
+      <p className="text-body-large text-ink-secondary">
+        After, log how it went. The app learns and adjusts.
+      </p>
+
+      <p className="text-body-large text-ink-secondary">
+        This is for you, not for {name}. They&apos;ll never see this app.
+        They&apos;ll just feel a parent who&apos;s quietly paying attention to
+        the right things.
+      </p>
     </div>
   );
 }
@@ -694,7 +685,7 @@ function FieldGroup({
 }
 
 function recommendedHint(range: { min: number; max: number }): string {
-  return `Pick your top ${range.min}–${range.max} — no need to be exhaustive.`;
+  return `Pick your top ${range.min} to ${range.max}. No need to be exhaustive.`;
 }
 
 // ---------- validation ----------
@@ -724,7 +715,7 @@ function stepValid(step: number, d: Draft): boolean {
     case 5:
     case 6:
     case 7:
-      // Soft steps — always advanceable.
+      // Soft steps, always advanceable.
       return true;
     case 8: {
       // Final commit re-checks the truly required fields.

@@ -1,5 +1,5 @@
 /**
- * Engine unit tests — each test reads as a single behavioral claim about
+ * Engine unit tests; each test reads as a single behavioral claim about
  * SPEC §7. If you change the engine, the assertion that breaks tells you
  * which behavior you altered.
  */

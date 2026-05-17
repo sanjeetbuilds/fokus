@@ -1,7 +1,7 @@
 import type { SkillKey } from "@/types";
 
 /**
- * SkillDefinition — user-facing metadata for each of the 8 SkillKeys.
+ * SkillDefinition: user-facing metadata for each of the 8 SkillKeys.
  *
  * `iconName` is the Lucide-React component name as a string; consumers
  * resolve it to a component at render time (keeps this file pure-data
@@ -28,7 +28,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
   language: {
     label: "Language confidence",
     description:
-      "Speaking up in English without freezing — fluency before accuracy, voice before vocabulary.",
+      "Speaking up in English without freezing. Fluency before accuracy, voice before vocabulary.",
     iconName: "BookOpen",
     color: "#4A7C8E",
   },
@@ -63,7 +63,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
   observation: {
     label: "Observation",
     description:
-      "Seeing what's there — sounds, textures, faces, small changes — instead of moving past it on autopilot.",
+      "Seeing what's there (sounds, textures, faces, small changes) instead of moving past it on autopilot.",
     iconName: "Eye",
     color: "#7A6E5C",
   },

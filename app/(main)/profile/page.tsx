@@ -98,7 +98,7 @@ export default function ProfilePage() {
       await reload();
     } catch (err) {
       console.error("[/profile] deleteChild:", err);
-      toast("Couldn't remove — see console.", { tone: "danger" });
+      toast("Couldn't remove. See console.", { tone: "danger" });
     } finally {
       setBusy(false);
     }
@@ -205,7 +205,7 @@ export default function ProfilePage() {
         <h2 className="text-title-3 text-ink">About Fokus</h2>
         <p className="mt-2 text-body text-ink-secondary">
           One small moment a day with your child. Fokus is built for the parts
-          school can&apos;t measure — curiosity, language confidence, emotional
+          school can&apos;t measure: curiosity, language confidence, emotional
           awareness, and the rest of the 70% that quietly shape a life.
         </p>
         <Link

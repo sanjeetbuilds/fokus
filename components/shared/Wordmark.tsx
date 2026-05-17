@@ -9,28 +9,28 @@ export interface WordmarkProps {
   className?: string;
   /**
    * Override the colour scheme. Default `brand` is the canonical wordmark:
-   * ink letterforms with a single accent-blue dot — reads as a proper
+   * ink letterforms with a single accent-blue dot. Reads as a proper
    * brand mark instead of plain text. `inverse` for accent-bg surfaces.
    */
   tone?: "brand" | "inverse";
 }
 
 const SIZES: Record<Size, { text: string; dot: string; gap: string; offset: string }> = {
-  // sm — top of every main screen header
+  // sm: top of every main screen header
   sm: {
     text: "text-[19px] font-bold uppercase tracking-[0.04em]",
     dot: "h-1.5 w-1.5",
     gap: "gap-2",
     offset: "translate-y-[-1px]",
   },
-  // md — onboarding final / install splash
+  // md: onboarding final / install splash
   md: {
     text: "text-[24px] font-bold uppercase tracking-[0.04em]",
     dot: "h-2 w-2",
     gap: "gap-2.5",
     offset: "translate-y-[-2px]",
   },
-  // hero — marketing-scale (kept for the /dev/identity preview)
+  // hero: marketing-scale (kept for the /dev/identity preview)
   hero: {
     text: "text-[64px] font-extrabold uppercase tracking-[0.02em] leading-none",
     dot: "h-3 w-3",
@@ -45,7 +45,7 @@ const TONE_CLASS: Record<NonNullable<WordmarkProps["tone"]>, { text: string; dot
 };
 
 /**
- * Fokus wordmark — Fraunces serif, uppercase, ink letterforms with a single
+ * Fokus wordmark: Fraunces serif, uppercase, ink letterforms with a single
  * accent-blue dot as the brand mark. The dot is offset upward so it visually
  * aligns with the cap-height baseline rather than centring on the text
  * baseline (looks anchored otherwise).

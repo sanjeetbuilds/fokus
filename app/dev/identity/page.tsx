@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /dev/identity — Visual identity preview.
+ * /dev/identity: Visual identity preview.
  *
  * INTERNAL ONLY. This page exists so the new warm-cream / bold-wordmark
  * identity can be reviewed in one scrollable view BEFORE any production
@@ -15,8 +15,8 @@
  *
  * Constraints honoured here (do not violate when propagating):
  *   - No "Level N" anywhere
- *   - No "Exercise" — say "moment" or "activity"
- *   - No "Building [child]" — say "Today with [child]"
+ *   - No "Exercise". Say "moment" or "activity"
+ *   - No "Building [child]". Say "Today with [child]"
  *   - No progress bar showing the child's "level"
  *   - No streaks / badges / achievements / wins
  */
@@ -50,7 +50,7 @@ const PALETTE = {
   danger: "#C44C3F",
 } as const;
 
-// Display sans stack — Inter if loaded, otherwise the platform display family.
+// Display sans stack: Inter if loaded, otherwise the platform display family.
 const FONT_STACK =
   '"Inter", system-ui, -apple-system, "Segoe UI Variable", "SF Pro Display", "Helvetica Neue", Arial, sans-serif';
 
@@ -158,13 +158,13 @@ function WordmarkSmall() {
 }
 
 // ============================================================
-// Section 1 — wordmark + palette
+// Section 1: wordmark + palette
 // ============================================================
 
 function Section1Palette() {
   return (
     <section className="mt-12">
-      <Eyebrow>Section 1 — Wordmark &amp; Palette</Eyebrow>
+      <Eyebrow>Section 1: Wordmark &amp; Palette</Eyebrow>
       <div className="mt-6 space-y-10">
         <div>
           <WordmarkHero />
@@ -219,7 +219,7 @@ function PaletteRow() {
 }
 
 // ============================================================
-// Section 2 — type scale
+// Section 2: type scale
 // ============================================================
 
 function Section2Type() {
@@ -227,7 +227,7 @@ function Section2Type() {
     <>
       <SectionDivider />
       <section>
-        <Eyebrow>Section 2 — Type Scale</Eyebrow>
+        <Eyebrow>Section 2: Type Scale</Eyebrow>
         <div className="mt-8 space-y-8">
           <TypeRow label="Display · 44px · 700 · tracking −0.02em">
             <h2
@@ -289,7 +289,7 @@ function TypeRow({ label, children }: { label: string; children: ReactNode }) {
 }
 
 // ============================================================
-// Section 3 — Today mockup
+// Section 3: Today mockup
 // ============================================================
 
 function Section3Today() {
@@ -297,7 +297,7 @@ function Section3Today() {
     <>
       <SectionDivider />
       <section>
-        <Eyebrow>Section 3 — Today screen (mockup)</Eyebrow>
+        <Eyebrow>Section 3: Today screen (mockup)</Eyebrow>
 
         <PhoneFrame>
           {/* Top bar */}
@@ -331,9 +331,9 @@ function Section3Today() {
                 Time available
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <MockChip>5–10 min</MockChip>
-                <MockChip selected>10–20 min</MockChip>
-                <MockChip>20–30 min</MockChip>
+                <MockChip>5-10 min</MockChip>
+                <MockChip selected>10-20 min</MockChip>
+                <MockChip>20-30 min</MockChip>
               </div>
             </div>
 
@@ -398,7 +398,7 @@ function MockSecondary({ children }: { children: ReactNode }) {
 }
 
 // ============================================================
-// Section 4 — Activity detail mockup
+// Section 4: Activity detail mockup
 // ============================================================
 
 function Section4Activity() {
@@ -406,7 +406,7 @@ function Section4Activity() {
     <>
       <SectionDivider />
       <section>
-        <Eyebrow>Section 4 — Activity detail (mockup)</Eyebrow>
+        <Eyebrow>Section 4: Activity detail (mockup)</Eyebrow>
 
         <PhoneFrame>
           {/* Top bar */}
@@ -472,7 +472,7 @@ function Section4Activity() {
               className="mt-3 text-[17px] text-ink"
               style={{ lineHeight: 1.6 }}
             >
-              Choose something Leo notices — a fan, a bird, traffic. Ask
+              Choose something Leo notices: a fan, a bird, traffic. Ask
               &ldquo;Why does it work like that?&rdquo; When he answers, ask
               &ldquo;But why does THAT happen?&rdquo; Continue 5 times. If he
               says &ldquo;I don&apos;t know,&rdquo; respond:{" "}
@@ -541,7 +541,7 @@ function ClosedCard({
 }
 
 // ============================================================
-// Section 5 — Intro Screen 3 redesigned
+// Section 5: Intro Screen 3 redesigned
 // ============================================================
 
 function Section5Intro() {
@@ -549,7 +549,7 @@ function Section5Intro() {
     <>
       <SectionDivider />
       <section>
-        <Eyebrow>Section 5 — Intro screen 3 (redesigned)</Eyebrow>
+        <Eyebrow>Section 5: Intro screen 3 (redesigned)</Eyebrow>
 
         <PhoneFrame tall>
           {/* Top bar */}
@@ -563,7 +563,7 @@ function Section5Intro() {
             <AxisIllustration />
           </div>
 
-          {/* Body text — bigger, looser */}
+          {/* Body text: bigger, looser */}
           <div className="mt-12 space-y-5">
             <p
               className="text-[24px] font-semibold tracking-[-0.01em] text-ink"
@@ -575,7 +575,7 @@ function Section5Intro() {
               className="text-[19px] text-ink-secondary"
               style={{ lineHeight: 1.55 }}
             >
-              They&apos;re built at home — in small moments, between ages 5
+              They&apos;re built at home, in small moments, between ages 5
               and 15.
             </p>
             <p
@@ -587,7 +587,7 @@ function Section5Intro() {
             </p>
           </div>
 
-          {/* Progress dots — third filled */}
+          {/* Progress dots, third filled */}
           <div className="mt-16 flex items-center justify-center gap-2">
             {[0, 1, 2, 3, 4].map((i) => (
               <span
@@ -680,7 +680,7 @@ function AxisIllustration() {
 }
 
 // ============================================================
-// Section 6 — Illustration samples
+// Section 6: Illustration samples
 // ============================================================
 
 function Section6Illustrations() {
@@ -688,7 +688,7 @@ function Section6Illustrations() {
     <>
       <SectionDivider />
       <section>
-        <Eyebrow>Section 6 — Illustration style</Eyebrow>
+        <Eyebrow>Section 6: Illustration style</Eyebrow>
         <p className="mt-2 text-[15px] text-ink-secondary" style={{ lineHeight: 1.5 }}>
           Single-line, single-color, abstract. No characters, no faces, no
           clothing details. Same stroke weight, same energy.
@@ -735,7 +735,7 @@ function IllustrationTile({
   );
 }
 
-// SVG glyphs — 120×120, single-stroke, `currentColor` so they re-skin
+// SVG glyphs: 120x120, single-stroke, `currentColor` so they re-skin
 // against the surrounding text color (here: ink on accent-bg).
 const SVG_BASE = {
   width: 120,
@@ -751,7 +751,7 @@ const SVG_BASE = {
 function HandWithDot() {
   return (
     <svg {...SVG_BASE} role="img" aria-label="A cupped hand holding a small moment">
-      {/* Cupped palm — wide, gentle curve, with thumb hint at left and pinky at right */}
+      {/* Cupped palm: wide, gentle curve, with thumb hint at left and pinky at right */}
       <path d="M 22 72 Q 60 110, 98 72" />
       <line x1={22} y1={72} x2={22} y2={58} />
       <line x1={98} y1={72} x2={98} y2={58} />
@@ -798,7 +798,7 @@ function TwoFigures() {
 }
 
 // ============================================================
-// Phone frame — visually delineates a screen mockup from the page chrome
+// Phone frame: visually delineates a screen mockup from the page chrome
 // ============================================================
 
 function PhoneFrame({

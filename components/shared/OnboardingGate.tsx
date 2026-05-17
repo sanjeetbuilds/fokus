@@ -24,7 +24,7 @@ const CHILD_ONBOARDING_ALLOWED = (path: string): boolean =>
  *   - parent but no children → push to /onboarding/child (same exception)
  *   - "/" (root) → push to /today if fully onboarded, /intro otherwise
  *
- * Renders children immediately while it checks — there's an unavoidable flash
+ * Renders children immediately while it checks; there's an unavoidable flash
  * on first paint because the gate can only run after hydration. That's
  * acceptable for Phase 1; a real fix would need the parent record to be
  * mirrored into a cookie (server-readable) at signup time.
@@ -94,7 +94,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     };
   }, [pathname, router, setParent]);
 
-  // We render children regardless of `checked` — this avoids a layout-wide
+  // We render children regardless of `checked`; this avoids a layout-wide
   // blank screen. Pages that absolutely require an onboarded state should
   // re-check themselves before doing destructive things.
   return <>{children}</>;

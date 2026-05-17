@@ -170,7 +170,7 @@ function ActivityDetailBody() {
       {/* Hero How To card */}
       <HeroHowTo text={activity.howTo} />
 
-      {/* Worked example — what this looks like at your kitchen table */}
+      {/* Worked example: what this looks like at your kitchen table */}
       <ExampleCard
         example={activity.example}
         childName={childName ?? "your child"}
@@ -355,7 +355,7 @@ function ExampleCard({
                   : "text-ink-secondary"
               }`}
             >
-              — {turn.speaker === "you" ? "You" : childName}:
+              {turn.speaker === "you" ? "You" : childName}:
             </dt>
             <dd
               className={`text-[15px] ${

@@ -9,7 +9,7 @@ import {
 
 /**
  * Skill → struggle phrases. Used by Rule 10. Mirrors SPEC §7 exactly:
- *   "// etc." in the spec is left as a tail comment — we keep just the
+ *   "// etc." in the spec is left as a tail comment; we keep just the
  *   pairs the spec actually lists so we don't invent linkages.
  */
 const SKILL_TO_STRUGGLE: Partial<Record<SkillKey, readonly string[]>> = {
@@ -38,7 +38,7 @@ const DURATION_FIT: Record<
  * context. Pure: no DB, no clock, no randomness. Returns the score and
  * an audit trail (reasons[]) for the /dev/engine debug page and tests.
  *
- * Implements SPEC §7 verbatim — all 10 rules, in spec order. If you find
+ * Implements SPEC §7 verbatim: all 10 rules, in spec order. If you find
  * yourself wanting to "tidy" a rule, re-read the spec first; the
  * asymmetries are intentional.
  */
@@ -184,15 +184,15 @@ export function scoreActivity(
   );
   if (trend < -5) {
     if (activity.difficulty === 3)
-      adjust(-35, "Skill trend negative — ease off difficulty 3");
+      adjust(-35, "Skill trend negative: ease off difficulty 3");
     if (activity.difficulty === 1)
-      adjust(+25, "Skill trend negative — boost difficulty 1");
+      adjust(+25, "Skill trend negative: boost difficulty 1");
   }
   if (trend > 12) {
     if (activity.difficulty === 3)
-      adjust(+25, "Skill trend positive — stretch with difficulty 3");
+      adjust(+25, "Skill trend positive: stretch with difficulty 3");
     if (activity.difficulty === 1)
-      adjust(-15, "Skill trend positive — difficulty 1 too easy");
+      adjust(-15, "Skill trend positive: difficulty 1 too easy");
   }
 
   // ============ Rule 9: Age fit ============

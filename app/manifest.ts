@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 /**
- * Web App Manifest — served at /manifest.webmanifest via Next's file-based
+ * Web App Manifest, served at /manifest.webmanifest via Next's file-based
  * metadata route. Backed by /public/icons/* (regenerate with
  * `npx tsx scripts/gen-icons.ts`).
  *

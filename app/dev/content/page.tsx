@@ -103,7 +103,7 @@ export default function ContentDevPage() {
         </div>
         {!totalOk || perSkill.some((p) => !p.ok) ? (
           <p className="mt-3 text-footnote text-danger">
-            Counts off — check activities.ts.
+            Counts off. Check activities.ts.
           </p>
         ) : null}
       </section>
@@ -220,7 +220,7 @@ export default function ContentDevPage() {
                             {DIFFICULTY_LABEL[a.difficulty]}
                           </td>
                           <td className="px-4 py-3 text-ink-secondary">
-                            {a.ageRange[0]}–{a.ageRange[1]}
+                            {a.ageRange[0]}-{a.ageRange[1]}
                           </td>
                           <td className="px-4 py-3 text-ink-secondary">
                             {REQUIRES_LABEL[a.requires]}

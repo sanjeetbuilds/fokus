@@ -6,12 +6,12 @@ import { useCallback, type ReactNode } from "react";
 import { IntroCarousel } from "@/components/intro/IntroCarousel";
 
 /**
- * Typography pass — same five INTRO_SCREENS, presented with editorial weight:
- *   - serif type at ~32–40px
+ * Typography pass: same five INTRO_SCREENS, presented with editorial weight:
+ *   - serif type at ~32 to 40px
  *   - one emphasized phrase per slide (accent-bar pull-quote treatment)
  *   - one abstract visual per slide (geometry, no illustration)
  *
- * /dev only — not part of the production gate. Compare in /dev/intro-compare.
+ * /dev only. Not part of the production gate. Compare in /dev/intro-compare.
  */
 export default function IntroTypographyPage() {
   const router = useRouter();
@@ -57,7 +57,7 @@ function PullQuote({ children }: { children: ReactNode }) {
 function Slide1Measures() {
   return (
     <article className="flex flex-col items-start gap-10">
-      {/* Three small horizontal bars at the top — abstract "what school measures" */}
+      {/* Three small horizontal bars at the top: abstract "what school measures" */}
       <div className="w-full max-w-[280px] space-y-3">
         {(["Marks", "Behavior", "Speed"] as const).map((label) => (
           <div
@@ -83,7 +83,7 @@ function Slide2DifferentList() {
   return (
     <article className="flex flex-col gap-8">
       <Lede>
-        But the people who do well in life — not just careers, life — usually
+        But the people who do well in life, not just careers, life, usually
         share{" "}
         <PullQuote>a different list of skills.</PullQuote>
       </Lede>
@@ -100,12 +100,12 @@ function Slide2DifferentList() {
 
 function Slide3AgeRange() {
   // Visual: a horizontal axis from 5 to 15, with the middle highlighted with
-  // a soft accent band. Pure CSS — no SVG required.
+  // a soft accent band. Pure CSS, no SVG required.
   return (
     <article className="flex flex-col gap-10">
       <div>
         <div className="relative h-1 w-full overflow-hidden rounded-full bg-line">
-          {/* Highlight band — roughly middle 60% */}
+          {/* Highlight band, roughly middle 60% */}
           <div className="absolute left-[18%] top-0 h-full w-[64%] bg-accent/30" />
         </div>
         <div className="mt-3 flex justify-between text-caption uppercase tracking-[0.12em] text-ink-tertiary">
@@ -124,7 +124,7 @@ function Slide3AgeRange() {
         style={{ fontFamily: SERIF }}
         className="text-[18px] leading-[1.55] text-ink-secondary"
       >
-        Most parents miss them — not because they don&apos;t care, but because
+        Most parents miss them. Not because they don&apos;t care, but because
         nobody told them what the moments are.
       </p>
     </article>
@@ -170,7 +170,7 @@ function Slide4OneMoment() {
 }
 
 function Slide5Closing() {
-  // Just typography — no visual.
+  // Just typography, no visual.
   return (
     <article className="flex flex-col gap-8 text-center">
       <p

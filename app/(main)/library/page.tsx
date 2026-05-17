@@ -43,7 +43,7 @@ export default function LibraryPage() {
         </p>
       </header>
 
-      {/* Filter row — horizontal scroll on mobile, no scrollbar */}
+      {/* Filter row: horizontal scroll on mobile, no scrollbar */}
       <div
         className="-mx-5 mt-6 overflow-x-auto"
         style={{ scrollbarWidth: "none" }}
@@ -85,7 +85,7 @@ export default function LibraryPage() {
         {filtered.length === 0 ? (
           <EmptyState
             title="No activities in this skill yet."
-            description="The library should have eight per skill — if you see this, something's wrong with the content file."
+            description="The library should have eight per skill. If you see this, something's wrong with the content file."
           />
         ) : (
           <ul className="flex flex-col gap-3">

@@ -20,7 +20,7 @@ export interface RadioCardProps {
  *
  * Built as a <button role="radio"> rather than a real <input type="radio">
  * because the card surface needs hover/active states the bare radio can't
- * give us. Grouping is the caller's responsibility — wrap a set in a
+ * give us. Grouping is the caller's responsibility; wrap a set in a
  * <div role="radiogroup" aria-label="...">.
  */
 export default function RadioCard({

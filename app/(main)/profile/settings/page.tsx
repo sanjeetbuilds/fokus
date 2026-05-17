@@ -76,7 +76,7 @@ export default function SettingsPage() {
 
   // Persist reminder choice. We DON'T schedule a real notification yet;
   // that gets wired up via a service worker / Notification API in the PWA
-  // pass (Prompt 10). For now this is storage-only — the user can set their
+  // pass (Prompt 10). For now this is storage-only; the user can set their
   // preferred time and we'll honor it once the worker exists.
   const saveReminder = useCallback(
     async (enabled: boolean, time: string) => {
@@ -134,7 +134,7 @@ export default function SettingsPage() {
       toast(`Exported ${filename}.`);
     } catch (err) {
       console.error("[/settings] export:", err);
-      toast("Couldn't export — see console.", { tone: "danger" });
+      toast("Couldn't export. See console.", { tone: "danger" });
     }
   }, [toast]);
 
@@ -147,7 +147,7 @@ export default function SettingsPage() {
       router.replace("/intro");
     } catch (err) {
       console.error("[/settings] wipe:", err);
-      toast("Couldn't delete — see console.", { tone: "danger" });
+      toast("Couldn't delete. See console.", { tone: "danger" });
       setBusyDelete(false);
     }
   }, [busyDelete, resetStore, router, toast]);
@@ -279,7 +279,7 @@ export default function SettingsPage() {
         </Card>
       </section>
 
-      {/* Delete all data sheet — two stages */}
+      {/* Delete all data sheet: two stages */}
       <Sheet
         open={deleteSheet !== null}
         onClose={closeDeleteSheet}
@@ -292,7 +292,7 @@ export default function SettingsPage() {
         {deleteSheet === "warn" ? (
           <div className="flex flex-col gap-4">
             <p className="text-body text-ink-secondary">
-              This removes everything — your account, your children&apos;s
+              This removes everything: your account, your children&apos;s
               profiles, and every session you&apos;ve logged. There&apos;s no
               undo.
             </p>

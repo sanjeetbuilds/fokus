@@ -1,9 +1,36 @@
 "use client";
 
+import {
+  Anchor,
+  BookOpen,
+  Brain,
+  Compass,
+  Eye,
+  Heart,
+  Sparkles,
+  Wind,
+  type LucideIcon,
+} from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
+
 import { getActivityById } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
 import { formatDate } from "@/lib/utils/dates";
 import type { Session, SessionResponse } from "@/types";
+
+const ICONS: Record<
+  string,
+  ComponentType<SVGProps<SVGSVGElement> & { size?: number; strokeWidth?: number }>
+> = {
+  Anchor,
+  BookOpen,
+  Brain,
+  Compass,
+  Eye,
+  Heart,
+  Sparkles,
+  Wind,
+};
 
 const RESPONSE_LABEL: Record<SessionResponse, string> = {
   loved: "loved",
@@ -18,60 +45,48 @@ export interface SessionCardProps {
   session: Session;
 }
 
-/**
- * Recent-moment card with per-skill chromatic tint, matching ActivityCard.
- * If the activityId is unknown (stale record), fall back to a neutral card
- * with the raw id rendered as the title.
- */
 export default function SessionCard({ session }: SessionCardProps) {
   const activity = getActivityById(session.activityId);
   const skill = activity ? SKILLS[activity.skill] : null;
-
-  const color = skill?.color ?? "var(--line)";
-  const bg = skill ? `${skill.color}14` : "var(--bg-elevated)";
-  const border = skill ? `${skill.color}33` : "var(--line)";
+  const Icon: LucideIcon | undefined = skill
+    ? ((ICONS[skill.iconName] as LucideIcon | undefined) ?? undefined)
+    : undefined;
 
   return (
-    <div
-      className="flex flex-col gap-2 rounded-lg p-4"
-      style={{
-        backgroundColor: bg,
-        boxShadow: `inset 0 0 0 1px ${border}`,
-      }}
-    >
-      <div className="flex items-center justify-between gap-3 text-caption uppercase tracking-[0.1em]">
-        <div className="flex items-center gap-2">
-          <span
-            aria-hidden
-            className="inline-block h-2 w-2 rounded-full"
-            style={{ backgroundColor: color }}
-          />
-          <span
-            className="font-semibold"
-            style={{ color: skill?.color ?? "var(--ink-secondary)" }}
-          >
-            {skill?.label ?? "Unknown skill"}
-          </span>
-        </div>
-        <span className="text-ink-tertiary">{formatDate(session.date)}</span>
+    <div className="flex items-start gap-4 rounded-[16px] border border-line bg-bg-elevated p-4">
+      <div
+        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px]"
+        style={{
+          backgroundColor: skill?.color ?? "var(--ink-quaternary)",
+          color: "#FFFFFF",
+        }}
+        aria-hidden
+      >
+        {Icon ? <Icon size={22} strokeWidth={1.75} /> : null}
       </div>
 
-      <h3 className="text-[18px] font-semibold leading-[1.3] text-ink">
-        {activity?.title ?? session.activityId}
-      </h3>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.1em]">
+          <span style={{ color: skill?.color ?? "var(--ink-secondary)" }}>
+            {skill?.label ?? "Unknown skill"}
+          </span>
+          <span className="text-ink-tertiary">{formatDate(session.date)}</span>
+        </div>
 
-      <p className="text-footnote text-ink-secondary">
-        {RESPONSE_LABEL[session.response]}
-      </p>
+        <h3 className="mt-1 text-[17px] font-semibold leading-[1.3] text-ink">
+          {activity?.title ?? session.activityId}
+        </h3>
 
-      {session.note ? (
-        <blockquote
-          className="mt-1 border-l-2 pl-3 text-body italic text-ink-secondary"
-          style={{ borderColor: color }}
-        >
-          {session.note}
-        </blockquote>
-      ) : null}
+        <p className="mt-1 text-[14px] text-ink-secondary">
+          {RESPONSE_LABEL[session.response]}
+        </p>
+
+        {session.note ? (
+          <p className="mt-2 text-[14px] italic text-ink-secondary">
+            &ldquo;{session.note}&rdquo;
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

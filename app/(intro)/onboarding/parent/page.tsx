@@ -31,7 +31,7 @@ export default function ParentOnboardingPage() {
         router.replace("/onboarding/child");
       } catch (err) {
         console.error("[/onboarding/parent] createParent:", err);
-        toast("Couldn't save — try again.", { tone: "danger" });
+        toast("Couldn't save. Try again.", { tone: "danger" });
         setBusy(false);
       }
     },
