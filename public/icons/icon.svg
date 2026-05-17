@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0071E3"/>
+  <text
+    x="50%"
+    y="363.78"
+    text-anchor="middle"
+    font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif"
+    font-weight="700"
+    font-size="317"
+    fill="#FFFFFF"
+    letter-spacing="-0.04em"
+  >F</text>
+</svg>
