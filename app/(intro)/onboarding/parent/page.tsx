@@ -41,7 +41,9 @@ export default function ParentOnboardingPage() {
   return (
     <main className="relative flex min-h-[100svh] flex-col bg-bg">
       <div className="px-5 pt-[calc(env(safe-area-inset-top)+24px)]">
-        <h1 className="text-display text-ink">Welcome.</h1>
+        <h1 className="font-display text-display leading-[1.1] text-ink">
+          Welcome.
+        </h1>
         <p className="mt-3 text-body-large text-ink-secondary">
           What should we call you?
         </p>

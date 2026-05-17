@@ -174,7 +174,7 @@ export default function SettingsPage() {
       </div>
 
       <header>
-        <h1 className="text-display text-ink">Settings</h1>
+        <h1 className="font-display text-display leading-[1.1] text-ink">Settings</h1>
       </header>
 
       {/* Theme */}

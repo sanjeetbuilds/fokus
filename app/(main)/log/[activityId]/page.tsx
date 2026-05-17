@@ -170,7 +170,7 @@ function LogSessionBody() {
 
       <header>
         <h1
-          className="text-[40px] font-bold tracking-[-0.02em] text-ink"
+          className="font-display text-[40px] font-semibold tracking-[-0.02em] text-ink"
           style={{ lineHeight: 1.05 }}
         >
           How did it go?

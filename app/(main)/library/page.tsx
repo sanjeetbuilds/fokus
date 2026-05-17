@@ -32,8 +32,8 @@ export default function LibraryPage() {
 
       <header className="mt-6">
         <h1
-          className="text-[36px] font-bold tracking-[-0.02em] text-ink"
-          style={{ lineHeight: 1.05 }}
+          className="font-display text-[36px] font-semibold tracking-[-0.02em] text-ink"
+          style={{ lineHeight: 1.1 }}
         >
           All activities
         </h1>

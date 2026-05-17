@@ -147,7 +147,9 @@ export default function SkillDetailPage() {
             className="inline-block h-3 w-3 rounded-full"
             style={{ backgroundColor: skill.color }}
           />
-          <h1 className="text-display text-ink">{skill.label}</h1>
+          <h1 className="font-display text-display leading-[1.1] text-ink">
+            {skill.label}
+          </h1>
         </div>
         <p className="mt-3 text-body text-ink-secondary">{skill.description}</p>
       </header>

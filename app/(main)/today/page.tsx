@@ -176,7 +176,7 @@ export default function TodayPage() {
           {longDate(new Date())}
         </p>
         <h1
-          className="mt-2 text-[44px] font-bold tracking-[-0.02em] text-ink"
+          className="mt-2 font-display text-[44px] font-semibold tracking-[-0.02em] text-ink"
           style={{ lineHeight: 1.05 }}
         >
           Today with {child?.name ?? "your child"}

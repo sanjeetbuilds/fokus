@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
-import Card from "@/components/ui/Card";
 import { SKILLS } from "@/lib/content/skills";
 import type { Activity, ActivityDifficulty } from "@/types";
 
@@ -39,12 +38,14 @@ export interface ActivityCardProps {
 }
 
 /**
- * Activity card (round-2 identity). Layout: small colored icon square on the
- * left, caption row + title + one-line description on the right.
+ * Activity card with per-skill chromatic tint. The card background is the
+ * skill colour at 8% opacity; the icon square at 16%; the border at 20%.
+ * Together they give each row a recognizable hue without overwhelming the
+ * page — every skill is identifiable at a glance.
  *
- * Renders the surface only — wrap in a <Link> to make it navigate. The icon
- * square uses a 13% tint of the skill colour so each skill's row reads
- * visually grouped without each card screaming for attention.
+ * `${color}14` = 8% alpha in hex (0x14 ≈ 20/255 ≈ 0.078)
+ * `${color}29` = 16% alpha
+ * `${color}33` = 20% alpha
  */
 export default function ActivityCard({ activity }: ActivityCardProps) {
   const skill = SKILLS[activity.skill];
@@ -52,11 +53,19 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
     (ICONS[skill.iconName] as LucideIcon | undefined) ?? undefined;
 
   return (
-    <Card variant="interactive" className="flex items-start gap-4">
+    <div
+      role="button"
+      tabIndex={-1}
+      className="flex items-start gap-4 rounded-lg p-4 transition-shadow duration-fast ease-out hover:shadow-sm active:scale-[0.99]"
+      style={{
+        backgroundColor: `${skill.color}14`,
+        boxShadow: `inset 0 0 0 1px ${skill.color}33`,
+      }}
+    >
       <div
         className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px]"
         style={{
-          backgroundColor: `${skill.color}22`,
+          backgroundColor: `${skill.color}29`,
           color: skill.color,
         }}
         aria-hidden
@@ -65,12 +74,12 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-secondary">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em]">
           <span style={{ color: skill.color }}>{skill.label}</span>
           <span className="text-ink-quaternary"> · </span>
-          <span>{activity.duration} min</span>
+          <span className="text-ink-secondary">{activity.duration} min</span>
           <span className="text-ink-quaternary"> · </span>
-          <span>{DIFFICULTY_LABEL[activity.difficulty]}</span>
+          <span className="text-ink-secondary">{DIFFICULTY_LABEL[activity.difficulty]}</span>
         </p>
 
         <h3 className="mt-1 text-[18px] font-semibold leading-[1.3] text-ink">
@@ -81,6 +90,6 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
           {activity.description}
         </p>
       </div>
-    </Card>
+    </div>
   );
 }

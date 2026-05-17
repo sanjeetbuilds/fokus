@@ -1,8 +1,29 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { OnboardingGate } from "@/components/shared/OnboardingGate";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
+
+// Display serif — Fraunces variable, with the optical-size axis so we get
+// the right cut at every headline size. Loaded as a CSS variable so we can
+// opt-in per-element via the Tailwind `font-display` utility; body text
+// continues to use Inter via --font-body.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: "variable",
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: "variable",
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -51,7 +72,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="h-full">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`h-full ${fraunces.variable} ${inter.variable}`}
+    >
       <body className="min-h-full bg-bg text-ink font-sans">
         <ThemeProvider>
           <ToastProvider>

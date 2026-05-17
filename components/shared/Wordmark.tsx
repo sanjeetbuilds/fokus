@@ -8,61 +8,60 @@ export interface WordmarkProps {
   noDot?: boolean;
   className?: string;
   /**
-   * Override the colour. Defaults to the accent token (themeable). Useful
-   * for headers on accent-bg surfaces where you want the wordmark in white.
+   * Override the colour scheme. Default `brand` is the canonical wordmark:
+   * ink letterforms with a single accent-blue dot — reads as a proper
+   * brand mark instead of plain text. `inverse` for accent-bg surfaces.
    */
-  tone?: "accent" | "ink" | "inverse";
+  tone?: "brand" | "inverse";
 }
 
 const SIZES: Record<Size, { text: string; dot: string; gap: string; offset: string }> = {
-  // sm: in nav rails / detail-screen headers
+  // sm — top of every main screen header
   sm: {
-    text: "text-[18px] font-bold uppercase tracking-[-0.02em]",
+    text: "text-[19px] font-bold uppercase tracking-[0.04em]",
     dot: "h-1.5 w-1.5",
-    gap: "gap-1.5",
+    gap: "gap-2",
+    offset: "translate-y-[-1px]",
+  },
+  // md — onboarding final / install splash
+  md: {
+    text: "text-[24px] font-bold uppercase tracking-[0.04em]",
+    dot: "h-2 w-2",
+    gap: "gap-2.5",
     offset: "translate-y-[-2px]",
   },
-  // md: top of /today and other root screens
-  md: {
-    text: "text-[22px] font-bold uppercase tracking-[-0.02em]",
-    dot: "h-2 w-2",
-    gap: "gap-1.5",
-    offset: "translate-y-[-3px]",
-  },
-  // hero: marketing-style placement (not currently used in production
-  // screens but kept for parity with /dev/identity)
+  // hero — marketing-scale (kept for the /dev/identity preview)
   hero: {
-    text: "text-[64px] font-extrabold uppercase tracking-[-0.04em] leading-none",
+    text: "text-[64px] font-extrabold uppercase tracking-[0.02em] leading-none",
     dot: "h-3 w-3",
-    gap: "gap-3",
-    offset: "translate-y-[-6px]",
+    gap: "gap-4",
+    offset: "translate-y-[-4px]",
   },
 };
 
 const TONE_CLASS: Record<NonNullable<WordmarkProps["tone"]>, { text: string; dot: string }> = {
-  accent: { text: "text-accent", dot: "bg-accent" },
-  ink: { text: "text-ink", dot: "bg-ink" },
+  brand: { text: "text-ink", dot: "bg-accent" },
   inverse: { text: "text-white", dot: "bg-white" },
 };
 
 /**
- * Fokus wordmark — bold uppercase letterforms with an optional dot mark
- * sitting just before the F. The dot is offset upward so it visually aligns
- * with the cap-height rather than centring on the baseline (looks heavier
- * without that nudge).
+ * Fokus wordmark — Fraunces serif, uppercase, ink letterforms with a single
+ * accent-blue dot as the brand mark. The dot is offset upward so it visually
+ * aligns with the cap-height baseline rather than centring on the text
+ * baseline (looks anchored otherwise).
  */
 export default function Wordmark({
   size = "sm",
   noDot = false,
   className,
-  tone = "accent",
+  tone = "brand",
 }: WordmarkProps) {
   const s = SIZES[size];
   const t = TONE_CLASS[tone];
   return (
     <span
       className={cn(
-        "inline-flex items-baseline select-none",
+        "inline-flex items-center select-none font-display",
         s.gap,
         t.text,
         className,

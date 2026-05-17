@@ -17,6 +17,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
   useCallback,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -26,9 +27,11 @@ import Wordmark from "@/components/shared/Wordmark";
 import Button from "@/components/ui/Button";
 import { getActivityById } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
+import { getChild } from "@/lib/db";
 import { useAppStore } from "@/lib/store/useAppStore";
 import type {
   Activity,
+  ActivityExample,
   ActivityDifficulty,
   ChildMood,
   TimeAvailable,
@@ -79,6 +82,27 @@ function ActivityDetailBody() {
   );
 
   const lastPickContext = useAppStore((s) => s.lastPickContext);
+  const activeChildId = useAppStore((s) => s.activeChildId);
+  const [childName, setChildName] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!activeChildId) {
+      setChildName(null);
+      return;
+    }
+    void (async () => {
+      try {
+        const c = await getChild(activeChildId);
+        if (!cancelled) setChildName(c?.name ?? null);
+      } catch (err) {
+        console.error("[/activity] load child:", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeChildId]);
 
   const time = (searchParams?.get("time") as TimeAvailable | null) ??
     (lastPickContext?.activityId === id ? lastPickContext.time : null) ??
@@ -145,6 +169,12 @@ function ActivityDetailBody() {
 
       {/* Hero How To card */}
       <HeroHowTo text={activity.howTo} />
+
+      {/* Worked example — what this looks like at your kitchen table */}
+      <ExampleCard
+        example={activity.example}
+        childName={childName ?? "your child"}
+      />
 
       {/* Collapsible details */}
       <div className="mt-3 flex flex-col gap-2.5">
@@ -238,7 +268,7 @@ function ActivityHeader({ activity }: { activity: Activity }) {
       </p>
 
       <h1
-        className="mt-3 text-[40px] font-bold tracking-[-0.02em] text-ink"
+        className="mt-3 font-display text-[40px] font-semibold tracking-[-0.02em] text-ink"
         style={{ lineHeight: 1.05 }}
       >
         {activity.title}
@@ -278,6 +308,77 @@ function HeroHowTo({ text }: { text: string }) {
       >
         {text}
       </p>
+    </div>
+  );
+}
+
+// ---------- worked example ----------
+
+function ExampleCard({
+  example,
+  childName,
+}: {
+  example: ActivityExample;
+  childName: string;
+}) {
+  const fill = useCallback(
+    (s: string) => s.replace(/\{childName\}/g, childName),
+    [childName],
+  );
+
+  return (
+    <div
+      className="mt-3 rounded-[18px] p-6"
+      style={{
+        backgroundColor: "var(--bg-elevated)",
+        boxShadow: "inset 0 0 0 1px var(--line-subtle)",
+      }}
+    >
+      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent">
+        Example
+      </p>
+
+      <p
+        className="mt-3 text-[16px] italic text-ink-secondary"
+        style={{ lineHeight: 1.55 }}
+      >
+        {fill(example.setup)}
+      </p>
+
+      <dl className="mt-4 flex flex-col gap-2.5">
+        {example.exchange.map((turn, i) => (
+          <div key={i} className="flex gap-2">
+            <dt
+              className={`shrink-0 text-[15px] ${
+                turn.speaker === "you"
+                  ? "font-semibold text-ink"
+                  : "text-ink-secondary"
+              }`}
+            >
+              — {turn.speaker === "you" ? "You" : childName}:
+            </dt>
+            <dd
+              className={`text-[15px] ${
+                turn.speaker === "you"
+                  ? "font-semibold text-ink"
+                  : "font-normal text-ink-secondary"
+              }`}
+              style={{ lineHeight: 1.55 }}
+            >
+              {fill(turn.line)}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      {example.closing ? (
+        <p
+          className="mt-5 border-t border-line-subtle pt-4 text-[15px] italic text-ink-secondary"
+          style={{ lineHeight: 1.55 }}
+        >
+          {fill(example.closing)}
+        </p>
+      ) : null}
     </div>
   );
 }

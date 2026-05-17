@@ -111,18 +111,37 @@ async function main() {
       type: "png",
     });
 
-    // ---------- /activity/cu1 ----------
+    // ---------- /library ----------
+    await page.goto(`${BASE}/library`, { waitUntil: "networkidle0" });
+    await page.waitForSelector("h1");
+    await new Promise((r) => setTimeout(r, 300));
+    await page.screenshot({
+      path: `${OUT}/v2-library.png`,
+      type: "png",
+    });
+
+    // ---------- /activity/cu1 (shows new EXAMPLE block) ----------
     await page.goto(`${BASE}/activity/cu1?from=today&time=medium&mood=normal`, {
       waitUntil: "networkidle0",
     });
     await page.waitForSelector("h1");
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 400));
     await page.screenshot({
       path: `${OUT}/v2-activity-detail.png`,
       type: "png",
+      fullPage: true,
     });
 
-    console.log("✓ Captured: v2-intro-slide-1, v2-intro-slide-3, v2-today, v2-activity-detail");
+    // ---------- /profile ----------
+    await page.goto(`${BASE}/profile`, { waitUntil: "networkidle0" });
+    await page.waitForSelector("h1");
+    await new Promise((r) => setTimeout(r, 300));
+    await page.screenshot({
+      path: `${OUT}/v2-profile.png`,
+      type: "png",
+    });
+
+    console.log("✓ Captured: v2-intro-slide-1, v2-intro-slide-3, v2-today, v2-library, v2-activity-detail, v2-profile");
   } finally {
     await browser.close();
   }

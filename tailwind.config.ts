@@ -49,7 +49,26 @@ const config: Config = {
         danger: "var(--danger)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)"],
+        // Body — Inter (loaded by next/font in app/layout.tsx) with a system
+        // fallback for the brief paint before the font ships.
+        sans: [
+          "var(--font-body)",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "sans-serif",
+        ],
+        // Display — Fraunces variable serif. Opt-in via the `font-display`
+        // utility on headlines; body text continues to use sans.
+        display: [
+          "var(--font-display)",
+          "'Iowan Old Style'",
+          "Palatino",
+          "Georgia",
+          "Cambria",
+          "serif",
+        ],
       },
       fontSize: {
         display: ["var(--text-display)", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],

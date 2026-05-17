@@ -32,7 +32,7 @@ export default function MainSegmentError({
       <p className="text-footnote uppercase tracking-[0.08em] text-ink-tertiary">
         Something went wrong
       </p>
-      <h1 className="mt-2 text-title-1 text-ink">
+      <h1 className="mt-2 font-display text-title-1 leading-[1.15] text-ink">
         Something didn&apos;t work.
       </h1>
       <p className="mt-3 text-body text-ink-secondary">

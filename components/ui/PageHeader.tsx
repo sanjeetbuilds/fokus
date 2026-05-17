@@ -49,7 +49,7 @@ export default function PageHeader({
           {eyebrow}
         </p>
       ) : null}
-      <h1 className="mt-1 text-display text-ink">{title}</h1>
+      <h1 className="mt-1 font-display text-display leading-[1.1] text-ink">{title}</h1>
     </header>
   );
 }

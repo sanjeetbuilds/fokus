@@ -118,15 +118,17 @@ export default function ProfilePage() {
         <Wordmark size="sm" />
       </div>
       <header className="mt-6">
-        <p className="text-[13px] font-medium text-ink-secondary">
-          {parentName ? `Signed in as ${parentName}` : "Profile"}
-        </p>
         <h1
-          className="mt-2 text-[36px] font-bold tracking-[-0.02em] text-ink"
-          style={{ lineHeight: 1.05 }}
+          className="font-display text-[36px] font-semibold tracking-[-0.02em] text-ink"
+          style={{ lineHeight: 1.1 }}
         >
-          Children
+          {rows.length === 1 ? "Your child" : "Children"}
         </h1>
+        {parentName ? (
+          <p className="mt-2 text-footnote text-ink-secondary">
+            Signed in as {parentName}
+          </p>
+        ) : null}
       </header>
 
       <ul className="mt-8 flex flex-col gap-3">
@@ -141,7 +143,7 @@ export default function ProfilePage() {
                     <p className="truncate text-title-3 text-ink">
                       {child.name}
                     </p>
-                    {isActive ? (
+                    {isActive && rows.length > 1 ? (
                       <span className="rounded-full bg-accent-bg px-2 py-0.5 text-caption font-medium text-accent-deep">
                         Active
                       </span>

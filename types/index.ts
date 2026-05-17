@@ -144,6 +144,17 @@ export interface ActivityAdapt {
   harder: string;
 }
 
+export interface ActivityExampleLine {
+  speaker: "you" | "child";
+  line: string;
+}
+
+export interface ActivityExample {
+  setup: string;
+  exchange: ActivityExampleLine[];
+  closing?: string;
+}
+
 export interface Activity {
   id: string;
   title: string;
@@ -163,4 +174,5 @@ export interface Activity {
   trap: string;
   adapt: ActivityAdapt;
   worksWellWith: string[];
+  example: ActivityExample;
 }

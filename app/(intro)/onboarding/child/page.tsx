@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, Plus } from "lucide-react";
+import { Check, ChevronLeft, Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
@@ -209,7 +209,9 @@ function ChildOnboardingBody() {
             <span>Back</span>
           </button>
         </div>
-        <ProgressBar current={step} total={TOTAL_STEPS} />
+        {step < TOTAL_STEPS ? (
+          <ProgressBar current={step} total={TOTAL_STEPS} />
+        ) : null}
       </div>
 
       <section className="flex-1 px-5 pb-32 pt-6">
@@ -376,7 +378,7 @@ function Step1({
   return (
     <div className="flex flex-col gap-8">
       <header>
-        <h1 className="text-title-1 text-ink">About your child</h1>
+        <h1 className="font-display text-title-1 leading-[1.15] text-ink">About your child</h1>
       </header>
 
       <Input
@@ -438,7 +440,7 @@ function Step4({
   return (
     <div className="flex flex-col gap-8">
       <header>
-        <h1 className="text-title-1 text-ink">
+        <h1 className="font-display text-title-1 leading-[1.15] text-ink">
           How comfortable is your child with English?
         </h1>
       </header>
@@ -537,7 +539,7 @@ function Step5({
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-title-1 text-ink">What lights them up?</h1>
+        <h1 className="font-display text-title-1 leading-[1.15] text-ink">What lights them up?</h1>
         <p className="mt-2 text-body text-ink-secondary">
           The stuff they genuinely love. We use these to make activities feel
           like THEIR thing.
@@ -599,32 +601,33 @@ function Step5({
 function Step8({ data }: { data: Draft }) {
   const name = data.name.trim() || "your child";
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col items-center gap-8 pt-6 text-center">
+      <div
+        className="flex h-14 w-14 items-center justify-center rounded-full"
+        style={{ backgroundColor: "var(--accent)" }}
+      >
+        <Check size={28} strokeWidth={2.25} aria-hidden className="text-white" />
+      </div>
+
       <header>
-        <h1 className="text-title-1 text-ink">You&apos;re ready.</h1>
+        <h1 className="font-display text-title-1 leading-[1.15] text-ink">
+          You&apos;re ready.
+        </h1>
+        <p className="mt-4 text-body-large text-ink-secondary">
+          Each day, Fokus gives you one moment to share with{" "}
+          <span className="text-ink">{name}</span>. Five to twenty-five minutes,
+          whatever you have. After, log how it went — the app learns.
+        </p>
       </header>
 
-      <p className="text-body-large text-ink-secondary">
-        Each day, Fokus will give you one moment to share with{" "}
-        <span className="text-ink">{name}</span>. Five to twenty-five minutes —
-        whatever you have.
-      </p>
-
-      <p className="text-body-large text-ink-secondary">
-        After, log how it went. The app learns and adjusts.
-      </p>
-
-      <div className="rounded-lg border-l-4 border-accent bg-accent-bg/40 p-5">
+      <div className="w-full rounded-lg border-l-4 border-accent bg-accent-bg/40 p-5 text-left">
         <p className="text-footnote uppercase tracking-[0.08em] text-ink-tertiary">
           One promise
         </p>
         <p className="mt-2 text-body italic text-ink">
-          This is for you, not for them. Don&apos;t show them streaks.
-          Don&apos;t make them feel measured.
-        </p>
-        <p className="mt-3 text-body italic text-ink">
-          The work is the relationship. We just help you focus on the right
-          things.
+          This is for you, not for {name}. No streaks shown to them, no scores,
+          no levels. The work is the relationship — we just help you focus on
+          the right things.
         </p>
       </div>
     </div>
@@ -651,7 +654,7 @@ function ChipStep({
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-title-1 text-ink">{header}</h1>
+        <h1 className="font-display text-title-1 leading-[1.15] text-ink">{header}</h1>
         <p className="mt-2 text-body text-ink-secondary">{subtext}</p>
       </header>
       <div className="flex flex-wrap gap-2">

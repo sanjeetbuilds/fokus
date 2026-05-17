@@ -1,21 +1,16 @@
 import type { Activity, SkillKey } from "@/types";
 
+import { ACTIVITY_EXAMPLES } from "./activity-examples";
+
 /**
  * The Fokus activity library — 64 activities, 8 per skill, content
  * copied verbatim from SPEC §8. Order: by skill, then by id within skill.
  *
- * Conventions applied at parse time (header → typed value):
- *   "Easy"   → difficulty 1
- *   "Medium" → difficulty 2
- *   "Stretch"→ difficulty 3
- *   "Nothing" / "Nothing needed"             → requires 'nothing'
- *   "Paper-pen"                              → requires 'paper-pen'
- *   "Objects at home" / "Objects-at-home"    → requires 'objects-at-home'
- *   "Outdoors"                               → requires 'outdoors'
- *   "Ages A–B"                               → ageRange [A, B]
- *   "Works well with: a, b, c"               → worksWellWith ['a','b','c'] (lowercased, trimmed)
+ * The `example` field for each activity lives in `./activity-examples.ts`
+ * and is merged in at module load. Keeping them separate keeps this file
+ * scannable as a content catalog.
  */
-export const ACTIVITIES: Activity[] = [
+const ACTIVITIES_BASE: Array<Omit<Activity, "example">> = [
   // ============================================================
   // CURIOSITY
   // ============================================================
@@ -1403,6 +1398,14 @@ export const ACTIVITIES: Activity[] = [
     worksWellWith: ["daily life"],
   },
 ];
+
+export const ACTIVITIES: Activity[] = ACTIVITIES_BASE.map((a) => {
+  const example = ACTIVITY_EXAMPLES[a.id];
+  if (!example) {
+    throw new Error(`Missing example for activity "${a.id}".`);
+  }
+  return { ...a, example };
+});
 
 // ---------- helpers ----------
 

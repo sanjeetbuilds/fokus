@@ -108,7 +108,7 @@ function Slide2() {
 function Slide3() {
   return (
     <SlideShell
-      illustration={<AgeAxis />}
+      illustration={<ScatteredMoments />}
       headline="These aren't taught anywhere."
       body={
         <>
@@ -222,48 +222,37 @@ function Silhouettes() {
   );
 }
 
-function AgeAxis() {
-  // Horizontal axis with a soft accent band between the 5 and 15 markers.
+function ScatteredMoments() {
+  // A scattered arc of dots — small moments along a gentle curve, not a
+  // ruler. One dot in the accent colour to suggest the moment you're in.
+  const dots: Array<{ x: number; y: number; r: number; accent?: boolean }> = [
+    { x: 18, y: 78, r: 2 },
+    { x: 28, y: 64, r: 2.5 },
+    { x: 38, y: 54, r: 2 },
+    { x: 48, y: 47, r: 3 },
+    { x: 58, y: 44, r: 2.5 },
+    { x: 64, y: 50, r: 2 },
+    { x: 72, y: 44, r: 3.5, accent: true },
+    { x: 82, y: 50, r: 2 },
+    { x: 90, y: 60, r: 2.5 },
+    { x: 100, y: 74, r: 2 },
+  ];
   return (
-    <svg {...SVG_BASE} role="img" aria-label="A path from age 5 to age 15">
-      <rect
-        x={18}
-        y={54}
-        width={84}
-        height={12}
-        rx={6}
-        fill="var(--accent)"
-        fillOpacity={0.18}
-        stroke="none"
-      />
-      <line x1={14} x2={106} y1={60} y2={60} />
-      <line x1={18} x2={18} y1={54} y2={66} />
-      <line x1={102} x2={102} y1={54} y2={66} />
-      <text
-        x={18}
-        y={84}
-        textAnchor="middle"
-        fontSize={11}
-        fontWeight={600}
-        fill="currentColor"
-        stroke="none"
-        fontFamily="inherit"
-      >
-        5
-      </text>
-      <text
-        x={102}
-        y={84}
-        textAnchor="middle"
-        fontSize={11}
-        fontWeight={600}
-        fill="currentColor"
-        stroke="none"
-        fontFamily="inherit"
-      >
-        15
-      </text>
-      <circle cx={60} cy={60} r={4} fill="var(--accent)" stroke="none" />
+    <svg
+      {...SVG_BASE}
+      role="img"
+      aria-label="A scattered arc of small moments"
+    >
+      {dots.map((d, i) => (
+        <circle
+          key={i}
+          cx={d.x}
+          cy={d.y}
+          r={d.r}
+          fill={d.accent ? "var(--accent)" : "currentColor"}
+          stroke="none"
+        />
+      ))}
     </svg>
   );
 }
