@@ -38,10 +38,13 @@ export const viewport: Viewport = {
   // low-vision accessibility (WCAG 2.5.4). Lighthouse fails meta-viewport
   // when maximum-scale < 5 or user-scalable=no.
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAF6EE" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-  ],
+  // Pinned to the cream regardless of OS preference. Default theme is "light"
+  // (see components/shared/ThemeProvider.tsx) so a fresh install on a dark
+  // phone still opens light; the status-bar tint should match.
+  themeColor: "#FAF6EE",
+  // Tells the UA we only render in light. Form controls + scrollbars stop
+  // auto-darkening; matches the defaultTheme="light" choice above.
+  colorScheme: "light",
 };
 
 export default function RootLayout({
