@@ -39,7 +39,7 @@ export const viewport: Viewport = {
   // when maximum-scale < 5 or user-scalable=no.
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: light)", color: "#FAF6EE" },
     { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
 };

@@ -1,43 +1,53 @@
 /* ============================================================
-   Fokus design tokens — SPEC §4
+   Fokus design tokens — Round-2 identity (warm cream + bold).
    Source of truth for color / type / spacing / motion.
    Tailwind utilities map to these via var(--token).
+
+   Round-2 changes (light mode):
+     - Backgrounds → warm cream (#FAF6EE / #F4EEDF)
+     - Ink → warmer near-black (#1A1814)
+     - Accent → confident indigo (#3A4FCC)
+     - Display + title-1 bumped to 44px / 32px (700)
+     - --ink-tertiary collapsed to the secondary value (5.5:1 AA on cream);
+       hierarchy is carried by reduced font-weight (350) on text-caption /
+       text-footnote in tailwind.config.ts.
+
+   Dark mode kept at its Apple-restrained palette for now — needs a
+   separate review pass before it gets the warm treatment.
    ============================================================ */
 
 :root {
   /* ---- Color: light mode ---- */
-  --bg: #FFFFFF;
-  --bg-elevated: #F5F5F7;
-  --bg-overlay: rgba(0, 0, 0, 0.4);
+  --bg: #FAF6EE;             /* warm cream, the brand surface */
+  --bg-elevated: #F4EEDF;    /* one shade warmer for cards / hero blocks */
+  --bg-overlay: rgba(26, 24, 20, 0.45);
 
-  --ink: #1D1D1F;
-  --ink-secondary: #6E6E73;
-  /* #86868B failed WCAG AA on white (3.9:1). Collapsed to the same value as
-     ink-secondary (5.0:1, AA) and re-established the visual hierarchy via
-     reduced font-weight on text-caption / text-footnote in tailwind.config.ts.
-     Dark mode keeps the original #8E8E93 — that one already passes (5.2:1). */
-  --ink-tertiary: #6E6E73;
-  --ink-quaternary: #C7C7CC;
+  --ink: #1A1814;            /* warm near-black */
+  --ink-secondary: #6B6357;  /* AA on cream, ~5.5:1 */
+  /* Tertiary collapsed to secondary; visual hierarchy is restored by the
+     350 font-weight on text-caption / text-footnote in tailwind.config.ts. */
+  --ink-tertiary: #6B6357;
+  --ink-quaternary: #B5AC9E; /* non-text only (separators, faint dots) */
 
-  --line: #D2D2D7;
-  --line-subtle: #E5E5EA;
+  --line: #E5DCC8;
+  --line-subtle: #F0E7D2;
 
-  --accent: #0071E3;
-  --accent-pressed: #0058B0;
-  --accent-bg: #E8F1FD;
-  --accent-deep: #0058B0;   /* readable accent on accent-bg (avatar text, etc.) */
+  --accent: #3A4FCC;
+  --accent-pressed: #2D3FA8;
+  --accent-bg: #E6E9FA;      /* light indigo tint behind icon squares */
+  --accent-deep: #2D3FA8;    /* readable indigo on accent-bg */
 
-  --success: #34C759;
-  --warning: #FF9500;
-  --danger: #FF3B30;
+  --success: #5C8A6B;        /* earthier than #34C759 to harmonize with cream */
+  --warning: #C97C3F;
+  --danger: #C44C3F;
 
   /* ---- Typography ---- */
   --font-sans:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
-    'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    'Inter', 'Segoe UI Variable', 'Segoe UI', Roboto, sans-serif;
 
-  --text-display: 2.125rem;     /* 34px */
-  --text-title-1: 1.75rem;      /* 28px */
+  --text-display: 2.75rem;      /* 44px — bumped from 34px for new identity */
+  --text-title-1: 2rem;         /* 32px — bumped from 28px */
   --text-title-2: 1.375rem;     /* 22px */
   --text-title-3: 1.25rem;      /* 20px */
   --text-headline: 1.0625rem;   /* 17px */
@@ -62,16 +72,16 @@
   --space-20: 80px;
 
   /* ---- Radii ---- */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* ---- Shadows (sparingly) ---- */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  /* ---- Shadows ---- */
+  --shadow-sm: 0 1px 2px rgba(26, 24, 20, 0.04);
+  --shadow-md: 0 2px 10px rgba(26, 24, 20, 0.06);
+  --shadow-lg: 0 16px 40px -16px rgba(26, 24, 20, 0.18);
 
   /* ---- Motion ---- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -82,6 +92,8 @@
 }
 
 /* ---- Color: dark mode ---- */
+/* Untouched for round-2. Needs its own pass before it harmonizes with the
+   warm light identity; for now it stays on the Apple-restrained set. */
 .dark {
   --bg: #000000;
   --bg-elevated: #1C1C1E;

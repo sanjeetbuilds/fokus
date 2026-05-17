@@ -1,8 +1,10 @@
 "use client";
 
+import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import Wordmark from "@/components/shared/Wordmark";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
@@ -21,9 +23,9 @@ const TIME_CHIPS: { value: TimeAvailable; label: string }[] = [
 ];
 
 const MOOD_CHIPS: { value: ChildMood; label: string }[] = [
-  { value: "low", label: "Low energy" },
+  { value: "low", label: "Low" },
   { value: "normal", label: "Normal" },
-  { value: "high", label: "High energy" },
+  { value: "high", label: "High" },
 ];
 
 export default function TodayPage() {
@@ -120,12 +122,20 @@ export default function TodayPage() {
 
   if (restDay) {
     return (
-      <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+24px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
+      <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
+        <div className="flex items-center justify-between">
+          <Wordmark size="sm" />
+        </div>
         <div className="my-auto">
-          <p className="text-footnote uppercase tracking-[0.08em] text-ink-tertiary">
+          <p className="text-[13px] font-medium text-ink-secondary">
             {longDate(new Date())}
           </p>
-          <h1 className="mt-2 text-display text-ink">A rest day.</h1>
+          <h1
+            className="mt-2 text-[44px] font-bold tracking-[-0.02em] text-ink"
+            style={{ lineHeight: 1.05 }}
+          >
+            A rest day.
+          </h1>
           <p className="mt-6 text-body-large text-ink-secondary">
             Take today off. Just be with{" "}
             <span className="text-ink">{child?.name ?? "your child"}</span>. The
@@ -147,25 +157,43 @@ export default function TodayPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+24px)] pb-[calc(env(safe-area-inset-bottom)+180px)]">
-      <header>
-        <p className="text-footnote uppercase tracking-[0.08em] text-ink-tertiary">
+    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+180px)]">
+      {/* Top bar: wordmark + menu */}
+      <div className="flex items-center justify-between">
+        <Wordmark size="sm" />
+        <button
+          type="button"
+          aria-label="Menu"
+          onClick={() => router.push("/profile")}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-secondary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          <Menu size={20} strokeWidth={1.75} aria-hidden />
+        </button>
+      </div>
+
+      <header className="mt-6">
+        <p className="text-[13px] font-medium text-ink-secondary">
           {longDate(new Date())}
         </p>
-        <h1 className="mt-2 text-display text-ink">
-          With {child?.name ?? "your child"}
+        <h1
+          className="mt-2 text-[44px] font-bold tracking-[-0.02em] text-ink"
+          style={{ lineHeight: 1.05 }}
+        >
+          Today with {child?.name ?? "your child"}
         </h1>
         {todaysSessions.length > 0 ? (
-          <p className="mt-3 text-callout text-accent-deep">
+          <p className="mt-4 text-callout text-accent-deep">
             ✓ {todaysSessions.length} moment
             {todaysSessions.length === 1 ? "" : "s"} done today
           </p>
         ) : null}
       </header>
 
-      <section className="mt-10">
-        <p className="text-footnote font-medium text-ink-secondary">
-          How much time do you have?
+      <div className="mt-8 h-px w-full bg-line-subtle" />
+
+      <section className="mt-7">
+        <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-ink-tertiary">
+          Time available
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {TIME_CHIPS.map((c) => (
@@ -180,9 +208,9 @@ export default function TodayPage() {
         </div>
       </section>
 
-      <section className="mt-8">
-        <p className="text-footnote font-medium text-ink-secondary">
-          How is {child?.name ?? "your child"} right now?
+      <section className="mt-7">
+        <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-ink-tertiary">
+          {child?.name ? `${child.name}'s energy` : "Their energy"}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {MOOD_CHIPS.map((c) => (
@@ -216,7 +244,7 @@ export default function TodayPage() {
             size="lg"
             disabled={!child || busy}
           >
-            Get today&apos;s moment →
+            Find today&apos;s moment →
           </Button>
         </div>
       </div>
@@ -227,16 +255,13 @@ export default function TodayPage() {
 // ---------- date formatting ----------
 
 /**
- * "WEDNESDAY · 6 NOV" — uppercase weekday + day + short month, joined by a
- * raised bullet. Kept inline since it's the only place we use this format.
+ * "Wednesday, 14 May" — long weekday + day + short month. The new identity
+ * uses normal case for the date stamp (caption above the big title) instead
+ * of the previous ALL-CAPS treatment.
  */
 function longDate(d: Date): string {
-  const weekday = new Intl.DateTimeFormat("en-US", { weekday: "long" })
-    .format(d)
-    .toUpperCase();
+  const weekday = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(d);
   const day = d.getDate();
-  const month = new Intl.DateTimeFormat("en-US", { month: "short" })
-    .format(d)
-    .toUpperCase();
-  return `${weekday} · ${day} ${month}`;
+  const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
+  return `${weekday}, ${day} ${month}`;
 }

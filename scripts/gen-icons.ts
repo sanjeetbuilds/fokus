@@ -21,7 +21,7 @@ function makeSvg({ size, padding }: { size: number; padding: number }): string {
   const baseline = size / 2 + letterFontPx * 0.34;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-  <rect width="${size}" height="${size}" fill="#0071E3"/>
+  <rect width="${size}" height="${size}" fill="#3A4FCC"/>
   <text
     x="50%"
     y="${baseline}"

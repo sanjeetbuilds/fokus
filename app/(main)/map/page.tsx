@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import SessionCard from "@/components/map/SessionCard";
 import SkillBar from "@/components/map/SkillBar";
 import StatCard from "@/components/map/StatCard";
+import Wordmark from "@/components/shared/Wordmark";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import { SKILL_KEYS } from "@/lib/content/skills";
@@ -80,12 +81,17 @@ export default function MapPage() {
   const childName = child?.name ?? "your child";
 
   return (
-    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+24px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
-      <header>
-        <p className="text-footnote uppercase tracking-[0.08em] text-ink-tertiary">
-          Map
-        </p>
-        <h1 className="mt-1 text-display text-ink">{childName}&apos;s map</h1>
+    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
+      <div className="flex items-center justify-between">
+        <Wordmark size="sm" />
+      </div>
+      <header className="mt-6">
+        <h1
+          className="text-[36px] font-bold tracking-[-0.02em] text-ink"
+          style={{ lineHeight: 1.05 }}
+        >
+          {childName}&apos;s map
+        </h1>
       </header>
 
       {sessions.length === 0 ? (

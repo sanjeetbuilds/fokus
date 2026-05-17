@@ -15,10 +15,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT: Record<Variant, string> = {
+  // The accent-tinted shadow makes the primary CTA feel a touch lifted on
+  // the cream background without resorting to a heavier shadow on the page.
   primary:
-    "bg-accent text-white hover:bg-accent-pressed",
+    "bg-accent text-white shadow-[0_6px_16px_-4px_rgba(58,79,204,0.32)] hover:bg-accent-pressed",
   secondary:
-    "border border-line bg-bg text-ink hover:bg-bg-elevated",
+    "border border-line bg-bg-elevated text-ink hover:border-ink-secondary",
   tertiary:
     "bg-transparent text-accent hover:text-accent-pressed",
   destructive:
@@ -26,9 +28,9 @@ const VARIANT: Record<Variant, string> = {
 };
 
 const SIZE: Record<Size, string> = {
-  sm: "h-9 px-3 text-callout gap-1.5",
-  md: "h-[50px] px-5 text-body gap-2",
-  lg: "h-14 px-6 text-body-large gap-2",
+  sm: "h-9 px-3 text-callout font-medium gap-1.5",
+  md: "h-[50px] px-5 text-[16px] font-semibold gap-2",
+  lg: "h-14 px-6 text-[17px] font-semibold gap-2",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

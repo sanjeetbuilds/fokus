@@ -39,8 +39,12 @@ export interface ActivityCardProps {
 }
 
 /**
- * Compact activity card — used in Library and on the Skill Detail page.
- * Renders just the card surface. Wrap in a <Link> to make it navigate.
+ * Activity card (round-2 identity). Layout: small colored icon square on the
+ * left, caption row + title + one-line description on the right.
+ *
+ * Renders the surface only — wrap in a <Link> to make it navigate. The icon
+ * square uses a 13% tint of the skill colour so each skill's row reads
+ * visually grouped without each card screaming for attention.
  */
 export default function ActivityCard({ activity }: ActivityCardProps) {
   const skill = SKILLS[activity.skill];
@@ -48,33 +52,35 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
     (ICONS[skill.iconName] as LucideIcon | undefined) ?? undefined;
 
   return (
-    <Card variant="interactive" className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 text-caption uppercase tracking-[0.1em] text-ink-secondary">
-        <span
-          aria-hidden
-          className="inline-block h-2 w-2 rounded-full"
-          style={{ backgroundColor: skill.color }}
-        />
-        {Icon ? (
-          <Icon
-            size={12}
-            strokeWidth={2}
-            aria-hidden
-            style={{ color: skill.color }}
-          />
-        ) : null}
-        <span>{skill.label}</span>
-        <span aria-hidden className="text-ink-quaternary">·</span>
-        <span>{activity.duration} min</span>
-        <span aria-hidden className="text-ink-quaternary">·</span>
-        <span>{DIFFICULTY_LABEL[activity.difficulty]}</span>
+    <Card variant="interactive" className="flex items-start gap-4">
+      <div
+        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px]"
+        style={{
+          backgroundColor: `${skill.color}22`,
+          color: skill.color,
+        }}
+        aria-hidden
+      >
+        {Icon ? <Icon size={22} strokeWidth={1.75} /> : null}
       </div>
 
-      <h3 className="text-title-3 text-ink">{activity.title}</h3>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-secondary">
+          <span style={{ color: skill.color }}>{skill.label}</span>
+          <span className="text-ink-quaternary"> · </span>
+          <span>{activity.duration} min</span>
+          <span className="text-ink-quaternary"> · </span>
+          <span>{DIFFICULTY_LABEL[activity.difficulty]}</span>
+        </p>
 
-      <p className="line-clamp-1 text-body text-ink-secondary">
-        {activity.description}
-      </p>
+        <h3 className="mt-1 text-[18px] font-semibold leading-[1.3] text-ink">
+          {activity.title}
+        </h3>
+
+        <p className="mt-1 line-clamp-1 text-[15px] text-ink-secondary">
+          {activity.description}
+        </p>
+      </div>
     </Card>
   );
 }

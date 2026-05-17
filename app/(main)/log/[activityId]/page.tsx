@@ -169,8 +169,13 @@ function LogSessionBody() {
       </div>
 
       <header>
-        <h1 className="text-display text-ink">How did it go?</h1>
-        <p className="mt-2 text-body text-ink-secondary">{activity.title}</p>
+        <h1
+          className="text-[40px] font-bold tracking-[-0.02em] text-ink"
+          style={{ lineHeight: 1.05 }}
+        >
+          How did it go?
+        </h1>
+        <p className="mt-2 text-[17px] text-ink-secondary">{activity.title}</p>
       </header>
 
       <section className="mt-8">

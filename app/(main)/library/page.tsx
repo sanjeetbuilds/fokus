@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import ActivityCard from "@/components/activity/ActivityCard";
+import Wordmark from "@/components/shared/Wordmark";
 import Chip from "@/components/ui/Chip";
 import EmptyState from "@/components/ui/EmptyState";
 import { ACTIVITIES } from "@/lib/content/activities";
@@ -24,13 +25,19 @@ export default function LibraryPage() {
   );
 
   return (
-    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+24px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
-      <header>
-        <p className="text-footnote uppercase tracking-[0.08em] text-ink-tertiary">
-          Library
-        </p>
-        <h1 className="mt-1 text-display text-ink">All activities</h1>
-        <p className="mt-3 text-body text-ink-secondary">
+    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
+      <div className="flex items-center justify-between">
+        <Wordmark size="sm" />
+      </div>
+
+      <header className="mt-6">
+        <h1
+          className="text-[36px] font-bold tracking-[-0.02em] text-ink"
+          style={{ lineHeight: 1.05 }}
+        >
+          All activities
+        </h1>
+        <p className="mt-3 text-[16px] text-ink-secondary" style={{ lineHeight: 1.5 }}>
           {ACTIVITIES.length} activities across 8 skill areas. Pick any one to
           do today.
         </p>

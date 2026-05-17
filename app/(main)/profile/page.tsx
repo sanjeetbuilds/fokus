@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import Wordmark from "@/components/shared/Wordmark";
 import Avatar from "@/components/ui/Avatar";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -112,12 +113,20 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+24px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
-      <header>
-        <p className="text-footnote uppercase tracking-[0.08em] text-ink-tertiary">
+    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
+      <div className="flex items-center justify-between">
+        <Wordmark size="sm" />
+      </div>
+      <header className="mt-6">
+        <p className="text-[13px] font-medium text-ink-secondary">
           {parentName ? `Signed in as ${parentName}` : "Profile"}
         </p>
-        <h1 className="mt-1 text-display text-ink">Children</h1>
+        <h1
+          className="mt-2 text-[36px] font-bold tracking-[-0.02em] text-ink"
+          style={{ lineHeight: 1.05 }}
+        >
+          Children
+        </h1>
       </header>
 
       <ul className="mt-8 flex flex-col gap-3">

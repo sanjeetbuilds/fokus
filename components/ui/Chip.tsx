@@ -24,13 +24,13 @@ export default function Chip({
       aria-checked={selected}
       disabled={disabled}
       className={cn(
-        "inline-flex h-9 select-none items-center gap-1.5 rounded-full px-[14px] text-callout",
+        "inline-flex h-11 select-none items-center gap-1.5 rounded-full px-5 text-[15px]",
         "transition-[background-color,border-color,color,transform] duration-fast ease-out active:scale-[0.97]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
         "disabled:pointer-events-none disabled:opacity-50",
         selected
-          ? "border border-transparent bg-accent text-white"
-          : "border border-line bg-transparent text-ink hover:bg-bg-elevated",
+          ? "border border-transparent bg-accent font-semibold text-white shadow-sm"
+          : "border border-line bg-bg font-medium text-ink hover:bg-bg-elevated",
         className,
       )}
       {...rest}
