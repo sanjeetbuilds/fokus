@@ -14,6 +14,7 @@ import WeeklyBars from "@/components/map/WeeklyBars";
 import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import LogSheet from "@/components/today/LogSheet";
+import ReflectionBlock from "@/components/today/ReflectionBlock";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
 import { createSession, db, getChild, getSessionsByDate } from "@/lib/db";
 import { pickActivity, RestDayError } from "@/lib/engine";
@@ -226,30 +227,8 @@ export default function TodayPage() {
         </p>
       </header>
 
-      {sessions.length === 0 ? (
-        <div
-          className="mx-auto mt-5 w-[90%] rounded-lg p-4"
-          style={{
-            backgroundColor:
-              "color-mix(in srgb, var(--accent) 5%, transparent)",
-            border:
-              "1px solid color-mix(in srgb, var(--accent) 20%, transparent)",
-          }}
-        >
-          <p
-            className="text-[15px] text-ink"
-            style={{ lineHeight: 1.5 }}
-          >
-            <span
-              aria-hidden
-              className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-accent align-middle"
-              style={{ transform: "translateY(-2px)" }}
-            />
-            Your first moment is below. Read it. Try it tonight with{" "}
-            <span className="font-semibold">{childName}</span>. Then tap
-            &ldquo;Did it&rdquo; to tell Fokus how it went.
-          </p>
-        </div>
+      {child ? (
+        <ReflectionBlock child={child} sessionCount={sessions.length} />
       ) : null}
 
       <div className="mt-5">

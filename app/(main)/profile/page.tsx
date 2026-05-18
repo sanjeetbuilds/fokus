@@ -10,13 +10,17 @@ import Button from "@/components/ui/Button";
 import Sheet from "@/components/ui/Sheet";
 import { useToast } from "@/components/ui/Toast";
 import {
+  profileFocusAreas,
+  whereHeadingSkills,
+} from "@/lib/content/reflection";
+import {
   db,
   deleteChild,
   getCurrentParent,
   listChildren,
 } from "@/lib/db";
 import { useAppStore } from "@/lib/store/useAppStore";
-import type { Child } from "@/types";
+import type { Child, Session } from "@/types";
 
 interface ChildRow {
   child: Child;
@@ -38,6 +42,7 @@ export default function ProfilePage() {
   const setActiveChild = useAppStore((s) => s.setActiveChild);
 
   const [rows, setRows] = useState<ChildRow[]>([]);
+  const [allSessions, setAllSessions] = useState<Session[]>([]);
   const [parentName, setParentName] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Child | null>(null);
@@ -68,6 +73,7 @@ export default function ProfilePage() {
         sessionCount: counts.get(c.id) ?? 0,
       })),
     );
+    setAllSessions(sessions);
     setLoaded(true);
   }, []);
 
@@ -197,6 +203,14 @@ export default function ProfilePage() {
               </div>
             </section>
           ) : null}
+
+          <FocusAreasSection child={featuredChild.child} />
+          <WhereHeadingSection
+            child={featuredChild.child}
+            sessions={allSessions.filter(
+              (s) => s.childId === featuredChild.child.id,
+            )}
+          />
         </>
       ) : null}
 
@@ -332,6 +346,96 @@ export default function ProfilePage() {
         ) : null}
       </Sheet>
     </main>
+  );
+}
+
+function FocusAreasSection({ child }: { child: Child }) {
+  const rows = profileFocusAreas(child);
+  if (rows.length === 0) return null;
+  return (
+    <section className="mt-7">
+      <p
+        className="mb-2.5 text-[11px] font-semibold uppercase text-ink-tertiary"
+        style={{ letterSpacing: "0.1em" }}
+      >
+        What Fokus is paying attention to with {child.name}
+      </p>
+      <div className="rounded-sm border border-line bg-bg-elevated p-5">
+        <ul className="flex flex-col gap-4">
+          {rows.map((r) => (
+            <li key={r.title} className="flex items-start gap-3">
+              <span
+                aria-hidden
+                className="mt-[9px] inline-block h-1 w-1 shrink-0 rounded-full bg-accent"
+              />
+              <div className="min-w-0 flex-1">
+                <p
+                  className="text-[15px] font-medium text-ink"
+                  style={{ lineHeight: 1.4 }}
+                >
+                  {r.title}
+                </p>
+                <p
+                  className="mt-1 text-[13px] italic text-ink-tertiary"
+                  style={{ lineHeight: 1.5 }}
+                >
+                  {r.reason}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <p className="mt-3 text-[12px] text-ink-tertiary">
+        This is how the app picks moments. It shifts as you log how things go.{" "}
+        <Link
+          href="/profile/settings"
+          className="font-medium text-accent-mid hover:text-accent"
+        >
+          Adjust →
+        </Link>
+      </p>
+    </section>
+  );
+}
+
+function WhereHeadingSection({
+  child,
+  sessions,
+}: {
+  child: Child;
+  sessions: Session[];
+}) {
+  const { primary, secondary, tertiary, quaternary } = whereHeadingSkills(
+    child,
+    sessions,
+  );
+  return (
+    <section className="mt-7">
+      <p
+        className="mb-2.5 text-[11px] font-semibold uppercase text-ink-tertiary"
+        style={{ letterSpacing: "0.1em" }}
+      >
+        Where things are heading
+      </p>
+      <p className="text-[17px] text-ink" style={{ lineHeight: 1.6 }}>
+        For now, the focus is on {primary.toLowerCase()} and{" "}
+        {secondary.toLowerCase()}.
+      </p>
+      <p
+        className="mt-3 text-[17px] text-ink"
+        style={{ lineHeight: 1.6 }}
+      >
+        Later, as {child.name} grows comfortable, we&apos;ll mix in{" "}
+        {tertiary.toLowerCase()} and {quaternary.toLowerCase()}.
+      </p>
+      <p
+        className="mt-3 text-[17px] italic text-ink-secondary"
+        style={{ lineHeight: 1.6 }}
+      >
+        This is a current, not a plan. You&apos;re in charge.
+      </p>
+    </section>
   );
 }
 
