@@ -7,6 +7,7 @@ export interface ChipProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
   selected?: boolean;
   leftIcon?: ReactNode;
+  size?: "sm" | "md";
 }
 
 export default function Chip({
@@ -15,8 +16,13 @@ export default function Chip({
   className,
   children,
   disabled,
+  size = "md",
   ...rest
 }: ChipProps) {
+  const sizing =
+    size === "sm"
+      ? "h-9 px-3.5 text-[13px]"
+      : "h-11 px-5 text-[15px]";
   return (
     <button
       type="button"
@@ -24,7 +30,8 @@ export default function Chip({
       aria-checked={selected}
       disabled={disabled}
       className={cn(
-        "inline-flex h-11 select-none items-center gap-1.5 rounded-full px-5 text-[15px]",
+        "inline-flex select-none items-center gap-1.5 rounded-full",
+        sizing,
         "transition-[background-color,border-color,color,transform] duration-fast ease-out active:scale-[0.97]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
         "disabled:pointer-events-none disabled:opacity-50",
