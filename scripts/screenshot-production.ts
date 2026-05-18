@@ -146,7 +146,7 @@ async function main() {
     await page.waitForSelector("h1");
     await new Promise((r) => setTimeout(r, 600));
     await page.screenshot({
-      path: `${OUT}/v5-today.png`,
+      path: `${OUT}/v6-today.png`,
       type: "png",
     });
 
@@ -155,7 +155,7 @@ async function main() {
     await page.waitForSelector("h1");
     await new Promise((r) => setTimeout(r, 400));
     await page.screenshot({
-      path: `${OUT}/v5-library.png`,
+      path: `${OUT}/v6-library.png`,
       type: "png",
     });
 
@@ -164,20 +164,19 @@ async function main() {
     await page.waitForSelector("h1");
     await new Promise((r) => setTimeout(r, 500));
     await page.screenshot({
-      path: `${OUT}/v5-track.png`,
+      path: `${OUT}/v6-track.png`,
       type: "png",
     });
 
     // ---------- /profile ----------
     await page.goto(`${BASE}/profile`, { waitUntil: "networkidle0" });
-    await page.waitForSelector("h1");
-    await new Promise((r) => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 600));
     await page.screenshot({
-      path: `${OUT}/v5-profile.png`,
+      path: `${OUT}/v6-profile.png`,
       type: "png",
     });
 
-    console.log("Captured: v5-today, v5-library, v5-track, v5-profile");
+    console.log("Captured: v6-today, v6-library, v6-track, v6-profile");
   } finally {
     await browser.close();
   }

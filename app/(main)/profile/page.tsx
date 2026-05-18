@@ -1,14 +1,12 @@
 "use client";
 
-import { Settings, Trash2, UserPlus } from "lucide-react";
+import { Bell, Settings, Trash2, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import Wordmark from "@/components/shared/Wordmark";
 import Avatar from "@/components/ui/Avatar";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
 import Sheet from "@/components/ui/Sheet";
 import { useToast } from "@/components/ui/Toast";
 import {
@@ -24,6 +22,14 @@ interface ChildRow {
   child: Child;
   sessionCount: number;
 }
+
+// Rotating swatches for the marker tags — purely visual, no hidden meaning.
+const MARKER_TONES = [
+  { bg: "var(--accent-bg)", text: "var(--accent-deep)" },
+  { bg: "var(--warm-bg)", text: "var(--warm-text)" },
+  { bg: "var(--coral-bg)", text: "var(--coral-text)" },
+  { bg: "var(--accent-pale)", text: "var(--accent-deep)" },
+];
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -112,110 +118,182 @@ export default function ProfilePage() {
     );
   }
 
+  const activeRow = rows.find((r) => r.child.id === activeChildId);
+  const featuredChild = activeRow ?? rows[0];
+  const markers = featuredChild
+    ? collectMarkers(featuredChild.child)
+    : [];
+
   return (
-    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
-      <div className="flex items-center justify-between">
-        <Wordmark size="sm" />
-      </div>
-      <header className="mt-6">
-        <h1
-          className="font-display text-[36px] font-semibold tracking-[-0.02em] text-ink"
-          style={{ lineHeight: 1.1 }}
+    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+12px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
+      {/* Top bar: spacer + centered title + bell */}
+      <div className="flex items-center justify-between pt-1">
+        <div className="w-9" />
+        <p className="text-[16px] font-bold text-ink">
+          {featuredChild
+            ? `${featuredChild.child.name}'s Journey`
+            : "Your Children"}
+        </p>
+        <button
+          type="button"
+          aria-label="Notifications"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-secondary transition-colors duration-fast ease-out hover:text-ink"
         >
-          {rows.length === 1 ? "Your child" : "Children"}
-        </h1>
-        {parentName ? (
-          <p className="mt-2 text-footnote text-ink-secondary">
-            Signed in as {parentName}
-          </p>
-        ) : null}
-      </header>
+          <Bell size={20} strokeWidth={1.8} aria-hidden />
+        </button>
+      </div>
 
-      <ul className="mt-8 flex flex-col gap-3">
-        {rows.map(({ child, sessionCount }) => {
-          const isActive = child.id === activeChildId;
-          return (
-            <li key={child.id}>
-              <Card className="flex items-center gap-4">
-                <Avatar name={child.name} size="lg" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-title-3 text-ink">
-                      {child.name}
-                    </p>
-                    {isActive && rows.length > 1 ? (
-                      <span className="rounded-full bg-accent-bg px-2 py-0.5 text-caption font-medium text-accent-deep">
-                        Active
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="text-footnote text-ink-secondary">
-                    Age {child.age} · {child.grade}
-                  </p>
-                  <p className="text-footnote text-ink-tertiary">
-                    {sessionCount} session{sessionCount === 1 ? "" : "s"}
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  {!isActive ? (
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => onSwitch(child.id)}
+      {featuredChild ? (
+        <>
+          {/* Child hero */}
+          <div className="mt-6 flex flex-col items-center">
+            <div className="relative h-[88px] w-[88px]">
+              <span
+                aria-hidden
+                className="absolute -inset-1.5 rounded-full border-[2.5px] border-dashed"
+                style={{ borderColor: "var(--coral-mid)" }}
+              />
+              <Avatar
+                name={featuredChild.child.name}
+                size="lg"
+                className="h-[88px] w-[88px] text-[36px]"
+              />
+            </div>
+            <p
+              className="mt-4 font-display text-[22px] font-bold text-ink"
+              style={{ letterSpacing: "-0.01em" }}
+            >
+              {featuredChild.child.name}
+            </p>
+            <p className="mt-1 text-[13px] text-ink-tertiary">
+              Age {featuredChild.child.age} ·{" "}
+              {featuredChild.sessionCount} moment
+              {featuredChild.sessionCount === 1 ? "" : "s"} together
+            </p>
+          </div>
+
+          {/* Current Markers */}
+          {markers.length > 0 ? (
+            <section className="mt-7">
+              <p className="mb-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-accent-mid">
+                Current Markers
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {markers.map((m, i) => {
+                  const tone = MARKER_TONES[i % MARKER_TONES.length]!;
+                  return (
+                    <span
+                      key={m}
+                      className="inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-semibold"
+                      style={{
+                        backgroundColor: tone.bg,
+                        color: tone.text,
+                      }}
                     >
-                      Switch
-                    </Button>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(child)}
-                    disabled={isActive}
-                    aria-label={
-                      isActive
-                        ? `Switch away to remove ${child.name}`
-                        : `Remove ${child.name}`
-                    }
-                    title={
-                      isActive
-                        ? "Switch to another child first."
-                        : `Remove ${child.name}`
-                    }
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-tertiary transition-colors duration-fast ease-out hover:bg-bg hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <Trash2 size={18} strokeWidth={1.75} aria-hidden />
-                  </button>
+                      {m}
+                    </span>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
+        </>
+      ) : null}
+
+      {parentName ? (
+        <p className="mt-7 text-[12px] text-ink-tertiary">
+          Signed in as {parentName}
+        </p>
+      ) : null}
+
+      <section className="mt-3">
+        <p className="mb-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-accent-mid">
+          Children
+        </p>
+        <ul className="flex flex-col gap-2.5">
+          {rows.map(({ child, sessionCount }) => {
+            const isActive = child.id === activeChildId;
+            return (
+              <li key={child.id}>
+                <div className="flex items-center gap-3.5 rounded-[18px] bg-bg-elevated p-3.5 shadow-md">
+                  <Avatar
+                    name={child.name}
+                    size="md"
+                    className="h-12 w-12 text-[20px]"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-[15px] font-semibold text-ink">
+                        {child.name}
+                      </p>
+                      {isActive && rows.length > 1 ? (
+                        <span className="rounded-full bg-accent-bg px-2 py-0.5 text-[11px] font-semibold text-accent-deep">
+                          Active
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="text-[12px] text-ink-tertiary">
+                      Age {child.age} · {child.grade} · {sessionCount} session
+                      {sessionCount === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {!isActive ? (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => onSwitch(child.id)}
+                      >
+                        Switch
+                      </Button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDelete(child)}
+                      disabled={isActive}
+                      aria-label={
+                        isActive
+                          ? `Switch away to remove ${child.name}`
+                          : `Remove ${child.name}`
+                      }
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-tertiary transition-colors duration-fast ease-out hover:bg-bg-alt hover:text-danger disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Trash2 size={18} strokeWidth={1.75} aria-hidden />
+                    </button>
+                  </div>
                 </div>
-              </Card>
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
 
-      {/* Add another child */}
-      <Link
-        href="/onboarding/child?return=profile"
-        className="mt-3 inline-flex h-14 w-full items-center justify-center gap-2 rounded-md border border-dashed border-line text-callout text-ink-secondary transition-colors duration-fast ease-out hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-      >
-        <UserPlus size={16} strokeWidth={1.75} aria-hidden />
-        Add another child
-      </Link>
+        <Link
+          href="/onboarding/child?return=profile"
+          className="mt-2.5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-[18px] border border-dashed border-line text-[14px] text-ink-secondary transition-colors duration-fast ease-out hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          <UserPlus size={16} strokeWidth={1.75} aria-hidden />
+          Add another child
+        </Link>
+      </section>
 
-      {/* About Fokus card */}
-      <Card className="mt-10">
-        <h2 className="text-title-3 text-ink">About Fokus</h2>
-        <p className="mt-2 text-body text-ink-secondary">
+      {/* About Fokus */}
+      <div className="mt-7 rounded-[18px] bg-bg-elevated p-5 shadow-md">
+        <h2 className="font-display text-[18px] font-bold text-ink">
+          About Fokus
+        </h2>
+        <p className="mt-2 text-[14px] leading-[1.55] text-ink-secondary">
           One small moment a day with your child. Fokus is built for the parts
           school can&apos;t measure: curiosity, language confidence, emotional
           awareness, and the rest of the 70% that quietly shape a life.
         </p>
         <Link
           href="/profile/settings"
-          className="mt-4 inline-flex items-center gap-1 text-callout text-accent hover:text-accent-pressed"
+          className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-accent-mid hover:text-accent"
         >
           <Settings size={14} strokeWidth={1.75} aria-hidden />
           Settings →
         </Link>
-      </Card>
+      </div>
 
       {/* Delete confirmation sheet */}
       <Sheet
@@ -226,9 +304,9 @@ export default function ProfilePage() {
         {confirmDelete ? (
           <div className="flex flex-col gap-4">
             <p className="text-body text-ink-secondary">
-              This removes <span className="text-ink">{confirmDelete.name}</span>{" "}
-              and every session and observation logged for them. It can&apos;t
-              be undone.
+              This removes{" "}
+              <span className="text-ink">{confirmDelete.name}</span> and every
+              session and observation logged for them. It can&apos;t be undone.
             </p>
             <div className="flex gap-3 pt-2">
               <Button
@@ -255,4 +333,21 @@ export default function ProfilePage() {
       </Sheet>
     </main>
   );
+}
+
+function collectMarkers(child: Child): string[] {
+  // Markers are parent-supplied at onboarding: interests + strengths. They
+  // are facts about the child the parent chose to share, not algorithm
+  // outputs. Surfacing them here as tag pills is the spec-safe equivalent
+  // of the design's "Current Markers" row.
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const t of [...child.interests, ...child.strengths]) {
+    const key = t.trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(key);
+    if (out.length >= 6) break;
+  }
+  return out;
 }

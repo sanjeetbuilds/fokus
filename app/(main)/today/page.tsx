@@ -1,47 +1,30 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import LogSheet from "@/components/today/LogSheet";
-import Wordmark from "@/components/shared/Wordmark";
+import TodayActivityCard from "@/components/activity/TodayActivityCard";
+import CategoryPills, {
+  type CategoryValue,
+} from "@/components/layout/CategoryPills";
+import GreetBar from "@/components/layout/GreetBar";
+import TipCard from "@/components/layout/TipCard";
+import WeeklyBars from "@/components/map/WeeklyBars";
 import Button from "@/components/ui/Button";
-import Chip from "@/components/ui/Chip";
 import { useToast } from "@/components/ui/Toast";
+import LogSheet from "@/components/today/LogSheet";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
-import { SKILLS } from "@/lib/content/skills";
 import { createSession, db, getChild, getSessionsByDate } from "@/lib/db";
 import { pickActivity, RestDayError } from "@/lib/engine";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { today as todayIso } from "@/lib/utils/dates";
 import type {
-  Activity,
-  ActivityDifficulty,
   Child,
   ChildMood,
   Session,
   TimeAvailable,
 } from "@/types";
-
-const TIME_CHIPS: { value: TimeAvailable; label: string }[] = [
-  { value: "short", label: "5 min" },
-  { value: "medium", label: "15 min" },
-  { value: "long", label: "25 min" },
-];
-
-const MOOD_CHIPS: { value: ChildMood; label: string }[] = [
-  { value: "low", label: "Low" },
-  { value: "normal", label: "Normal" },
-  { value: "high", label: "High" },
-];
-
-const DIFFICULTY_LABEL: Record<ActivityDifficulty, string> = {
-  1: "Easy",
-  2: "Medium",
-  3: "Stretch",
-};
 
 export default function TodayPage() {
   const router = useRouter();
@@ -54,16 +37,19 @@ export default function TodayPage() {
   const [todaysSessions, setTodaysSessions] = useState<Session[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  const [time, setTime] = useState<TimeAvailable>("medium");
-  const [mood, setMood] = useState<ChildMood>("normal");
+  const [category, setCategory] = useState<CategoryValue>("all");
   const [pickedActivityId, setPickedActivityId] = useState<string | null>(null);
   const [restDay, setRestDay] = useState(false);
 
   const [showLogSheet, setShowLogSheet] = useState(false);
-  // When the parent already finished today but taps "One more moment", we
-  // override the done-state and show the chips + card again.
   const [showOverride, setShowOverride] = useState(false);
   const [skipBusy, setSkipBusy] = useState(false);
+
+  // Engine context — sensible defaults; the new design doesn't expose
+  // time/mood as chips. Power users can still hit /activity/[id] to
+  // tweak via URL parameters.
+  const time: TimeAvailable = "medium";
+  const mood: ChildMood = "normal";
 
   const todayDate = useMemo(() => todayIso(), []);
 
@@ -77,7 +63,6 @@ export default function TodayPage() {
     setTodaysSessions(todaysRows);
   }, [activeChildId, todayDate]);
 
-  // Initial load
   useEffect(() => {
     let cancelled = false;
     if (!activeChildId) {
@@ -106,22 +91,28 @@ export default function TodayPage() {
     };
   }, [activeChildId, todayDate]);
 
-  // Whether to render the active picker. Default: show picker if no sessions
-  // logged today. Override: parent tapped "One more moment".
-  const showingPicker =
-    todaysSessions.length === 0 || showOverride;
+  const showingPicker = todaysSessions.length === 0 || showOverride;
 
-  // Re-pick whenever child/sessions/time/mood change AND we're showing the
-  // picker. The engine is pure, so this is idempotent given inputs.
+  // Filter activities by category before letting the engine choose.
+  const candidatePool = useMemo(() => {
+    if (category === "all") return ACTIVITIES;
+    return ACTIVITIES.filter((a) => a.skill === category);
+  }, [category]);
+
   useEffect(() => {
     if (!showingPicker || !child) return;
+    if (candidatePool.length === 0) {
+      setPickedActivityId(null);
+      setRestDay(false);
+      return;
+    }
     try {
       const result = pickActivity(
         child,
         sessions,
         { timeAvailable: time, childMood: mood },
         new Date(),
-        ACTIVITIES,
+        candidatePool,
       );
       setPickedActivityId(result.pick.id);
       setRestDay(false);
@@ -141,9 +132,8 @@ export default function TodayPage() {
         toast("Couldn't pick. See console.", { tone: "danger" });
       }
     }
-    // intentionally exclude setLastPickContext from deps; it's stable
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [child, sessions, time, mood, todayDate, showingPicker]);
+  }, [child, sessions, candidatePool, todayDate, showingPicker]);
 
   const pickedActivity = useMemo(
     () => (pickedActivityId ? getActivityById(pickedActivityId) : null),
@@ -154,7 +144,7 @@ export default function TodayPage() {
     if (!pickedActivity) return;
     const params = new URLSearchParams({ time, mood, from: "today" });
     router.push(`/activity/${pickedActivity.id}?${params.toString()}`);
-  }, [pickedActivity, mood, router, time]);
+  }, [pickedActivity, router]);
 
   const onDidIt = useCallback(() => {
     if (!pickedActivity) return;
@@ -180,7 +170,7 @@ export default function TodayPage() {
     } finally {
       setSkipBusy(false);
     }
-  }, [activeChildId, mood, pickedActivity, reloadSessions, skipBusy, time, todayDate, toast]);
+  }, [activeChildId, pickedActivity, reloadSessions, skipBusy, todayDate, toast]);
 
   const onLogged = useCallback(async () => {
     setShowLogSheet(false);
@@ -188,11 +178,21 @@ export default function TodayPage() {
     await reloadSessions();
   }, [reloadSessions]);
 
-  const onAnotherMoment = useCallback(() => {
-    setShowOverride(true);
-  }, []);
+  const childName = child?.name ?? "your child";
+  const truncatedHowTo = useMemo(
+    () => (pickedActivity ? truncateWords(pickedActivity.howTo, 38) : ""),
+    [pickedActivity],
+  );
 
-  // ---------- render ----------
+  // Frequency stat for the right-hand TipCard.
+  const monthCount = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 30);
+    const cutoffIso = cutoff.toISOString().slice(0, 10);
+    return sessions.filter(
+      (s) => s.date >= cutoffIso && s.response !== "skipped",
+    ).length;
+  }, [sessions]);
 
   if (!loaded) {
     return (
@@ -206,48 +206,29 @@ export default function TodayPage() {
     return (
       <main className="flex min-h-[100svh] flex-col items-center justify-center px-6 text-center">
         <p className="text-body text-ink-secondary">No active child.</p>
-        <p className="mt-2 text-footnote text-ink-tertiary">
-          The gate should redirect. Try /profile to switch children.
-        </p>
       </main>
     );
   }
 
-  const childName = child?.name ?? "your child";
-  const headerSub = "Whenever feels right today.";
-  // First-time hint: nothing ever logged, never finished today.
-  const isFirstTime = sessions.length === 0 && todaysSessions.length === 0;
-
   return (
-    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
-      {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <Wordmark size="sm" />
-        <button
-          type="button"
-          aria-label="Menu"
-          onClick={() => router.push("/profile")}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-secondary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          <Menu size={20} strokeWidth={1.75} aria-hidden />
-        </button>
-      </div>
+    <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+12px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
+      <GreetBar />
 
-      {/* Header: date, title, subhead */}
-      <header className="mt-6">
-        <p className="text-footnote text-ink-tertiary">
-          {longDate(new Date())}
-        </p>
+      <header className="mt-5">
         <h1
-          className="mt-1 font-display text-[40px] font-semibold tracking-[-0.02em] text-ink"
-          style={{ lineHeight: 1.05 }}
+          className="font-display text-[28px] font-bold tracking-[-0.02em] text-ink"
+          style={{ lineHeight: 1.15 }}
         >
           Tonight with {childName}.
         </h1>
-        {showingPicker ? (
-          <p className="mt-2 text-footnote text-ink-tertiary">{headerSub}</p>
-        ) : null}
+        <p className="mt-1 text-[14px] text-ink-tertiary">
+          Gentle moments for what schools can&apos;t measure.
+        </p>
       </header>
+
+      <div className="mt-5">
+        <CategoryPills selected={category} onChange={setCategory} />
+      </div>
 
       <AnimatePresence mode="wait">
         {restDay ? (
@@ -257,7 +238,7 @@ export default function TodayPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
-            className="mt-10 rounded-[18px] bg-bg-elevated p-6 shadow-md"
+            className="mt-6 rounded-[18px] bg-bg-elevated p-6 shadow-md"
           >
             <p className="text-body-large text-ink">
               Take today off. Just be with{" "}
@@ -281,52 +262,6 @@ export default function TodayPage() {
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Time chips */}
-            <section className="mt-8">
-              <p className="text-caption uppercase tracking-[0.1em] font-medium text-ink-tertiary">
-                Time you have
-              </p>
-              <div className="mt-2 flex gap-2">
-                {TIME_CHIPS.map((c) => (
-                  <Chip
-                    key={c.value}
-                    size="sm"
-                    selected={c.value === time}
-                    onClick={() => setTime(c.value)}
-                  >
-                    {c.label}
-                  </Chip>
-                ))}
-              </div>
-            </section>
-
-            {/* Mood chips */}
-            <section className="mt-5">
-              <p className="text-caption uppercase tracking-[0.1em] font-medium text-ink-tertiary">
-                {child?.name ? `${child.name}'s energy` : "Their energy"}
-              </p>
-              <div className="mt-2 flex gap-2">
-                {MOOD_CHIPS.map((c) => (
-                  <Chip
-                    key={c.value}
-                    size="sm"
-                    selected={c.value === mood}
-                    onClick={() => setMood(c.value)}
-                  >
-                    {c.label}
-                  </Chip>
-                ))}
-              </div>
-            </section>
-
-            {isFirstTime ? (
-              <p className="mt-6 text-footnote text-ink-tertiary">
-                Your first moment is below. Tap &ldquo;Did it&rdquo; when
-                you&apos;ve finished.
-              </p>
-            ) : null}
-
-            {/* Activity card */}
             <AnimatePresence mode="wait">
               {pickedActivity ? (
                 <motion.div
@@ -337,32 +272,70 @@ export default function TodayPage() {
                   transition={{ duration: 0.2 }}
                   className="mt-5"
                 >
-                  <ActivityCardInline
+                  <TodayActivityCard
                     activity={pickedActivity}
                     onMore={onMoreDetail}
+                    onDidIt={onDidIt}
+                    onSkip={() => void onSkipToday()}
+                    skipBusy={skipBusy}
+                    truncatedHowTo={truncatedHowTo}
                   />
                 </motion.div>
-              ) : null}
+              ) : (
+                <p className="mt-10 text-center text-footnote text-ink-tertiary">
+                  No activities in this skill yet.
+                </p>
+              )}
             </AnimatePresence>
 
-            {/* Actions */}
-            <div className="mt-4 flex gap-3">
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => void onSkipToday()}
-                disabled={!pickedActivity || skipBusy}
-              >
-                Skip today
-              </Button>
-              <Button
-                size="lg"
-                className="flex-1"
-                onClick={onDidIt}
-                disabled={!pickedActivity}
-              >
-                Did it
-              </Button>
+            {/* Weekly bar chart */}
+            <section className="mt-6">
+              <div className="mb-3 flex items-baseline justify-between">
+                <span className="text-[17px] font-bold text-ink">
+                  This week
+                </span>
+                <button
+                  type="button"
+                  onClick={() => router.push("/map")}
+                  className="text-[13px] font-medium text-accent-mid hover:text-accent"
+                >
+                  Details →
+                </button>
+              </div>
+              <div className="rounded-[18px] bg-bg-elevated p-4 shadow-md">
+                <WeeklyBars sessions={sessions} today={new Date()} />
+              </div>
+            </section>
+
+            {/* Tip cards row */}
+            <div className="mt-5 flex gap-3">
+              <TipCard
+                tone="warm"
+                icon={
+                  <span aria-hidden role="img">
+                    ☼
+                  </span>
+                }
+                title="One a day"
+                body="One real moment beats ten rushed ones."
+              />
+              <TipCard
+                tone="coral"
+                icon={
+                  <span aria-hidden role="img">
+                    ◆
+                  </span>
+                }
+                title="This month"
+                body={
+                  <>
+                    <span className="text-[18px] font-bold text-ink">
+                      {monthCount}
+                    </span>{" "}
+                    moment{monthCount === 1 ? "" : "s"} together.
+                  </>
+                }
+              />
             </div>
           </motion.div>
         ) : (
@@ -370,7 +343,7 @@ export default function TodayPage() {
             key="done"
             childName={childName}
             todaysSessions={todaysSessions}
-            onAnother={onAnotherMoment}
+            onAnother={() => setShowOverride(true)}
             onLookBack={() => router.push("/map")}
             onLibrary={() => router.push("/library")}
           />
@@ -417,10 +390,7 @@ function DoneForToday({
       transition={{ duration: 0.2 }}
       className="mt-16 flex flex-col items-center text-center"
     >
-      <span
-        aria-hidden
-        className="h-2.5 w-2.5 rounded-full bg-ink"
-      />
+      <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-ink" />
       <p className="mt-6 text-body-large text-ink">
         {wasSkipped ? "Marked as skipped." : "Done for today."}
       </p>
@@ -461,85 +431,10 @@ function DoneForToday({
   );
 }
 
-// ---------- Inline activity card ----------
-
-function ActivityCardInline({
-  activity,
-  onMore,
-}: {
-  activity: Activity;
-  onMore: () => void;
-}) {
-  const skill = SKILLS[activity.skill];
-  const shortHowTo = truncateWords(activity.howTo, 55);
-
-  return (
-    <article
-      className="rounded-[18px] bg-bg-elevated shadow-md"
-      style={{ padding: "24px" }}
-    >
-      {/* Eyebrow */}
-      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em]">
-        <span
-          aria-hidden
-          className="inline-block h-2 w-2 rounded-full"
-          style={{ backgroundColor: skill.color }}
-        />
-        <span style={{ color: skill.color }}>{skill.label}</span>
-        <span className="text-ink-quaternary">·</span>
-        <span className="text-ink-secondary">{activity.duration} min</span>
-        <span className="text-ink-quaternary">·</span>
-        <span className="text-ink-secondary">
-          {DIFFICULTY_LABEL[activity.difficulty]}
-        </span>
-      </p>
-
-      {/* Title */}
-      <h2 className="mt-3 font-display text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-ink">
-        {activity.title}
-      </h2>
-
-      {/* Description */}
-      <p className="mt-2 text-[15px] italic leading-[1.45] text-ink-secondary">
-        {activity.description}
-      </p>
-
-      {/* Short howTo */}
-      <p className="mt-4 text-[14px] leading-[1.55] text-ink">{shortHowTo}</p>
-
-      {/* The one thing to say */}
-      <p className="mt-4 flex gap-2 text-[14px] leading-[1.55] text-ink">
-        <span
-          aria-hidden
-          className="mt-[7px] inline-block h-1.5 w-1.5 shrink-0 rounded-full"
-          style={{ backgroundColor: skill.color }}
-        />
-        <span>{activity.oneLineToSay}</span>
-      </p>
-
-      {/* More link */}
-      <button
-        type="button"
-        onClick={onMore}
-        className="mt-5 text-callout text-accent transition-colors duration-fast ease-out hover:text-accent-pressed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
-      >
-        More →
-      </button>
-    </article>
-  );
-}
-
 // ---------- helpers ----------
 
 function truncateWords(text: string, maxWords: number): string {
   const words = text.split(/\s+/);
   if (words.length <= maxWords) return text;
   return words.slice(0, maxWords).join(" ").replace(/[,.;:]$/, "") + "…";
-}
-
-function longDate(d: Date): string {
-  const weekday = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(d);
-  const day = d.getDate();
-  const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
-  return `${weekday} · ${day} ${month}`;
 }
