@@ -46,12 +46,10 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       onClick={onClick}
       onKeyDown={interactive ? handleKeyDown : onKeyDown}
       className={cn(
-        "rounded-lg bg-bg-elevated p-4",
-        // Subtle 1px line so the white surface still has an edge against
-        // the cream page background.
-        "border border-line-subtle",
+        // White surface with the design's soft lift shadow (no border).
+        "rounded-lg bg-bg-elevated p-4 shadow-md",
         interactive &&
-          "cursor-pointer transition-all duration-fast ease-out hover:shadow-md active:scale-[0.99] active:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+          "cursor-pointer transition-all duration-fast ease-out active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
         className,
       )}
       {...rest}

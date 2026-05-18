@@ -242,21 +242,16 @@ function ActivityHeader({ activity }: { activity: Activity }) {
 
   return (
     <header>
-      {/* Big colored icon square hero */}
+      {/* Big colored icon square hero — picks up the skill colour rather
+          than the global accent so the page reads as that skill. */}
       <div
         className="flex h-20 w-20 items-center justify-center rounded-[20px]"
         style={{
-          backgroundColor: "var(--accent-bg)",
-          boxShadow:
-            "0 8px 24px -8px rgba(58, 79, 204, 0.18), inset 0 0 0 1px rgba(58, 79, 204, 0.05)",
+          backgroundColor: skill.color,
+          color: "#FFFFFF",
         }}
       >
-        <Icon
-          size={36}
-          strokeWidth={1.75}
-          aria-hidden
-          style={{ color: "var(--accent)" }}
-        />
+        <Icon size={36} strokeWidth={1.75} aria-hidden />
       </div>
 
       <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.12em] text-ink-secondary">
@@ -292,14 +287,8 @@ function ActivityHeader({ activity }: { activity: Activity }) {
 
 function HeroHowTo({ text }: { text: string }) {
   return (
-    <div
-      className="mt-8 rounded-[18px] p-6"
-      style={{
-        backgroundColor: "var(--bg-elevated)",
-        boxShadow: "inset 0 0 0 1px var(--line-subtle)",
-      }}
-    >
-      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent">
+    <div className="mt-8 rounded-[18px] bg-bg-elevated p-6 shadow-md">
+      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-mid">
         How to do it
       </p>
       <p
@@ -327,14 +316,8 @@ function ExampleCard({
   );
 
   return (
-    <div
-      className="mt-3 rounded-[18px] p-6"
-      style={{
-        backgroundColor: "var(--bg-elevated)",
-        boxShadow: "inset 0 0 0 1px var(--line-subtle)",
-      }}
-    >
-      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent">
+    <div className="mt-3 rounded-[18px] bg-bg-elevated p-6 shadow-md">
+      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-mid">
         Example
       </p>
 
@@ -405,13 +388,7 @@ function CollapsibleCard({
       : "text-ink-secondary";
 
   return (
-    <div
-      className="relative rounded-[14px] transition-shadow duration-fast ease-out"
-      style={{
-        backgroundColor: "var(--bg-elevated)",
-        boxShadow: "inset 0 0 0 1px var(--line-subtle)",
-      }}
-    >
+    <div className="relative rounded-[14px] bg-bg-elevated shadow-md transition-shadow duration-fast ease-out">
       {accentStripe ? (
         <span
           aria-hidden

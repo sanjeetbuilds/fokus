@@ -49,7 +49,7 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
     <div
       role="button"
       tabIndex={-1}
-      className="flex items-start gap-4 rounded-[16px] border border-line bg-bg-elevated p-4 transition-shadow duration-fast ease-out hover:shadow-sm active:scale-[0.99]"
+      className="flex items-start gap-4 rounded-[18px] bg-bg-elevated p-4 shadow-md transition-transform duration-fast ease-out active:scale-[0.99]"
     >
       <div
         className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px]"

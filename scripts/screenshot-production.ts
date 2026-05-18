@@ -121,8 +121,7 @@ async function main() {
     await page.goto(`${BASE}/intro`, { waitUntil: "networkidle0" });
     await seed(page);
 
-    // ---------- /today fresh (activity card visible, no "find" button) ----------
-    // First, wipe any sessions for today so we get the picker, not the done state.
+    // Wipe any sessions for today so /today shows the picker.
     await page.goto(`${BASE}/today`, { waitUntil: "networkidle0" });
     await page.evaluate(async () => {
       const Dexie = (
@@ -142,49 +141,43 @@ async function main() {
       }
     });
 
+    // ---------- /today ----------
     await page.goto(`${BASE}/today`, { waitUntil: "networkidle0" });
     await page.waitForSelector("h1");
     await new Promise((r) => setTimeout(r, 600));
     await page.screenshot({
-      path: `${OUT}/v4-today-picker.png`,
+      path: `${OUT}/v5-today.png`,
       type: "png",
     });
 
-    // ---------- /today done state (after logging a session today) ----------
-    // Programmatically write a session for today so the done state renders.
-    await page.evaluate(async () => {
-      const Dexie = (
-        await import("https://cdn.jsdelivr.net/npm/dexie@4.4.2/+esm")
-      ).default;
-      const db = new Dexie("fokus_db");
-      db.version(1).stores({
-        parents: "id, updatedAt",
-        children: "id, parentId, updatedAt",
-        sessions: "id, childId, date, activityId, [childId+date]",
-        observations: "id, childId, date",
-      });
-      const today = new Date().toISOString().slice(0, 10);
-      await db.sessions.put({
-        id: `sess-today-cu1`,
-        childId: "demo-child",
-        activityId: "cu1",
-        date: today,
-        response: "loved",
-        context: { timeAvailable: "medium", childMood: "normal" },
-        createdAt: new Date().toISOString(),
-        _syncStatus: "local",
-      });
+    // ---------- /library ----------
+    await page.goto(`${BASE}/library`, { waitUntil: "networkidle0" });
+    await page.waitForSelector("h1");
+    await new Promise((r) => setTimeout(r, 400));
+    await page.screenshot({
+      path: `${OUT}/v5-library.png`,
+      type: "png",
     });
 
-    await page.goto(`${BASE}/today`, { waitUntil: "networkidle0" });
+    // ---------- /map (Track) ----------
+    await page.goto(`${BASE}/map`, { waitUntil: "networkidle0" });
     await page.waitForSelector("h1");
     await new Promise((r) => setTimeout(r, 500));
     await page.screenshot({
-      path: `${OUT}/v4-today-done.png`,
+      path: `${OUT}/v5-track.png`,
       type: "png",
     });
 
-    console.log("Captured: v4-today-picker, v4-today-done");
+    // ---------- /profile ----------
+    await page.goto(`${BASE}/profile`, { waitUntil: "networkidle0" });
+    await page.waitForSelector("h1");
+    await new Promise((r) => setTimeout(r, 400));
+    await page.screenshot({
+      path: `${OUT}/v5-profile.png`,
+      type: "png",
+    });
+
+    console.log("Captured: v5-today, v5-library, v5-track, v5-profile");
   } finally {
     await browser.close();
   }

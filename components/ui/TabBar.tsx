@@ -17,6 +17,11 @@ export interface TabBarProps {
   className?: string;
 }
 
+/**
+ * Bottom navigation. Inactive tabs show icon + tiny label underneath.
+ * Active tab collapses the label and renders icon + label inline inside a
+ * light-green pill — mirrors the Fokus design's `.nb-pill` pattern.
+ */
 export default function TabBar({
   tabs,
   activeKey,
@@ -27,17 +32,17 @@ export default function TabBar({
     <nav
       aria-label="Primary"
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 border-t border-line-subtle bg-bg",
+        "fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg-elevated",
         "pb-[env(safe-area-inset-bottom)]",
         className,
       )}
     >
-      <ul className="mx-auto flex w-full max-w-[540px] items-stretch justify-around">
+      <ul className="mx-auto flex w-full max-w-[540px] items-start justify-around pt-2">
         {tabs.slice(0, 4).map((tab) => {
           const isActive = tab.key === activeKey;
           const Icon = tab.icon;
           return (
-            <li key={tab.key} className="flex-1">
+            <li key={tab.key} className="min-w-[56px]">
               <button
                 type="button"
                 aria-current={isActive ? "page" : undefined}
@@ -46,21 +51,31 @@ export default function TabBar({
                   onChange?.(tab.key);
                 }}
                 className={cn(
-                  "flex h-14 w-full select-none flex-col items-center justify-center gap-1",
+                  "flex h-14 w-full flex-col items-center justify-start gap-0.5 select-none",
                   "transition-colors duration-fast ease-out",
-                  "focus-visible:outline-none focus-visible:bg-bg-elevated",
-                  isActive ? "text-accent" : "text-ink-quaternary hover:text-ink-tertiary",
+                  "focus-visible:outline-none focus-visible:rounded-full focus-visible:ring-2 focus-visible:ring-accent",
                 )}
               >
-                <Icon size={20} strokeWidth={1.75} aria-hidden />
                 <span
                   className={cn(
-                    "text-[10px] leading-none",
-                    isActive ? "font-medium" : "font-normal",
+                    "inline-flex items-center gap-1 rounded-full transition-all duration-fast ease-out",
+                    isActive
+                      ? "bg-accent-bg px-3.5 py-1.5 text-accent-mid"
+                      : "px-2.5 py-1.5 text-ink-quaternary",
                   )}
                 >
-                  {tab.label}
+                  <Icon size={20} strokeWidth={1.8} aria-hidden />
+                  {isActive ? (
+                    <span className="text-[13px] font-semibold leading-none">
+                      {tab.label}
+                    </span>
+                  ) : null}
                 </span>
+                {!isActive ? (
+                  <span className="text-[11px] leading-none text-ink-tertiary">
+                    {tab.label}
+                  </span>
+                ) : null}
               </button>
             </li>
           );

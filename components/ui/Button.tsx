@@ -15,10 +15,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT: Record<Variant, string> = {
-  // The accent-tinted shadow makes the primary CTA feel a touch lifted on
-  // the cream background without resorting to a heavier shadow on the page.
+  // Forest-green CTA. Soft green-tinted lift on the cream surface; flattens
+  // on press via the active:scale below.
   primary:
-    "bg-accent text-white shadow-[0_6px_16px_-4px_rgba(58,79,204,0.32)] hover:bg-accent-pressed",
+    "bg-accent text-white shadow-[0_6px_16px_-4px_rgba(42,92,65,0.28)] hover:bg-accent-pressed",
   secondary:
     "border border-line bg-bg-elevated text-ink hover:border-ink-secondary",
   tertiary:
@@ -54,9 +54,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       ref={ref}
       type={type}
       disabled={disabled}
-      // Inline border-radius pins to --radius-md (12px) so no class merging,
-      // cache, or specificity issue can ever round the button into a pill.
-      style={{ borderRadius: "var(--radius-md)", ...style }}
+      // Pill shape matches the design's 26px radius on a 52px CTA. Inline so
+      // class-merging / specificity never reverts it.
+      style={{ borderRadius: 9999, ...style }}
       className={cn(
         "inline-flex select-none items-center justify-center font-medium",
         "transition-transform duration-100 ease-out active:scale-[0.97]",

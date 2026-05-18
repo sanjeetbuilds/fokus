@@ -257,7 +257,7 @@ export default function TodayPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
-            className="mt-10 rounded-lg border border-line bg-bg-elevated p-6"
+            className="mt-10 rounded-[18px] bg-bg-elevated p-6 shadow-md"
           >
             <p className="text-body-large text-ink">
               Take today off. Just be with{" "}
@@ -475,7 +475,7 @@ function ActivityCardInline({
 
   return (
     <article
-      className="rounded-[10px] border border-line bg-bg-elevated"
+      className="rounded-[18px] bg-bg-elevated shadow-md"
       style={{ padding: "24px" }}
     >
       {/* Eyebrow */}

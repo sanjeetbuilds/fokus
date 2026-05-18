@@ -1,66 +1,68 @@
 /* ============================================================
-   Fokus design tokens — Round-2 identity (warm cream + bold).
+   Fokus design tokens — Round-3 identity (cream + green).
    Source of truth for color / type / spacing / motion.
    Tailwind utilities map to these via var(--token).
 
-   Round-2 changes (light mode):
-     - Backgrounds → warm cream (#FAF6EE / #F4EEDF)
-     - Ink → warmer near-black (#1A1814)
-     - Accent → confident indigo (#3A4FCC)
-     - Display + title-1 bumped to 44px / 32px (700)
-     - --ink-tertiary collapsed to the secondary value (5.5:1 AA on cream);
-       hierarchy is carried by reduced font-weight (350) on text-caption /
-       text-footnote in tailwind.config.ts.
-
-   Dark mode kept at its Apple-restrained palette for now — needs a
-   separate review pass before it gets the warm treatment.
+   Round-3 changes (light mode), from the Fokus.html design:
+     - Backgrounds → cream #F4F3EE on body, #FFFFFF on cards
+     - Accent → forest green #2A5C41 (replaces indigo #3A4FCC)
+     - Cards → pure white with soft drop shadow (no line border)
+     - New semantic warm/coral/mulberry palettes for tags + emphasis
+     - Wordmark dot, primary buttons, active states all pick up green
+   Typography (Fraunces display + Inter body) is preserved.
+   Dark mode kept on its prior set until it gets a dedicated pass.
    ============================================================ */
 
 :root {
   /* ---- Color: light mode ---- */
-  --bg: #FAF6EE;             /* warm cream, the brand surface */
-  /*
-    Cards: pure white on the cream surface. Replaces the earlier warm
-    cream-on-cream pattern; activity/session cards now use per-skill tints
-    (see ActivityCard, SessionCard) so neutral cards (Stat, Radio, About
-    Fokus, onboarding step 4) need a different surface that reads as a
-    distinct tile against the cream.
-  */
-  --bg-elevated: #FFFFFF;
-  --bg-overlay: rgba(26, 24, 20, 0.45);
+  --bg: #F4F3EE;             /* warm linen — body surface */
+  --bg-elevated: #FFFFFF;    /* card surface */
+  --bg-input: #ECECE7;       /* slightly inset surface — textareas */
+  --bg-alt: #EEECEA;         /* inactive chip bg, separators */
+  --bg-overlay: rgba(26, 26, 23, 0.5);
 
-  --ink: #1A1814;            /* warm near-black */
-  --ink-secondary: #6B6357;  /* AA on cream, ~5.5:1 */
-  /* Tertiary collapsed to secondary; visual hierarchy is restored by the
-     350 font-weight on text-caption / text-footnote in tailwind.config.ts. */
-  --ink-tertiary: #6B6357;
-  --ink-quaternary: #B5AC9E; /* non-text only (separators, faint dots) */
+  --ink: #1A1A17;            /* near-black */
+  --ink-secondary: #6B6B67;  /* AA on cream ~ 5.7:1 */
+  --ink-tertiary: #6B6B67;   /* collapsed to secondary for AA; hierarchy via weight */
+  --ink-quaternary: #ADADAA; /* non-text only (separators, faint dots) */
 
-  --line: #E5DCC8;
-  --line-subtle: #F0E7D2;
+  --line: #EEECEA;
+  --line-subtle: #F0EFEB;
 
-  --accent: #3A4FCC;
-  --accent-pressed: #2D3FA8;
-  --accent-bg: #E6E9FA;      /* light indigo tint behind icon squares */
-  --accent-deep: #2D3FA8;    /* readable indigo on accent-bg */
+  /* ---- Accent: forest green ---- */
+  --accent: #2A5C41;         /* primary green — buttons, active states */
+  --accent-pressed: #1D3B2C;
+  --accent-bg: #EAF6EF;      /* very-light green tint */
+  --accent-deep: #1D3B2C;    /* deepest green, readable on cream */
+  --accent-mid: #3D7A5C;     /* mid green — eyebrow captions, links */
+  --accent-soft: #8EC9AC;    /* charts, midweight emphasis */
+  --accent-pale: #D4EDE0;    /* chip bg when selected secondary */
 
-  --success: #5C8A6B;        /* earthier than #34C759 to harmonize with cream */
-  --warning: #C97C3F;
-  --danger: #C44C3F;
+  /* ---- Warm secondary (peach) ---- */
+  --warm-text: #C8733A;
+  --warm-mid: #F5C4A8;
+  --warm-bg: #FAF0E8;
+
+  /* ---- Coral / soft red ---- */
+  --coral-text: #B85858;
+  --coral-mid: #E8A8A8;
+  --coral-bg: #FAE8E8;
+
+  /* ---- Mulberry — used for "today/now" emphasis ---- */
+  --mulberry: #7D3A4A;
+
+  /* ---- Semantic ---- */
+  --success: #2A5C41;
+  --warning: #C8733A;
+  --danger: #B85858;
 
   /* ---- Typography ---- */
-  /*
-    --font-display and --font-body are injected on <html> by next/font in
-    app/layout.tsx. They contain the Fraunces / Inter family stacks (with
-    next/font's fallback metric for layout-shift-free swap). --font-sans is
-    a legacy alias kept here for any inline style that still reads it.
-  */
   --font-sans:
     var(--font-body),
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  --text-display: 2.75rem;      /* 44px — bumped from 34px for new identity */
-  --text-title-1: 2rem;         /* 32px — bumped from 28px */
+  --text-display: 2.75rem;      /* 44px */
+  --text-title-1: 2rem;         /* 32px */
   --text-title-2: 1.375rem;     /* 22px */
   --text-title-3: 1.25rem;      /* 20px */
   --text-headline: 1.0625rem;   /* 17px */
@@ -91,10 +93,10 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* ---- Shadows ---- */
-  --shadow-sm: 0 1px 2px rgba(26, 24, 20, 0.04);
-  --shadow-md: 0 2px 10px rgba(26, 24, 20, 0.06);
-  --shadow-lg: 0 16px 40px -16px rgba(26, 24, 20, 0.18);
+  /* ---- Shadows (matched to design's soft card lift) ---- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 14px rgba(0, 0, 0, 0.055);
+  --shadow-lg: 0 16px 40px -16px rgba(0, 0, 0, 0.18);
 
   /* ---- Motion ---- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -105,11 +107,12 @@
 }
 
 /* ---- Color: dark mode ---- */
-/* Untouched for round-2. Needs its own pass before it harmonizes with the
-   warm light identity; for now it stays on the Apple-restrained set. */
+/* Round-3 has not been re-keyed for dark; the prior set still applies. */
 .dark {
   --bg: #000000;
   --bg-elevated: #1C1C1E;
+  --bg-input: #1C1C1E;
+  --bg-alt: #2C2C2E;
   --bg-overlay: rgba(0, 0, 0, 0.6);
 
   --ink: #F5F5F7;
@@ -120,12 +123,25 @@
   --line: #38383A;
   --line-subtle: #2C2C2E;
 
-  --accent: #0A84FF;
-  --accent-pressed: #409CFF;
-  --accent-bg: #0A2540;
-  --accent-deep: #409CFF;
+  --accent: #3D7A5C;
+  --accent-pressed: #5BA37D;
+  --accent-bg: #0F2419;
+  --accent-deep: #5BA37D;
+  --accent-mid: #5BA37D;
+  --accent-soft: #2A5C41;
+  --accent-pale: #1D3B2C;
 
-  --success: #30D158;
-  --warning: #FF9F0A;
-  --danger: #FF453A;
+  --warm-text: #E89B6F;
+  --warm-mid: #C8733A;
+  --warm-bg: #2A1A0F;
+
+  --coral-text: #E89494;
+  --coral-mid: #B85858;
+  --coral-bg: #2A1414;
+
+  --mulberry: #C58594;
+
+  --success: #5BA37D;
+  --warning: #E89B6F;
+  --danger: #E89494;
 }

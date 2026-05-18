@@ -37,7 +37,7 @@ export default function Chip({
         "disabled:pointer-events-none disabled:opacity-50",
         selected
           ? "border border-transparent bg-accent font-semibold text-white shadow-sm"
-          : "border border-line bg-bg font-medium text-ink hover:bg-bg-elevated",
+          : "border border-transparent bg-bg-alt font-medium text-ink-secondary hover:bg-line",
         className,
       )}
       {...rest}

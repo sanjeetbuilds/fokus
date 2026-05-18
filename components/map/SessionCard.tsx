@@ -53,7 +53,7 @@ export default function SessionCard({ session }: SessionCardProps) {
     : undefined;
 
   return (
-    <div className="flex items-start gap-4 rounded-[16px] border border-line bg-bg-elevated p-4">
+    <div className="flex items-start gap-4 rounded-[18px] bg-bg-elevated p-4 shadow-md">
       <div
         className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px]"
         style={{

@@ -62,7 +62,7 @@ export const viewport: Viewport = {
   // Pinned to the cream regardless of OS preference. Default theme is "light"
   // (see components/shared/ThemeProvider.tsx) so a fresh install on a dark
   // phone still opens light; the status-bar tint should match.
-  themeColor: "#FAF6EE",
+  themeColor: "#F4F3EE",
   // Tells the UA we only render in light. Form controls + scrollbars stop
   // auto-darkening; matches the defaultTheme="light" choice above.
   colorScheme: "light",

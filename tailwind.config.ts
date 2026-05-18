@@ -26,6 +26,8 @@ const config: Config = {
         bg: {
           DEFAULT: "var(--bg)",
           elevated: "var(--bg-elevated)",
+          input: "var(--bg-input)",
+          alt: "var(--bg-alt)",
           overlay: "var(--bg-overlay)",
         },
         ink: {
@@ -43,7 +45,21 @@ const config: Config = {
           pressed: "var(--accent-pressed)",
           bg: "var(--accent-bg)",
           deep: "var(--accent-deep)",
+          mid: "var(--accent-mid)",
+          soft: "var(--accent-soft)",
+          pale: "var(--accent-pale)",
         },
+        warm: {
+          text: "var(--warm-text)",
+          mid: "var(--warm-mid)",
+          bg: "var(--warm-bg)",
+        },
+        coral: {
+          text: "var(--coral-text)",
+          mid: "var(--coral-mid)",
+          bg: "var(--coral-bg)",
+        },
+        mulberry: "var(--mulberry)",
         success: "var(--success)",
         warning: "var(--warning)",
         danger: "var(--danger)",

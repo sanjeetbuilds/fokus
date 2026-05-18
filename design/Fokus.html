@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fokus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F3EE;--bg-alt:#EEECEA;--bg-in:#ECECE7;--w:#fff;--g9:#1D3B2C;--g7:#2A5C41;--g5:#3D7A5C;--g3:#8EC9AC;--g1:#D4EDE0;--g0:#EAF6EF;--p5:#C8733A;--p3:#F5C4A8;--p1:#FAF0E8;--r5:#B85858;--r3:#E8A8A8;--r1:#FAE8E8;--ml:#7D3A4A;--t9:#1A1A17;--t6:#6B6B67;--t4:#ADADAA;--sc:0 2px 14px rgba(0,0,0,.055);--f:'DM Sans',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);background:radial-gradient(ellipse at 50% 20%,#25302A,#141210);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px 16px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{display:none}*{scrollbar-width:none}
+button{font-family:var(--f);cursor:pointer;-webkit-tap-highlight-color:transparent;border:none}
+input,textarea{font-family:var(--f);outline:none;border:none}textarea{resize:none}
+.stage{transform-origin:top center;width:390px}
+.phone{width:390px;height:844px;background:#1A1918;border-radius:52px;padding:4px;box-shadow:0 0 0 1px #333,0 32px 80px rgba(0,0,0,.8),inset 0 0 0 1px #444;position:relative}
+.screen{width:100%;height:100%;border-radius:48px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:var(--g9)}
+.island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:122px;height:35px;background:#0E0E0E;border-radius:20px;z-index:999;pointer-events:none}
+.sbar{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 8px;flex-shrink:0}
+.sbar-time{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.sbar-icons{display:flex;gap:5px;align-items:center}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── ONBOARDING ─────────────────────────────────────────────── */
+#ob{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column}
+.ob-sbar{color:rgba(255,255,255,.7);flex-shrink:0}
+.ob-slides{position:relative;flex:1}
+.obs{position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;padding:12px 32px 44px;background:var(--g9)}
+.obs.on{display:flex;animation:fadeUp .45s cubic-bezier(.22,1,.36,1) both}
+.obs-sp{flex:1;display:flex;flex-direction:column;justify-content:center}
+.obs-h{font-weight:700;color:rgba(255,255,255,.93);line-height:1.18;letter-spacing:-.02em;white-space:pre-line;margin-bottom:28px;font-size:38px}
+.obs-h.sm{font-size:32px}
+.obs-b{font-size:20px;font-weight:300;color:rgba(255,255,255,.42);line-height:1.55;white-space:pre-line}
+.ob-bottom{display:flex;flex-direction:column;gap:0}
+.ob-dots{display:flex;gap:6px;justify-content:center;margin-bottom:24px}
+.ob-dot{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.18);transition:all .35s}
+.ob-dot.on{width:20px;background:rgba(255,255,255,.85)}
+.ob-btn{width:100%;height:52px;border-radius:26px;background:transparent;border:1.5px solid rgba(255,255,255,.28) !important;color:rgba(255,255,255,.85);font-size:16px;font-weight:600;letter-spacing:-.01em}
+/* Setup slide */
+.obs.setup{background:var(--bg)}
+.setup-ey{font-size:12px;font-weight:600;color:var(--g5);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.setup-h{font-size:32px;font-weight:700;color:var(--t9);line-height:1.15;letter-spacing:-.02em;margin-bottom:10px}
+.setup-sub{font-size:15px;color:var(--t4);line-height:1.6;margin-bottom:32px}
+.setup-dots{display:flex;gap:6px;margin-bottom:32px}
+.setup-dot{width:6px;height:6px;border-radius:3px;background:var(--bg-alt);transition:all .35s}
+.setup-dot.on{width:20px;background:var(--g7)}
+.setup-lbl{font-size:11px;font-weight:600;color:var(--t4);letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:7px}
+.setup-inp{width:100%;height:52px;border-radius:14px;border:1.5px solid var(--bg-alt) !important;background:var(--w);padding:0 16px;font-size:16px;color:var(--t9)}
+.setup-fields{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.setup-age{display:flex;gap:8px;flex-wrap:wrap}
+.begin-btn{width:100%;height:52px;border-radius:26px;background:var(--g7);color:var(--w);font-size:16px;font-weight:600;margin-top:auto}
+.setup-priv{text-align:center;font-size:12px;color:var(--t4);margin-top:10px}
+
+/* ── MAIN APP ───────────────────────────────────────────────── */
+#app{flex:1;display:none;flex-direction:column;min-height:0;background:var(--bg)}
+#app.on{display:flex}
+.app-sbar{color:var(--t6)}
+.tabs{flex:1;overflow-y:auto;overflow-x:hidden}
+.tab{display:none;padding:0 20px}
+.tab.on{display:block;animation:fadeIn .3s ease}
+
+/* ── BOTTOM NAV ─────────────────────────────────────────────── */
+.bnav{height:76px;background:var(--w);border-top:1px solid var(--bg-alt);display:flex;align-items:flex-start;justify-content:space-around;padding-top:8px;flex-shrink:0}
+.nb{background:none;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:56px;padding:0}
+.nb-pill{display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:22px;transition:all .2s}
+.nb.on .nb-pill{background:var(--g0);padding:7px 14px}
+.nb-lbl{font-size:11px;color:var(--t4)}
+.nb.on .nb-lbl{display:none}
+.nb-al{font-size:13px;font-weight:600;color:var(--g7);display:none}
+.nb.on .nb-al{display:block}
+
+/* ── COMMON COMPONENTS ─────────────────────────────────────── */
+.card{background:var(--w);border-radius:18px;padding:18px;box-shadow:var(--sc)}
+.card-sm{background:var(--w);border-radius:18px;padding:14px;box-shadow:var(--sc)}
+.pill{background:var(--bg-alt);color:var(--t6);font-size:13px;font-weight:500;padding:7px 15px;border-radius:20px;white-space:nowrap;flex-shrink:0;transition:all .2s;cursor:pointer}
+.pill.on{background:var(--g7);color:var(--w);font-weight:600}
+.pill-sm{font-size:12px;padding:6px 12px}
+.tag{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:5px 11px;border-radius:14px;white-space:nowrap}
+.cta{width:100%;height:52px;border-radius:26px;background:var(--g7);color:var(--w);font-size:16px;font-weight:600;letter-spacing:-.01em}
+.prog{position:relative;height:7px;background:var(--bg-alt);border-radius:7px;overflow:visible}
+.prog-fill{height:100%;border-radius:7px;position:relative}
+.prog-dot{position:absolute;right:-7px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:7px;border:2.5px solid white;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.sec-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.sec-lbl{font-size:18px;font-weight:700;color:var(--t9)}
+.sec-act{background:none;font-size:13px;color:var(--g5);font-weight:500}
+.iph{background:var(--bg-alt);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;flex-shrink:0}
+.iph::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 8px,rgba(0,0,0,.04) 8px,rgba(0,0,0,.04) 16px)}
+.iph span{position:relative;font-size:10px;color:var(--t4);font-family:monospace;text-align:center;padding:0 8px;line-height:1.5}
+
+/* ── TODAY ─────────────────────────────────────────────────── */
+.greet{display:flex;align-items:center;justify-content:space-between;padding-top:4px;margin-bottom:22px}
+.av{width:42px;height:42px;border-radius:21px;background:var(--g1);border:2px solid var(--g3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.chart-wrap{display:flex;align-items:flex-end;justify-content:space-between;height:100px}
+.bc{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;justify-content:flex-end}
+.bp{border-radius:999px;width:20px;min-height:10px}
+.bc.td .bp{width:28px}
+.bc span{font-size:11px;color:var(--t4)}
+.bc.td span{color:var(--ml);font-weight:600}
+.act-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.av-stack{display:flex;align-items:center}
+.av-mini{width:26px;height:26px;border-radius:13px;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:11px}
+
+/* ── LIBRARY ────────────────────────────────────────────────── */
+.act-row{display:flex;align-items:center;gap:14px}
+.act-ico{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+
+/* ── COMPASS ────────────────────────────────────────────────── */
+.bviz{position:relative;height:196px;margin-bottom:8px}
+.blob{position:absolute}
+.ba{left:8%;top:8%;width:165px;height:155px;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;background:rgba(245,196,168,.42)}
+.bb{right:6%;top:18%;width:158px;height:148px;border-radius:45% 55% 40% 60%/60% 40% 55% 45%;background:rgba(142,201,172,.38)}
+.bc-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:26px;background:var(--g7);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(42,92,65,.3)}
+.trait-grid{display:flex;gap:10px;margin-bottom:10px}
+.tcard{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;padding:16px}
+.tico{width:46px;height:46px;border-radius:23px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.str-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.str-ico{width:40px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.nur-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.nur-ico{width:44px;height:44px;border-radius:14px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+
+/* ── PROFILE ────────────────────────────────────────────────── */
+.child-hero{display:flex;flex-direction:column;align-items:center;margin-bottom:22px}
+.child-av-w{position:relative;width:84px;height:84px}
+.child-ring{position:absolute;inset:-5px;border-radius:50%;border:2.5px dashed var(--r3)}
+.child-av{width:84px;height:84px;border-radius:42px;background:var(--p1);display:flex;align-items:center;justify-content:center;font-size:38px}
+.sk-stack{display:flex;margin-bottom:8px}
+.sk-ico{width:28px;height:28px;border-radius:14px;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tune-row{margin-bottom:18px}
+.tune-top{display:flex;justify-content:space-between;margin-bottom:8px}
+.tune-trk{position:relative;height:6px;background:var(--bg-alt);border-radius:3px}
+.tune-thumb{position:absolute;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:11px;background:var(--w);box-shadow:0 2px 8px rgba(0,0,0,.14)}
+.j-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;margin-bottom:28px}
+.j-card{min-width:148px;border-radius:16px;padding:14px;flex-shrink:0}
+
+/* ── REFLECT OVERLAY ────────────────────────────────────────── */
+#ref{position:absolute;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .42s cubic-bezier(.34,1.06,.64,1)}
+#ref.open{transform:translateY(0)}
+.ref-hd{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 8px;flex-shrink:0}
+.ref-back{background:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.ref-scroll{flex:1;overflow-y:auto;padding:0 20px 100px}
+.ref-title-area{text-align:center;margin-bottom:24px;margin-top:8px}
+.mood-row{display:flex;justify-content:space-around;margin-bottom:20px}
+.mood-btn{display:flex;flex-direction:column;align-items:center;gap:7px;background:none;cursor:pointer}
+.mood-circ{width:64px;height:64px;border-radius:32px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--bg-alt);transition:all .2s}
+.mood-btn.on .mood-circ{box-shadow:0 3px 12px rgba(0,0,0,.15)}
+.mood-lbl{font-size:13px;color:var(--t4);font-weight:400}
+.mood-btn.on .mood-lbl{color:var(--t9);font-weight:600}
+.div{height:1px;background:var(--bg-alt);margin:16px 0}
+.obs-ta{width:100%;min-height:88px;border-radius:12px;background:var(--bg-in);padding:12px 14px;font-size:14px;color:var(--t9);line-height:1.6}
+.fa-row{display:flex;gap:8px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+<div class="phone">
+<div class="screen" id="screen">
+
+<!-- Dynamic Island -->
+<div class="island"></div>
+
+<!-- ══ ONBOARDING ══════════════════════════════════════════════ -->
+<div id="ob" aria-label="Onboarding">
+
+  <!-- Dark status bar -->
+  <div class="sbar ob-sbar" style="color:rgba(255,255,255,.7)">
+    <span class="sbar-time">9:41</span>
+    <div class="sbar-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx=".5" fill="currentColor" opacity=".35"/><rect x="4.5" y="5" width="3" height="7" rx=".5" fill="currentColor" opacity=".55"/><rect x="9" y="2" width="3" height="10" rx=".5" fill="currentColor" opacity=".75"/><rect x="13.5" y="0" width="3" height="12" rx=".5" fill="currentColor"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="21" height="11" rx="2.5" stroke="currentColor" stroke-opacity=".35" fill="none"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a1.5 1.5 0 000-4z" fill="currentColor" opacity=".35"/></svg>
+    </div>
+  </div>
+
+  <div class="ob-slides" style="position:relative;flex:1">
+
+    <!-- Slide 0 -->
+    <div class="obs on" id="obs-0">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+        <p class="obs-h">Schools measure<br>visible things.</p>
+        <p class="obs-b">But invisible traits<br>shape lives.</p>
+      </div>
+      <div class="ob-bottom">
+        <div class="ob-dots">
+          <div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+        </div>
+        <button class="ob-btn" onclick="nextSlide()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Slide 1 -->
+    <div class="obs" id="obs-1">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+        <p class="obs-h sm">Confidence.<br>Curiosity.<br>Resilience.<br>Empathy.</p>
+        <p class="obs-b">Built quietly<br>in daily moments.</p>
+      </div>
+      <div class="ob-bottom">
+        <div class="ob-dots">
+          <div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+        </div>
+        <button class="ob-btn" onclick="nextSlide()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="obs" id="obs-2">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+        <p class="obs-h">Parents don't need<br>more pressure.</p>
+        <p class="obs-b">They need<br>clearer attention.</p>
+      </div>
+      <div class="ob-bottom">
+        <div class="ob-dots">
+          <div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+        </div>
+        <button class="ob-btn" onclick="nextSlide()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="obs" id="obs-3">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+        <p class="obs-h">One meaningful<br>interaction a day<br>is enough.</p>
+      </div>
+      <div class="ob-bottom">
+        <div class="ob-dots">
+          <div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div>
+        </div>
+        <button class="ob-btn" onclick="nextSlide()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Slide 4: Setup -->
+    <div class="obs setup" id="obs-4" style="padding-top:8px">
+      <p class="setup-ey">Welcome</p>
+      <p class="setup-h">Let's begin.</p>
+      <p class="setup-sub">A quiet space to notice<br>what matters most.</p>
+      <div class="setup-dots">
+        <div class="setup-dot"></div><div class="setup-dot"></div><div class="setup-dot"></div><div class="setup-dot"></div><div class="setup-dot on"></div>
+      </div>
+      <div class="setup-fields">
+        <div>
+          <label class="setup-lbl">Your child's name</label>
+          <input class="setup-inp" id="child-name" placeholder="e.g. Leo" value="Leo">
+        </div>
+        <div>
+          <label class="setup-lbl">Your name</label>
+          <input class="setup-inp" id="parent-name" placeholder="e.g. Jenny" value="Jenny">
+        </div>
+        <div>
+          <label class="setup-lbl" style="margin-bottom:9px">Child's age</label>
+          <div class="setup-age" id="age-pills">
+            <button class="pill pill-sm" onclick="selAge(this)">0–1 yr</button>
+            <button class="pill pill-sm on" onclick="selAge(this)">2–4 yrs</button>
+            <button class="pill pill-sm" onclick="selAge(this)">4–6 yrs</button>
+            <button class="pill pill-sm" onclick="selAge(this)">6–9 yrs</button>
+          </div>
+        </div>
+      </div>
+      <button class="begin-btn" onclick="startApp()">Begin your journey →</button>
+      <p class="setup-priv">Your data stays private, always.</p>
+    </div>
+
+  </div><!-- /ob-slides -->
+</div><!-- /ob -->
+
+<!-- ══ MAIN APP ════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- Light status bar -->
+  <div class="sbar app-sbar">
+    <span class="sbar-time">9:41</span>
+    <div class="sbar-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx=".5" fill="currentColor" opacity=".35"/><rect x="4.5" y="5" width="3" height="7" rx=".5" fill="currentColor" opacity=".55"/><rect x="9" y="2" width="3" height="10" rx=".5" fill="currentColor" opacity=".75"/><rect x="13.5" y="0" width="3" height="12" rx=".5" fill="currentColor"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="21" height="11" rx="2.5" stroke="currentColor" stroke-opacity=".35" fill="none"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a1.5 1.5 0 000-4z" fill="currentColor" opacity=".35"/></svg>
+    </div>
+  </div>
+
+  <div class="tabs">
+
+    <!-- TODAY -->
+    <div class="tab on" id="tab-today">
+      <div class="greet">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="av">👤</div>
+          <div><div style="font-size:12px;color:var(--t4)">Welcome back,</div><div id="parent-display" style="font-size:17px;font-weight:700;color:var(--g7)">Jenny</div></div>
+        </div>
+        <button style="background:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t6)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+      </div>
+      <h1 style="font-size:27px;font-weight:700;color:var(--t9);letter-spacing:-.02em;margin-bottom:5px">Today's Focus</h1>
+      <p style="font-size:14px;color:var(--t4);margin-bottom:20px">Gentle steps for big milestones.</p>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:22px" id="today-cats">
+        <button class="pill on" onclick="selPill(this,this.closest('div'))">All</button>
+        <button class="pill" onclick="selPill(this,this.closest('div'))">Development</button>
+        <button class="pill" onclick="selPill(this,this.closest('div'))">Sensory</button>
+        <button class="pill" onclick="selPill(this,this.closest('div'))">Creative</button>
+        <button class="pill" onclick="selPill(this,this.closest('div'))">Movement</button>
+      </div>
+      <!-- Activity card -->
+      <div class="card" style="margin-bottom:24px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <span class="tag" style="color:var(--r5);background:var(--r1)">New Activity</span>
+          <button style="background:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+        </div>
+        <h2 style="font-size:20px;font-weight:700;color:var(--g7);line-height:1.25;margin-bottom:8px;letter-spacing:-.01em">The Observation Game</h2>
+        <p style="font-size:13px;color:var(--t6);line-height:1.6;margin-bottom:14px">Help your little one identify shapes and colors in the living room. A journey of quiet discovery.</p>
+        <div class="iph" style="height:148px;border-radius:12px"><span>activity photo</span></div>
+        <div class="act-foot">
+          <div class="av-stack">
+            <div class="av-mini" style="background:var(--g1)">👤</div>
+            <div class="av-mini" style="background:var(--r1);margin-left:-8px">👤</div>
+            <div class="av-mini" style="background:var(--p1);margin-left:-8px">👤</div>
+            <span style="font-size:12px;color:var(--t4);margin-left:6px">+12</span>
+          </div>
+          <button onclick="showReflect()" style="background:var(--g7);color:var(--w);border-radius:20px;padding:9px 18px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px">Start Now
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Weekly Progress -->
+      <div style="margin-bottom:22px">
+        <div class="sec-row"><span class="sec-lbl">Weekly Progress</span><button class="sec-act">Details →</button></div>
+        <div class="card" style="padding:16px">
+          <div class="chart-wrap">
+            <div class="bc"><div class="bp" style="height:40px;background:var(--g3)"></div><span>M</span></div>
+            <div class="bc"><div class="bp" style="height:56px;background:var(--g3)"></div><span>T</span></div>
+            <div class="bc td" style="position:relative">
+              <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:4px;background:var(--ml)"></div>
+              <div class="bp" style="height:79px;background:var(--ml);width:28px"></div><span>W</span>
+            </div>
+            <div class="bc"><div class="bp" style="height:34px;background:var(--g3)"></div><span>T</span></div>
+            <div class="bc"><div class="bp" style="height:25px;background:var(--bg-alt)"></div><span>F</span></div>
+            <div class="bc"><div class="bp" style="height:16px;background:var(--bg-alt)"></div><span>S</span></div>
+            <div class="bc"><div class="bp" style="height:10px;background:var(--bg-alt)"></div><span>S</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Tip cards -->
+      <div style="display:flex;gap:12px;margin-bottom:28px">
+        <div style="flex:1;background:var(--p1);border-radius:18px;padding:16px">
+          <div style="font-size:18px;margin-bottom:6px">💡</div>
+          <div style="font-size:14px;font-weight:700;color:var(--p5);margin-bottom:4px">Daily Tip</div>
+          <div style="font-size:12px;color:var(--t6);line-height:1.5">Soft light helps nap time transitions.</div>
+        </div>
+        <div style="flex:1;background:var(--r1);border-radius:18px;padding:16px">
+          <div style="font-size:18px;margin-bottom:6px">📊</div>
+          <div style="font-size:14px;font-weight:700;color:var(--r5);margin-bottom:4px">Stats</div>
+          <div style="font-size:12px;color:var(--t6);line-height:1.5">32 activities this month.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div class="tab" id="tab-library">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:4px;margin-bottom:22px">
+        <div><h1 style="font-size:27px;font-weight:700;color:var(--t9);letter-spacing:-.02em">Activity Library</h1><p style="font-size:13px;color:var(--t4);margin-top:3px">Browse by what matters today.</p></div>
+        <button style="background:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t6)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+      </div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:22px" id="lib-cats">
+        <button class="pill on" onclick="selPill(this,this.closest('div'))">All</button>
+        <button class="pill" onclick="selPill(this,this.closest('div'))">Sensory</button>
+        <button class="pill" onclick="selPill(this,this.closest('div'))">Storytelling</button>
+        <button class="pill" onclick="selPill(this,this.closest('div'))">Movement</button>
+        <button class="pill" onclick="selPill(this,this.closest('div'))">Mindfulness</button>
+      </div>
+      <div style="margin-bottom:24px">
+        <div class="sec-row"><span class="sec-lbl">Today's Pick</span></div>
+        <div style="background:var(--g0);border-radius:18px;padding:18px;display:flex;gap:14px;align-items:center">
+          <div style="flex:1">
+            <span class="tag" style="color:var(--g5);background:var(--g1)">Recommended</span>
+            <h3 style="font-size:16px;font-weight:700;color:var(--g7);margin-top:8px;margin-bottom:4px">The Observation Game</h3>
+            <p style="font-size:12px;color:var(--t6);line-height:1.5">5 min of mindful seeing with Leo.</p>
+            <button style="margin-top:12px;background:var(--g7);color:var(--w);border-radius:16px;padding:7px 14px;font-size:12px;font-weight:600">Start Now</button>
+          </div>
+          <div class="iph" style="width:88px;height:88px;border-radius:12px;flex-shrink:0"><span>illustration</span></div>
+        </div>
+      </div>
+      <div style="margin-bottom:28px">
+        <div class="sec-row"><span class="sec-lbl">All Activities</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="card-sm"><div class="act-row"><div class="act-ico" style="background:var(--g0)">📖</div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600;color:var(--t9);margin-bottom:3px">The Kind Giant</div><div style="font-size:12px;color:var(--t4);margin-bottom:5px">A story to spark empathy</div><div style="display:flex;gap:6px;align-items:center"><span class="tag" style="color:var(--g5);background:var(--g0)">Storytelling</span><span style="font-size:11px;color:var(--t4)">10 min</span></div></div><button style="width:32px;height:32px;border-radius:16px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--t6)"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="card-sm"><div class="act-row"><div class="act-ico" style="background:var(--p1)">🔮</div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600;color:var(--t9);margin-bottom:3px">Mystery Shapes</div><div style="font-size:12px;color:var(--t4);margin-bottom:5px">Building logical resilience</div><div style="display:flex;gap:6px;align-items:center"><span class="tag" style="color:var(--p5);background:var(--p1)">Sensory</span><span style="font-size:11px;color:var(--t4)">8 min</span></div></div><button style="width:32px;height:32px;border-radius:16px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--t6)"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="card-sm"><div class="act-row"><div class="act-ico" style="background:var(--g1)">🎨</div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600;color:var(--t9);margin-bottom:3px">Color Walk</div><div style="font-size:12px;color:var(--t4);margin-bottom:5px">Visual recognition outdoors</div><div style="display:flex;gap:6px;align-items:center"><span class="tag" style="color:var(--g5);background:var(--g1)">Movement</span><span style="font-size:11px;color:var(--t4)">15 min</span></div></div><button style="width:32px;height:32px;border-radius:16px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--t6)"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="card-sm"><div class="act-row"><div class="act-ico" style="background:var(--r1)">🌿</div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600;color:var(--t9);margin-bottom:3px">Mindful Minutes</div><div style="font-size:12px;color:var(--t4);margin-bottom:5px">Calming breathing exercises</div><div style="display:flex;gap:6px;align-items:center"><span class="tag" style="color:var(--r5);background:var(--r1)">Mindfulness</span><span style="font-size:11px;color:var(--t4)">5 min</span></div></div><button style="width:32px;height:32px;border-radius:16px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--t6)"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+          <div class="card-sm"><div class="act-row"><div class="act-ico" style="background:var(--p1)">🏗️</div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600;color:var(--t9);margin-bottom:3px">Tower Challenge</div><div style="font-size:12px;color:var(--t4);margin-bottom:5px">Focus and balance building</div><div style="display:flex;gap:6px;align-items:center"><span class="tag" style="color:var(--p5);background:var(--p1)">Development</span><span style="font-size:11px;color:var(--t4)">12 min</span></div></div><button style="width:32px;height:32px;border-radius:16px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--t6)"><polygon points="5,3 19,12 5,21"/></svg></button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPASS -->
+    <div class="tab" id="tab-compass">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:4px;margin-bottom:10px">
+        <div class="av">👤</div>
+        <span style="font-size:15px;font-weight:700;color:var(--g5)">Parenting Companion</span>
+        <button style="background:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t6)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+      </div>
+      <div style="text-align:center;margin-bottom:4px;margin-top:8px">
+        <h1 style="font-size:26px;font-weight:700;color:var(--t9);letter-spacing:-.02em;margin-bottom:6px">Invisible Strengths</h1>
+        <p style="font-size:13px;color:var(--t4);line-height:1.6">Nurturing the soft skills that matter most<br>in early development.</p>
+      </div>
+      <!-- Blob viz -->
+      <div class="bviz">
+        <div class="blob ba"></div>
+        <div class="blob bb"></div>
+        <div class="bc-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36z" fill="white" stroke="none"/></svg>
+        </div>
+        <div style="position:absolute;left:4%;top:22%"><span class="tag" style="color:var(--p5);background:var(--p1)">Empathy: 85%</span></div>
+        <div style="position:absolute;right:2%;bottom:14%"><span class="tag" style="color:var(--r5);background:var(--r1)">Resilience: 72%</span></div>
+      </div>
+      <!-- Trait grid -->
+      <div class="trait-grid">
+        <div class="card tcard"><div class="tico" style="background:var(--g0)">💚</div><div style="font-size:15px;font-weight:700;color:var(--t9)">Empathy</div><div style="font-size:12px;color:var(--t4)">Social bonds</div></div>
+        <div class="card tcard"><div class="tico" style="background:var(--r1)">🧠</div><div style="font-size:15px;font-weight:700;color:var(--t9)">Resilience</div><div style="font-size:12px;color:var(--t4)">Emotional grit</div></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;padding:16px;margin-bottom:18px">
+        <div class="tico" style="background:var(--p1)">🔍</div>
+        <div style="font-size:15px;font-weight:700;color:var(--t9)">Focus &amp; Curiosity</div>
+        <div style="font-size:12px;color:var(--t4)">Attention span and inquisitive learning habits</div>
+      </div>
+      <!-- Strength cards -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="str-hd">
+          <div style="display:flex;align-items:center;gap:10px"><div class="str-ico" style="background:var(--r1)">💚</div><div><div style="font-size:16px;font-weight:700;color:var(--t9)">Empathy</div><div style="font-size:12px;color:var(--t4);margin-top:2px;max-width:180px;line-height:1.4">Recognising emotions in others and responding with kindness.</div></div></div>
+          <span class="tag" style="color:var(--r5);background:var(--r1)">Growing Fast</span>
+        </div>
+        <div class="prog"><div class="prog-fill" style="width:82%;background:var(--ml)"><div class="prog-dot" style="background:var(--ml)"></div></div></div>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="str-hd">
+          <div style="display:flex;align-items:center;gap:10px"><div class="str-ico" style="background:var(--g0)">🧠</div><div><div style="font-size:16px;font-weight:700;color:var(--t9)">Resilience</div><div style="font-size:12px;color:var(--t4);margin-top:2px;max-width:180px;line-height:1.4">Trying again after a challenge and staying optimistic.</div></div></div>
+          <span class="tag" style="color:var(--g5);background:var(--g0)">Emerging</span>
+        </div>
+        <div class="prog"><div class="prog-fill" style="width:44%;background:var(--g7)"><div class="prog-dot" style="background:var(--g7)"></div></div></div>
+      </div>
+      <!-- Nurture Today -->
+      <div style="margin-bottom:28px">
+        <div class="sec-row"><span class="sec-lbl">Nurture Today</span><button class="sec-act">View All</button></div>
+        <div class="card-sm nur-row" style="margin-bottom:10px"><div class="nur-ico">📖</div><div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--t9);margin-bottom:2px">Storytelling Session</div><div style="font-size:12px;color:var(--t4)">Focus on empathy</div></div><button style="width:32px;height:32px;border-radius:16px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--t6)"><polygon points="5,3 19,12 5,21"/></svg></button></div>
+        <div class="card-sm nur-row" style="margin-bottom:10px"><div class="nur-ico">🎨</div><div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--t9);margin-bottom:2px">Color Exploration</div><div style="font-size:12px;color:var(--t4)">Visual recognition</div></div><button style="width:32px;height:32px;border-radius:16px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="var(--t6)"><polygon points="5,3 19,12 5,21"/></svg></button></div>
+        <div class="card-sm nur-row" style="cursor:pointer" onclick="showReflect()"><div class="nur-ico">🌿</div><div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--t9);margin-bottom:2px">Mindful Minutes</div><div style="font-size:12px;color:var(--g5)">Tap to reflect →</div></div><button style="width:32px;height:32px;border-radius:16px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--g5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="tab" id="tab-profile">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:4px;margin-bottom:20px">
+        <div style="width:36px"></div>
+        <span style="font-size:16px;font-weight:700;color:var(--t9)">Leo's Journey</span>
+        <button style="background:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t6)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+      </div>
+      <div class="child-hero">
+        <div class="child-av-w"><div class="child-ring"></div><div class="child-av">👦</div></div>
+        <div id="child-display" style="font-size:22px;font-weight:700;color:var(--t9);letter-spacing:-.01em;margin-top:14px;text-align:center">Leo Harrison</div>
+        <div style="font-size:13px;color:var(--t4);margin-top:4px">3 Years, 4 Months · Growing Fast!</div>
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:12px;font-weight:600;color:var(--g5);letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px">Current Markers</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="tag" style="color:var(--g5);background:var(--g0)">🎨 Artist in Training</span>
+          <span class="tag" style="color:var(--p5);background:var(--p1)">🧩 Puzzle Solver</span>
+          <span class="tag" style="color:var(--r5);background:var(--r1)">⭐ Early Riser</span>
+          <span class="tag" style="color:var(--t4);background:var(--bg-alt)">+ Add Marker</span>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+          <div><div style="font-size:11px;font-weight:600;color:var(--t4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Weekly Play</div><div style="font-size:30px;font-weight:700;color:var(--t9);letter-spacing:-.03em">12.5 <span style="font-size:16px;font-weight:400;color:var(--t4)">hours</span></div></div>
+          <div style="width:40px;height:40px;border-radius:20px;background:var(--g0);display:flex;align-items:center;justify-content:center;font-size:18px">🎯</div>
+        </div>
+        <div style="margin-top:14px;margin-bottom:10px"><div class="prog"><div class="prog-fill" style="width:70%;background:var(--g7)"><div class="prog-dot" style="background:var(--g7)"></div></div></div></div>
+        <div style="font-size:12px;color:var(--t4)">15% more than last week ✨</div>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><div style="font-size:11px;font-weight:600;color:var(--t4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Skills Earned</div><div style="font-size:30px;font-weight:700;color:var(--r5);letter-spacing:-.03em">08</div></div>
+          <div style="width:40px;height:40px;border-radius:20px;background:var(--r1);display:flex;align-items:center;justify-content:center;font-size:18px">⭐</div>
+        </div>
+        <div class="sk-stack" style="margin-bottom:8px">
+          <div class="sk-ico" style="background:var(--g0)">🎵</div>
+          <div class="sk-ico" style="background:var(--r1);margin-left:-8px">🧠</div>
+          <div class="sk-ico" style="background:var(--p1);margin-left:-8px">💡</div>
+          <div class="sk-ico" style="background:var(--g1);margin-left:-8px">🎨</div>
+          <div class="sk-ico" style="background:var(--bg-alt);margin-left:-8px;font-size:10px;color:var(--t4);font-weight:600">+5</div>
+        </div>
+        <div style="font-size:12px;color:var(--t4)">New: "Sharing Toys"</div>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <span style="font-size:16px;font-weight:700;color:var(--g5)">Tune Framework</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="8.5" r="0.8" fill="var(--t4)" stroke="none"/><line x1="12" y1="12" x2="12" y2="16.5"/></svg>
+        </div>
+        <div class="tune-row"><div class="tune-top"><div style="display:flex;align-items:center;gap:6px"><div class="tune-dot" style="width:8px;height:8px;border-radius:4px;background:var(--g5)"></div><span style="font-size:13px;font-weight:500;color:var(--t6)">Curiosity</span></div><span style="font-size:13px;font-weight:600;color:var(--g5)">Inquisitive</span></div><div class="tune-trk"><div class="tune-thumb" style="left:calc(58% - 11px);border:2px solid var(--g5)"></div></div></div>
+        <div class="tune-row"><div class="tune-top"><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:4px;background:var(--p5)"></div><span style="font-size:13px;font-weight:500;color:var(--t6)">Energy Level</span></div><span style="font-size:13px;font-weight:600;color:var(--p5)">Dynamic</span></div><div class="tune-trk"><div class="tune-thumb" style="left:calc(72% - 11px);border:2px solid var(--p5)"></div></div></div>
+        <div class="tune-row" style="margin-bottom:0"><div class="tune-top"><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:4px;background:var(--r5)"></div><span style="font-size:13px;font-weight:500;color:var(--t6)">Social Butterfly</span></div><span style="font-size:13px;font-weight:600;color:var(--r5)">Friendly</span></div><div class="tune-trk"><div class="tune-thumb" style="left:calc(40% - 11px);border:2px solid var(--r5)"></div></div></div>
+      </div>
+      <div style="margin-bottom:28px">
+        <div class="sec-row"><span class="sec-lbl">Milestones Journal</span><button class="sec-act">View All</button></div>
+        <div class="j-scroll">
+          <div class="j-card" style="background:var(--p1)"><div style="font-size:10px;font-weight:600;color:var(--t4);letter-spacing:.04em;margin-bottom:8px">DEC 15</div><div class="iph" style="height:68px;border-radius:9px"><span>memory</span></div><div style="font-size:13px;font-weight:600;color:var(--t9);margin-top:8px;line-height:1.3">Built a 10-block tower!</div><div style="font-size:11px;color:var(--t4);margin-top:3px">Focus improving.</div></div>
+          <div class="j-card" style="background:var(--g0)"><div style="font-size:10px;font-weight:600;color:var(--t4);letter-spacing:.04em;margin-bottom:8px">DEC 12</div><div class="iph" style="height:68px;border-radius:9px"><span>memory</span></div><div style="font-size:13px;font-weight:600;color:var(--t9);margin-top:8px;line-height:1.3">First colour mix!</div><div style="font-size:11px;color:var(--t4);margin-top:3px">Exploring creativity.</div></div>
+          <div class="j-card" style="background:var(--r1)"><div style="font-size:10px;font-weight:600;color:var(--t4);letter-spacing:.04em;margin-bottom:8px">DEC 10</div><div class="iph" style="height:68px;border-radius:9px"><span>memory</span></div><div style="font-size:13px;font-weight:600;color:var(--t9);margin-top:8px;line-height:1.3">Shared toys today.</div><div style="font-size:11px;color:var(--t4);margin-top:3px">Growing in empathy.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tabs -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bnav">
+    <button class="nb on" onclick="switchTab('today')" id="nb-today">
+      <div class="nb-pill"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg><span class="nb-al">Today</span></div>
+      <span class="nb-lbl">Today</span>
+    </button>
+    <button class="nb" onclick="switchTab('library')" id="nb-library">
+      <div class="nb-pill"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span class="nb-al">Library</span></div>
+      <span class="nb-lbl">Library</span>
+    </button>
+    <button class="nb" onclick="switchTab('compass')" id="nb-compass">
+      <div class="nb-pill"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36z" fill="currentColor" stroke="none"/></svg><span class="nb-al">Compass</span></div>
+      <span class="nb-lbl">Compass</span>
+    </button>
+    <button class="nb" onclick="switchTab('profile')" id="nb-profile">
+      <div class="nb-pill"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nb-al">Profile</span></div>
+      <span class="nb-lbl">Profile</span>
+    </button>
+  </nav>
+
+  <!-- REFLECT OVERLAY -->
+  <div id="ref">
+    <div style="height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 8px;flex-shrink:0;color:var(--t6)">
+      <span style="font-size:15px;font-weight:600;letter-spacing:-.01em">9:41</span>
+      <div style="display:flex;gap:5px;align-items:center">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx=".5" fill="currentColor" opacity=".35"/><rect x="4.5" y="5" width="3" height="7" rx=".5" fill="currentColor" opacity=".55"/><rect x="9" y="2" width="3" height="10" rx=".5" fill="currentColor" opacity=".75"/><rect x="13.5" y="0" width="3" height="12" rx=".5" fill="currentColor"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="21" height="11" rx="2.5" stroke="currentColor" stroke-opacity=".35" fill="none"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><path d="M23 4v4a1.5 1.5 0 000-4z" fill="currentColor" opacity=".35"/></svg>
+      </div>
+    </div>
+    <div class="ref-hd">
+      <button class="ref-back" onclick="hideReflect()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t9)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+      <span style="font-size:17px;font-weight:700;color:var(--g7)">Fokus</span>
+      <div class="av" style="width:36px;height:36px;border-radius:18px;font-size:16px">👤</div>
+    </div>
+    <div class="ref-scroll">
+      <div class="ref-title-area">
+        <span class="tag" style="color:var(--r5);background:var(--r1)">Daily Discovery</span>
+        <h1 style="font-size:28px;font-weight:700;color:var(--t9);letter-spacing:-.02em;line-height:1.2;margin:12px 0 8px">Reflection Time</h1>
+        <p style="font-size:14px;color:var(--t4);line-height:1.6">How did today's activity go with Leo?</p>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="text-align:center;margin-bottom:16px"><span style="font-size:15px;font-weight:600;color:var(--g5)">The child's response</span></div>
+        <div class="mood-row">
+          <button class="mood-btn" onclick="selMood(this,'g1')"><div class="mood-circ" id="mc-loved" style="">❤️</div><span class="mood-lbl">Loved it!</span></button>
+          <button class="mood-btn" onclick="selMood(this,'p1')"><div class="mood-circ" id="mc-okay">😊</div><span class="mood-lbl">It was okay</span></button>
+          <button class="mood-btn" onclick="selMood(this,'r1')"><div class="mood-circ" id="mc-not">😔</div><span class="mood-lbl">Not today</span></button>
+        </div>
+        <div class="div"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:15px;font-weight:600;color:var(--g5)">Your Observations</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g5)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+        </div>
+        <textarea class="obs-ta" placeholder="What did you notice? Any new&#10;interests or challenges today…"></textarea>
+        <div class="div"></div>
+        <span style="font-size:15px;font-weight:600;color:var(--g5);display:block;margin-bottom:10px">Key Focus Areas</span>
+        <div class="fa-row" id="focus-areas">
+          <button class="pill pill-sm on" onclick="selPill(this,this.closest('div'),true)">Fine Motor</button>
+          <button class="pill pill-sm" onclick="selPill(this,this.closest('div'),true)">Curiosity</button>
+          <button class="pill pill-sm" onclick="selPill(this,this.closest('div'),true)">Focus</button>
+          <button class="pill pill-sm" onclick="selPill(this,this.closest('div'),true)">Sensory Play</button>
+          <button class="pill pill-sm" onclick="selPill(this,this.closest('div'),true)">Empathy</button>
+        </div>
+      </div>
+      <button class="cta">Log Progress</button>
+      <p style="text-align:center;font-size:12px;color:var(--t4);margin-top:10px;line-height:1.5">Your entries are kept private in your family journal.</p>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+</div><!-- /screen -->
+</div><!-- /phone -->
+</div><!-- /stage -->
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let obStep = 0;
+
+function nextSlide() {
+  document.getElementById('obs-' + obStep).classList.remove('on');
+  obStep++;
+  if (obStep > 4) return;
+  const next = document.getElementById('obs-' + obStep);
+  next.classList.add('on');
+}
+
+function selAge(el) {
+  document.querySelectorAll('#age-pills .pill').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function startApp() {
+  document.getElementById('ob').style.display = 'none';
+  const app = document.getElementById('app');
+  app.classList.add('on');
+  // Update names
+  const cn = document.getElementById('child-name').value || 'Leo';
+  const pn = document.getElementById('parent-name').value || 'Jenny';
+  document.getElementById('parent-display').textContent = pn;
+  document.getElementById('child-display').textContent = cn + ' Harrison';
+  document.getElementById('screen').style.background = 'var(--bg)';
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('tab-' + id).classList.add('on');
+  document.querySelectorAll('.nb').forEach(n => n.classList.remove('on'));
+  document.getElementById('nb-' + id).classList.add('on');
+  document.getElementById('ref').classList.remove('open');
+  // Reset scroll
+  document.querySelector('.tabs').scrollTop = 0;
+}
+
+function showReflect() {
+  document.getElementById('ref').classList.add('open');
+}
+
+function hideReflect() {
+  document.getElementById('ref').classList.remove('open');
+}
+
+function selPill(el, container, multi) {
+  if (!multi) {
+    container.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
+    el.classList.add('on');
+  } else {
+    el.classList.toggle('on');
+  }
+}
+
+function selMood(btn, colorVar) {
+  document.querySelectorAll('.mood-btn').forEach(b => {
+    b.classList.remove('on');
+    b.querySelector('.mood-circ').style.background = 'var(--bg-alt)';
+  });
+  btn.classList.add('on');
+  btn.querySelector('.mood-circ').style.background = 'var(--' + colorVar + ')';
+}
+
+// ── SCALE ──────────────────────────────────────────────────────────────────
+function updateScale() {
+  const s = Math.min(1, (window.innerWidth - 20) / 390, (window.innerHeight - 20) / 844);
+  const stage = document.getElementById('stage');
+  stage.style.transform = 'scale(' + s + ')';
+  stage.style.marginBottom = s < 1 ? ((1 - s) * -844) + 'px' : '0';
+}
+window.addEventListener('resize', updateScale);
+updateScale();
+</script>
+</body>
+</html>
