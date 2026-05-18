@@ -175,4 +175,10 @@ export interface Activity {
   adapt: ActivityAdapt;
   worksWellWith: string[];
   example: ActivityExample;
+  /**
+   * Per-activity Lucide icon name (e.g. "Wrench"). Resolved at render via
+   * components/activity/ActivityIcon.tsx, which falls back to the skill's
+   * iconName if the activity's name doesn't resolve.
+   */
+  iconName: string;
 }

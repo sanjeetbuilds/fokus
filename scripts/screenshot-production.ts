@@ -121,6 +121,42 @@ async function main() {
     await page.goto(`${BASE}/intro`, { waitUntil: "networkidle0" });
     await seed(page);
 
+    // ---------- splash (cold open) ----------
+    // Open the page once with sessionStorage cleared so the splash fires.
+    await page.goto(`${BASE}/today`, { waitUntil: "domcontentloaded" });
+    await page.evaluate(() => {
+      try {
+        window.sessionStorage.removeItem("fokus_splash_shown");
+      } catch {
+        /* ignore */
+      }
+    });
+    // Re-navigate so the SplashGate effect runs from scratch.
+    await page.goto(`${BASE}/today`, { waitUntil: "domcontentloaded" });
+    await new Promise((r) => setTimeout(r, 800));
+    await page.screenshot({
+      path: `${OUT}/v7-splash.png`,
+      type: "png",
+    });
+    // Wait past the 2500ms hold + 250ms fade so subsequent captures
+    // never include the splash overlay.
+    await new Promise((r) => setTimeout(r, 3000));
+
+    // ---------- intro screen 2 ----------
+    await page.goto(`${BASE}/intro`, { waitUntil: "networkidle0" });
+    await page.waitForSelector("[aria-roledescription='slide']");
+    await page.evaluate(() => {
+      const btn = document.querySelector<HTMLButtonElement>(
+        "[aria-label^='Go to slide 2']",
+      );
+      btn?.click();
+    });
+    await new Promise((r) => setTimeout(r, 500));
+    await page.screenshot({
+      path: `${OUT}/v7-intro-screen-2.png`,
+      type: "png",
+    });
+
     // Wipe any sessions for today so /today shows the picker.
     await page.goto(`${BASE}/today`, { waitUntil: "networkidle0" });
     await page.evaluate(async () => {
@@ -150,12 +186,15 @@ async function main() {
       type: "png",
     });
 
-    // ---------- /library ----------
+    // ---------- /library (scroll a bit so several activity rows visible) ----------
     await page.goto(`${BASE}/library`, { waitUntil: "networkidle0" });
     await page.waitForSelector("h1");
-    await new Promise((r) => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 500));
+    // Pick "All" so we get a mix of skills (which means a mix of activity icons)
+    await page.evaluate(() => window.scrollTo(0, 320));
+    await new Promise((r) => setTimeout(r, 300));
     await page.screenshot({
-      path: `${OUT}/v6-library.png`,
+      path: `${OUT}/v7-library.png`,
       type: "png",
     });
 

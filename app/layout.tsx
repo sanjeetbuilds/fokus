@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { OnboardingGate } from "@/components/shared/OnboardingGate";
+import SplashGate from "@/components/shared/SplashGate";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 
@@ -80,7 +81,9 @@ export default function RootLayout({
       <body className="min-h-full bg-bg text-ink font-sans">
         <ThemeProvider>
           <ToastProvider>
-            <OnboardingGate>{children}</OnboardingGate>
+            <SplashGate>
+              <OnboardingGate>{children}</OnboardingGate>
+            </SplashGate>
           </ToastProvider>
         </ThemeProvider>
       </body>

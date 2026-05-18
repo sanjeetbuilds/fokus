@@ -1,18 +1,6 @@
 "use client";
 
-import {
-  Anchor,
-  BookOpen,
-  Brain,
-  ChevronDown,
-  ChevronLeft,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronDown, ChevronLeft } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
@@ -23,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import Wordmark from "@/components/shared/Wordmark";
 import Button from "@/components/ui/Button";
 import { getActivityById } from "@/lib/content/activities";
@@ -41,17 +30,6 @@ const DIFFICULTY_LABEL: Record<ActivityDifficulty, string> = {
   1: "Easy",
   2: "Medium",
   3: "Stretch",
-};
-
-const ICONS: Record<string, LucideIcon> = {
-  Anchor,
-  BookOpen,
-  Brain,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
 };
 
 export default function ActivityDetailPage() {
@@ -238,12 +216,10 @@ function ActivityDetailBody() {
 
 function ActivityHeader({ activity }: { activity: Activity }) {
   const skill = SKILLS[activity.skill];
-  const Icon = ICONS[skill.iconName] ?? Sparkles;
 
   return (
     <header>
-      {/* Big colored icon square hero — picks up the skill colour rather
-          than the global accent so the page reads as that skill. */}
+      {/* Big skill-coloured icon hero showing the activity's own glyph. */}
       <div
         className="flex h-20 w-20 items-center justify-center rounded-[20px]"
         style={{
@@ -251,7 +227,12 @@ function ActivityHeader({ activity }: { activity: Activity }) {
           color: "#FFFFFF",
         }}
       >
-        <Icon size={36} strokeWidth={1.75} aria-hidden />
+        <ActivityIcon
+          iconName={activity.iconName}
+          skill={activity.skill}
+          size={36}
+          strokeWidth={1.75}
+        />
       </div>
 
       <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.12em] text-ink-secondary">

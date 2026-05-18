@@ -1,35 +1,10 @@
 "use client";
 
-import {
-  Anchor,
-  ArrowRight,
-  BookOpen,
-  Brain,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-  type LucideIcon,
-} from "lucide-react";
-import type { ComponentType, SVGProps } from "react";
+import { ArrowRight } from "lucide-react";
 
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import { SKILLS } from "@/lib/content/skills";
 import type { Activity, ActivityDifficulty } from "@/types";
-
-const ICONS: Record<
-  string,
-  ComponentType<SVGProps<SVGSVGElement> & { size?: number; strokeWidth?: number }>
-> = {
-  Anchor,
-  BookOpen,
-  Brain,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-};
 
 const DIFFICULTY_LABEL: Record<ActivityDifficulty, string> = {
   1: "Easy",
@@ -62,8 +37,6 @@ export default function TodayActivityCard({
   truncatedHowTo,
 }: TodayActivityCardProps) {
   const skill = SKILLS[activity.skill];
-  const Icon: LucideIcon | undefined =
-    (ICONS[skill.iconName] as LucideIcon | undefined) ?? undefined;
 
   return (
     <article className="rounded-[18px] bg-bg-elevated p-5 shadow-md">
@@ -101,19 +74,19 @@ export default function TodayActivityCard({
         {activity.description}
       </p>
 
-      {/* Hero block: a large skill-tinted icon panel (in lieu of photo) */}
+      {/* Hero block: a large skill-tinted panel showing the activity's
+          specific icon. */}
       <div
         className="mt-4 flex h-[140px] items-center justify-center rounded-[14px]"
         style={{ backgroundColor: `${skill.color}14` }}
       >
-        {Icon ? (
-          <Icon
-            size={56}
-            strokeWidth={1.5}
-            style={{ color: skill.color }}
-            aria-hidden
-          />
-        ) : null}
+        <ActivityIcon
+          iconName={activity.iconName}
+          skill={activity.skill}
+          size={56}
+          strokeWidth={1.5}
+          style={{ color: skill.color }}
+        />
       </div>
 
       {/* Short howTo */}

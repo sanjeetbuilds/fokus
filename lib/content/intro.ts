@@ -1,31 +1,27 @@
 export interface IntroScreen {
-  id: number; // 1..5
+  id: number; // 1..3
+  title: string;
   body: string;
 }
 
 /**
- * The five intro screens shown before signup. Copy is verbatim from
- * SPEC §1 "The parent's introduction".
+ * The three intro screens shown before signup. Copy is intentionally
+ * tight: title in Fraunces, body in Inter, no auxiliary callouts.
  */
 export const INTRO_SCREENS: IntroScreen[] = [
   {
     id: 1,
-    body: "School measures what's easy to measure. Marks. Behavior. Speed.",
+    title: "School measures what's easy to measure.",
+    body: "Marks. Behavior. Speed. The things teachers can grade by Friday.",
   },
   {
     id: 2,
-    body: "But the people who do well in life, not just careers, life, usually share a different list of skills. How to think. How to recover. How to read other people. How to start something hard. How to lose. How to keep going.",
+    title: "How to think. How to recover. How to wonder.",
+    body: "These don't show up on report cards. They show up in who your child becomes.",
   },
   {
     id: 3,
-    body: "These aren't taught anywhere. They're built at home, in small moments, between ages 5 and 15. Most parents miss them. Not because they don't care, but because nobody told them what the moments are.",
-  },
-  {
-    id: 4,
-    body: "Fokus gives you one thing to focus on each day. Ten minutes. Designed for who your child actually is. You'll know what you're building, what to watch for, and what to leave alone.",
-  },
-  {
-    id: 5,
-    body: "This is a tool for you, not for them. They'll never see this app. They'll just feel a parent who's quietly paying attention to the right things.",
+    title: "One small moment a day. That's the whole app.",
+    body: "Fokus picks today's moment for you, based on who your child actually is. You do it together, log how it went, and that's it.",
   },
 ];

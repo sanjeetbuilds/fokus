@@ -1,34 +1,8 @@
 "use client";
 
-import {
-  Anchor,
-  BookOpen,
-  Brain,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-  type LucideIcon,
-} from "lucide-react";
-import type { ComponentType, SVGProps } from "react";
-
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import { SKILLS } from "@/lib/content/skills";
 import type { Activity, ActivityDifficulty } from "@/types";
-
-const ICONS: Record<
-  string,
-  ComponentType<SVGProps<SVGSVGElement> & { size?: number; strokeWidth?: number }>
-> = {
-  Anchor,
-  BookOpen,
-  Brain,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-};
 
 const DIFFICULTY_LABEL: Record<ActivityDifficulty, string> = {
   1: "Easy",
@@ -42,8 +16,6 @@ export interface ActivityCardProps {
 
 export default function ActivityCard({ activity }: ActivityCardProps) {
   const skill = SKILLS[activity.skill];
-  const Icon: LucideIcon | undefined =
-    (ICONS[skill.iconName] as LucideIcon | undefined) ?? undefined;
 
   return (
     <div
@@ -56,7 +28,12 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
         style={{ backgroundColor: skill.color, color: "#FFFFFF" }}
         aria-hidden
       >
-        {Icon ? <Icon size={22} strokeWidth={1.75} /> : null}
+        <ActivityIcon
+          iconName={activity.iconName}
+          skill={activity.skill}
+          size={22}
+          strokeWidth={1.75}
+        />
       </div>
 
       <div className="min-w-0 flex-1">

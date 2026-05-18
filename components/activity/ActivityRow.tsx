@@ -1,35 +1,10 @@
 "use client";
 
-import {
-  Anchor,
-  BookOpen,
-  Brain,
-  ChevronRight,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-  type LucideIcon,
-} from "lucide-react";
-import type { ComponentType, SVGProps } from "react";
+import { ChevronRight } from "lucide-react";
 
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import { SKILLS } from "@/lib/content/skills";
 import type { Activity } from "@/types";
-
-const ICONS: Record<
-  string,
-  ComponentType<SVGProps<SVGSVGElement> & { size?: number; strokeWidth?: number }>
-> = {
-  Anchor,
-  BookOpen,
-  Brain,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-};
 
 export interface ActivityRowProps {
   activity: Activity;
@@ -40,11 +15,12 @@ export interface ActivityRowProps {
  *   [colored icon] Title
  *                  Subtitle (1 line, ellipsised)
  *                  [skill tag] · duration                  [▶ arrow]
+ *
+ * The icon square uses the activity's own iconName (per-activity context)
+ * not the skill's icon.
  */
 export default function ActivityRow({ activity }: ActivityRowProps) {
   const skill = SKILLS[activity.skill];
-  const Icon: LucideIcon | undefined =
-    (ICONS[skill.iconName] as LucideIcon | undefined) ?? undefined;
 
   return (
     <div className="flex items-center gap-3.5 rounded-[18px] bg-bg-elevated p-3.5 shadow-md transition-transform duration-fast ease-out active:scale-[0.99]">
@@ -53,7 +29,12 @@ export default function ActivityRow({ activity }: ActivityRowProps) {
         style={{ backgroundColor: skill.color, color: "#FFFFFF" }}
         aria-hidden
       >
-        {Icon ? <Icon size={22} strokeWidth={1.75} /> : null}
+        <ActivityIcon
+          iconName={activity.iconName}
+          skill={activity.skill}
+          size={22}
+          strokeWidth={1.75}
+        />
       </div>
 
       <div className="min-w-0 flex-1">

@@ -145,7 +145,7 @@ export function IntroCarousel({
               <span
                 aria-hidden
                 className={`block h-2 rounded-full transition-all duration-200 ease-out ${
-                  i === index ? "w-7 bg-accent" : "w-2 bg-line"
+                  i === index ? "w-7 bg-accent" : "w-2 bg-ink-quaternary"
                 }`}
               />
             </button>
@@ -153,31 +153,44 @@ export function IntroCarousel({
         ))}
       </ul>
 
-      {/* Bottom action row: Skip + circular arrow */}
-      <div className="flex items-center justify-between px-5 pb-[calc(env(safe-area-inset-bottom)+20px)] pt-2">
-        {!isLast ? (
+      {/* Bottom action row. On non-last slides: Skip on the left, a
+          circular arrow on the right. On the last slide: a full-width
+          primary CTA. */}
+      <div className="px-5 pb-[calc(env(safe-area-inset-bottom)+20px)] pt-2">
+        {isLast ? (
           <button
             type="button"
             onClick={onComplete}
-            className="rounded-md px-2 py-2 text-[15px] font-medium text-ink-tertiary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-accent text-[16px] font-semibold text-white transition-transform duration-fast ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+            style={{
+              boxShadow: "0 6px 16px -4px rgba(42, 92, 65, 0.32)",
+            }}
           >
-            Skip
+            {finishLabel}
+            <ArrowRight size={18} strokeWidth={2.25} aria-hidden />
           </button>
         ) : (
-          <span aria-hidden className="px-2 py-2" />
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={onComplete}
+              className="rounded-md px-2 py-2 text-[15px] font-medium text-ink-tertiary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              Skip
+            </button>
+            <button
+              type="button"
+              onClick={advance}
+              aria-label="Next"
+              className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white transition-transform duration-fast ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              style={{
+                boxShadow: "0 6px 16px -4px rgba(42, 92, 65, 0.32)",
+              }}
+            >
+              <ArrowRight size={22} strokeWidth={2.25} aria-hidden />
+            </button>
+          </div>
         )}
-
-        <button
-          type="button"
-          onClick={advance}
-          aria-label={isLast ? finishLabel : "Next"}
-          className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white transition-transform duration-fast ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-          style={{
-            boxShadow: "0 6px 16px -4px rgba(58, 79, 204, 0.36)",
-          }}
-        >
-          <ArrowRight size={22} strokeWidth={2.25} aria-hidden />
-        </button>
       </div>
     </Wrapper>
   );

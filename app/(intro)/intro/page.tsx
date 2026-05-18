@@ -4,17 +4,17 @@ import { useRouter } from "next/navigation";
 import { useCallback, type ReactNode, type SVGProps } from "react";
 
 import { IntroCarousel } from "@/components/intro/IntroCarousel";
+import { INTRO_SCREENS, type IntroScreen } from "@/lib/content/intro";
 
 /**
- * Production intro carousel (round-2 identity). Each slide has:
+ * Production intro carousel. Three screens, each with:
  *   - one abstract line-art illustration on a soft accent disc
- *   - a bold headline (the most striking line of the copy)
- *   - one or two supporting paragraphs underneath
+ *   - a Fraunces title (centered, weight 500, ~32px)
+ *   - a Inter body line (centered, ink-secondary)
  *
- * Copy is hand-shaped per slide here rather than read from
- * /lib/content/intro.ts because the new design splits the original
- * single-paragraph entries into headline + body and the data shape
- * doesn't have a place for that yet.
+ * Screens 1 and 2 use the standard "Skip + arrow" bottom row provided
+ * by IntroCarousel. Screen 3 collapses the row into a single
+ * full-width "Set up Fokus →" CTA (handled inside IntroCarousel).
  */
 export default function IntroPage() {
   const router = useRouter();
@@ -22,46 +22,54 @@ export default function IntroPage() {
     router.push("/onboarding/parent");
   }, [router]);
 
-  const slides: ReactNode[] = [
-    <Slide1 key="s1" />,
-    <Slide2 key="s2" />,
-    <Slide3 key="s3" />,
-    <Slide4 key="s4" />,
-    <Slide5 key="s5" />,
+  const illustrations: ReactNode[] = [
+    <Ruler key="i1" />,
+    <WindingPath key="i2" />,
+    <DoorwayRays key="i3" />,
   ];
 
-  return <IntroCarousel slides={slides} onComplete={finish} />;
+  const slides = INTRO_SCREENS.map((screen, i) => (
+    <Slide
+      key={screen.id}
+      screen={screen}
+      illustration={illustrations[i]}
+    />
+  ));
+
+  return (
+    <IntroCarousel
+      slides={slides}
+      onComplete={finish}
+      finishLabel="Set up Fokus"
+    />
+  );
 }
 
-// ---------- slide layout primitive ----------
+// ---------- slide layout ----------
 
-function SlideShell({
+function Slide({
+  screen,
   illustration,
-  headline,
-  body,
 }: {
+  screen: IntroScreen;
   illustration: ReactNode;
-  headline: string;
-  body: ReactNode;
 }) {
   return (
-    <article className="flex flex-col items-stretch gap-10">
-      <div className="flex justify-center pt-4">
-        <IllustrationDisc>{illustration}</IllustrationDisc>
-      </div>
-      <div className="space-y-5">
+    <article className="flex flex-col items-center gap-10 pt-2 text-center">
+      <IllustrationDisc>{illustration}</IllustrationDisc>
+      <div className="space-y-4">
         <h2
-          className="text-[26px] font-bold tracking-[-0.015em] text-ink"
-          style={{ lineHeight: 1.2 }}
+          className="font-display text-[32px] font-medium tracking-[-0.01em] text-ink"
+          style={{ lineHeight: 1.15 }}
         >
-          {headline}
+          {screen.title}
         </h2>
-        <div
-          className="text-[18px] text-ink-secondary"
-          style={{ lineHeight: 1.55 }}
+        <p
+          className="text-[17px] text-ink-secondary"
+          style={{ lineHeight: 1.5 }}
         >
-          {body}
-        </div>
+          {screen.body}
+        </p>
       </div>
     </article>
   );
@@ -70,7 +78,7 @@ function SlideShell({
 function IllustrationDisc({ children }: { children: ReactNode }) {
   return (
     <div
-      className="flex h-[176px] w-[176px] items-center justify-center rounded-full"
+      className="flex h-[180px] w-[180px] items-center justify-center rounded-full"
       style={{ backgroundColor: "var(--accent-bg)" }}
     >
       <div className="text-ink">{children}</div>
@@ -78,94 +86,7 @@ function IllustrationDisc({ children }: { children: ReactNode }) {
   );
 }
 
-// ---------- slides ----------
-
-function Slide1() {
-  return (
-    <SlideShell
-      illustration={<Ruler />}
-      headline="School measures what's easy to measure."
-      body={<p>Marks. Behavior. Speed.</p>}
-    />
-  );
-}
-
-function Slide2() {
-  return (
-    <SlideShell
-      illustration={<WindingPath />}
-      headline="The people who do well in life share a different list of skills."
-      body={
-        <p>
-          How to think. How to recover. How to read other people. How to start
-          something hard. How to lose. How to keep going.
-        </p>
-      }
-    />
-  );
-}
-
-function Slide3() {
-  return (
-    <SlideShell
-      illustration={<DoorwayLight />}
-      headline="These aren't taught anywhere."
-      body={
-        <>
-          <p>
-            They&apos;re built at home, in small moments, between ages 5 and
-            15.
-          </p>
-          <p className="mt-4">
-            Most parents miss them. Not because they don&apos;t care, but
-            because nobody told them what the moments are.
-          </p>
-        </>
-      }
-    />
-  );
-}
-
-function Slide4() {
-  return (
-    <SlideShell
-      illustration={<DotInRing />}
-      headline="One thing each day. Ten minutes."
-      body={
-        <>
-          <p>Designed for who your child actually is.</p>
-          <p className="mt-4">
-            You&apos;ll know what to do, what to watch for, and what to leave
-            alone.
-          </p>
-        </>
-      }
-    />
-  );
-}
-
-function Slide5() {
-  return (
-    <SlideShell
-      illustration={<PalmCradle />}
-      headline="This is for you, not for them."
-      body={
-        <>
-          <p>They&apos;ll never see this app.</p>
-          <p className="mt-4">
-            They&apos;ll just feel a parent who&apos;s quietly paying attention
-            to the right things.
-          </p>
-        </>
-      }
-    />
-  );
-}
-
-// ---------- inline SVG illustrations ----------
-//
-// 120×120 viewBox, single ink stroke, currentColor so they re-skin with
-// the surrounding text colour. Same family used in /dev/identity Section 6.
+// ---------- SVG illustrations ----------
 
 const SVG_BASE: SVGProps<SVGSVGElement> = {
   width: 120,
@@ -179,92 +100,108 @@ const SVG_BASE: SVGProps<SVGSVGElement> = {
 };
 
 function Ruler() {
-  // Hint at measurement: a ruler with tick marks under a small data pulse.
+  // Slide 1 — a horizontal ruler with three tick marks above the bar,
+  // each labelled in tiny text: marks / behavior / speed.
   return (
-    <svg {...SVG_BASE} role="img" aria-label="A ruler measuring small marks">
-      <rect x={18} y={56} width={84} height={26} rx={3} />
-      {Array.from({ length: 8 }, (_, i) => {
-        const x = 25 + i * 10.5;
-        const long = i % 2 === 0;
-        return (
-          <line
-            key={i}
-            x1={x}
-            x2={x}
-            y1={56}
-            y2={56 + (long ? 11 : 7)}
-          />
-        );
-      })}
-      <polyline points="26,40 40,32 56,36 70,28 86,32 100,28" />
+    <svg
+      {...SVG_BASE}
+      role="img"
+      aria-label="A ruler with marks, behavior, and speed labels"
+    >
+      <rect x={14} y={62} width={92} height={18} rx={3} />
+      <line x1={32} y1={52} x2={32} y2={62} />
+      <line x1={60} y1={52} x2={60} y2={62} />
+      <line x1={88} y1={52} x2={88} y2={62} />
+      <text
+        x={32}
+        y={44}
+        textAnchor="middle"
+        fontSize="8"
+        fontFamily="inherit"
+        fill="currentColor"
+        stroke="none"
+      >
+        marks
+      </text>
+      <text
+        x={60}
+        y={44}
+        textAnchor="middle"
+        fontSize="8"
+        fontFamily="inherit"
+        fill="currentColor"
+        stroke="none"
+      >
+        behavior
+      </text>
+      <text
+        x={88}
+        y={44}
+        textAnchor="middle"
+        fontSize="8"
+        fontFamily="inherit"
+        fill="currentColor"
+        stroke="none"
+      >
+        speed
+      </text>
     </svg>
   );
 }
 
 function WindingPath() {
-  // A trail meandering left to right, ending in a filled dot. Suggests the
-  // journey through life skills without depicting a person.
+  // Slide 2 — a curving path from lower-left to upper-right with a
+  // small filled dot at the destination. Reads as "a journey to who
+  // your child becomes."
   return (
     <svg
       {...SVG_BASE}
       role="img"
       aria-label="A path winding to a destination"
     >
-      <path d="M 14 86 Q 30 56, 48 70 T 80 50 Q 92 44, 100 38" />
-      <circle cx={100} cy={38} r={3.5} fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function DoorwayLight() {
-  // A doorway shape with a soft glow inside: home, small light. The glow is
-  // a single filled accent circle behind the doorway rectangle.
-  return (
-    <svg
-      {...SVG_BASE}
-      role="img"
-      aria-label="A doorway with a soft glow inside"
-    >
+      <path d="M 14 88 Q 32 60, 50 72 T 82 50 Q 92 44, 102 40" />
       <circle
-        cx={60}
-        cy={68}
-        r={16}
-        fill="var(--accent)"
-        fillOpacity={0.22}
+        cx={102}
+        cy={40}
+        r={4}
+        fill="currentColor"
         stroke="none"
       />
-      <path d="M 40 96 V 50 Q 40 36, 60 36 Q 80 36, 80 50 V 96" />
-      <line x1={32} y1={96} x2={88} y2={96} />
     </svg>
   );
 }
 
-function DotInRing() {
-  // A small filled circle held within a thin-outlined larger circle.
-  // One moment held within time.
+function DoorwayRays() {
+  // Slide 3 — a small doorway with a few light rays radiating outward.
+  // The rays use a softer ink-tertiary so the door reads as primary.
+  const rays = [
+    { x1: 60, y1: 28, x2: 60, y2: 12 },
+    { x1: 76, y1: 36, x2: 92, y2: 22 },
+    { x1: 44, y1: 36, x2: 28, y2: 22 },
+    { x1: 84, y1: 50, x2: 100, y2: 50 },
+    { x1: 36, y1: 50, x2: 20, y2: 50 },
+  ];
   return (
     <svg
       {...SVG_BASE}
       role="img"
-      aria-label="A small moment held within a larger circle"
+      aria-label="A small open doorway with light rays"
     >
-      <circle cx={60} cy={60} r={32} />
-      <circle cx={60} cy={60} r={4.5} fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function PalmCradle() {
-  // An open cradling palm shape (no fingers) holding a single dot above.
-  // No face, no body, just the gesture of holding.
-  return (
-    <svg
-      {...SVG_BASE}
-      role="img"
-      aria-label="An open palm holding a small dot"
-    >
-      <path d="M 18 70 Q 60 110, 102 70" />
-      <circle cx={60} cy={50} r={4} fill="currentColor" stroke="none" />
+      {/* Rays first (under the door outline) */}
+      {rays.map((r, i) => (
+        <line
+          key={i}
+          x1={r.x1}
+          y1={r.y1}
+          x2={r.x2}
+          y2={r.y2}
+          stroke="var(--ink-tertiary)"
+          strokeWidth={1.25}
+        />
+      ))}
+      {/* Doorway: arched top, two vertical jambs, ground line */}
+      <path d="M 44 100 V 60 Q 44 46, 60 46 Q 76 46, 76 60 V 100" />
+      <line x1={38} y1={100} x2={82} y2={100} />
     </svg>
   );
 }

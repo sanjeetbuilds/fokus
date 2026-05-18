@@ -1,36 +1,10 @@
 "use client";
 
-import {
-  Anchor,
-  BookOpen,
-  Brain,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-  type LucideIcon,
-} from "lucide-react";
-import type { ComponentType, SVGProps } from "react";
-
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import { getActivityById } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
 import { formatDate } from "@/lib/utils/dates";
 import type { Session, SessionResponse } from "@/types";
-
-const ICONS: Record<
-  string,
-  ComponentType<SVGProps<SVGSVGElement> & { size?: number; strokeWidth?: number }>
-> = {
-  Anchor,
-  BookOpen,
-  Brain,
-  Compass,
-  Eye,
-  Heart,
-  Sparkles,
-  Wind,
-};
 
 const RESPONSE_LABEL: Record<SessionResponse, string> = {
   loved: "loved",
@@ -48,9 +22,6 @@ export interface SessionCardProps {
 export default function SessionCard({ session }: SessionCardProps) {
   const activity = getActivityById(session.activityId);
   const skill = activity ? SKILLS[activity.skill] : null;
-  const Icon: LucideIcon | undefined = skill
-    ? ((ICONS[skill.iconName] as LucideIcon | undefined) ?? undefined)
-    : undefined;
 
   return (
     <div className="flex items-start gap-4 rounded-[18px] bg-bg-elevated p-4 shadow-md">
@@ -62,7 +33,14 @@ export default function SessionCard({ session }: SessionCardProps) {
         }}
         aria-hidden
       >
-        {Icon ? <Icon size={22} strokeWidth={1.75} /> : null}
+        {activity ? (
+          <ActivityIcon
+            iconName={activity.iconName}
+            skill={activity.skill}
+            size={22}
+            strokeWidth={1.75}
+          />
+        ) : null}
       </div>
 
       <div className="min-w-0 flex-1">

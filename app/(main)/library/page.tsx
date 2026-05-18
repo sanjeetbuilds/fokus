@@ -4,6 +4,7 @@ import { ArrowRight, Bell } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import ActivityRow from "@/components/activity/ActivityRow";
 import CategoryPills, {
   type CategoryValue,
@@ -124,11 +125,17 @@ function FeaturedPick({ activityId }: { activityId: string }) {
             </span>
           </div>
           <div
-            className="flex h-[88px] w-[88px] shrink-0 items-center justify-center rounded-[14px] text-white"
+            className="flex h-[88px] w-[88px] shrink-0 flex-col items-center justify-center gap-1 rounded-[14px] text-white"
             style={{ backgroundColor: skill.color }}
             aria-hidden
           >
-            <span className="text-[12px] font-semibold uppercase tracking-[0.1em]">
+            <ActivityIcon
+              iconName={activity.iconName}
+              skill={activity.skill}
+              size={28}
+              strokeWidth={1.6}
+            />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] opacity-80">
               {activity.duration}m
             </span>
           </div>
