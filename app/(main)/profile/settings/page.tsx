@@ -11,6 +11,7 @@ import {
   type ChangeEvent,
 } from "react";
 
+import ChildProfileForm from "@/components/onboarding/ChildProfileForm";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
@@ -19,12 +20,13 @@ import { useToast } from "@/components/ui/Toast";
 import {
   exportAllData,
   exportFilename,
+  getChild,
   getCurrentParent,
   updateParent,
   wipeAllData,
 } from "@/lib/db";
 import { useAppStore } from "@/lib/store/useAppStore";
-import type { Parent } from "@/types";
+import type { Child, Parent } from "@/types";
 
 const THEME_CHOICES: { value: string; label: string }[] = [
   { value: "system", label: "System" },
@@ -41,8 +43,10 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const resetStore = useAppStore((s) => s.reset);
+  const activeChildId = useAppStore((s) => s.activeChildId);
 
   const [parent, setParent] = useState<Parent | null>(null);
+  const [child, setChild] = useState<Child | null>(null);
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState<string>(DEFAULT_REMINDER);
   const [deleteSheet, setDeleteSheet] = useState<DeleteStage | null>(null);
@@ -68,11 +72,19 @@ export default function SettingsPage() {
       } catch (err) {
         console.error("[/settings] load parent:", err);
       }
+      if (activeChildId) {
+        try {
+          const c = await getChild(activeChildId);
+          if (!cancelled) setChild(c ?? null);
+        } catch (err) {
+          console.error("[/settings] load child:", err);
+        }
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [activeChildId]);
 
   // Persist reminder choice. We DON'T schedule a real notification yet;
   // that gets wired up via a service worker / Notification API in the PWA
@@ -174,8 +186,32 @@ export default function SettingsPage() {
       </div>
 
       <header>
-        <h1 className="font-display text-display leading-[1.1] text-ink">Settings</h1>
+        <h1
+          className="text-[50px] font-extrabold text-ink"
+          style={{ letterSpacing: "-0.035em", lineHeight: 1.05 }}
+        >
+          Settings
+        </h1>
       </header>
+
+      {child ? (
+        <section className="mt-10">
+          <p
+            className="mb-2 text-[12px] font-bold uppercase"
+            style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
+          >
+            Tell us more about {child.name}
+          </p>
+          <p
+            className="mb-4 text-[13px] text-ink-tertiary"
+            style={{ lineHeight: 1.55 }}
+          >
+            The more Fokus knows, the better the daily picks. Edits save as you
+            tap; nothing leaves the device.
+          </p>
+          <ChildProfileForm child={child} />
+        </section>
+      ) : null}
 
       {/* Theme */}
       <section className="mt-10">

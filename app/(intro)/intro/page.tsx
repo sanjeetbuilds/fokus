@@ -97,7 +97,10 @@ export default function IntroPage() {
   ]);
 
   return (
-    <main className="relative flex min-h-[100svh] flex-col bg-ink">
+    <main
+      className="relative flex min-h-[100svh] flex-col"
+      style={{ background: step < 4 ? "var(--ink)" : "var(--bg)" }}
+    >
       <StatusBar dark={step < 4} />
 
       <div className="relative flex-1 overflow-hidden">
