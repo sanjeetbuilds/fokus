@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 
+import ChildPhotoInput from "@/components/onboarding/ChildPhotoInput";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
 import Input from "@/components/ui/Input";
@@ -24,7 +25,6 @@ import {
   INTEREST_OPTIONS,
   ONBOARDING_RECOMMENDED,
   PRIMARY_LANGUAGE_OPTIONS,
-  STRENGTH_OPTIONS,
   STRUGGLE_OPTIONS,
   SUPPORTED_AGE_RANGE,
 } from "@/lib/content/onboarding";
@@ -33,18 +33,18 @@ import { useAppStore } from "@/lib/store/useAppStore";
 import { ageFromDob } from "@/lib/utils/dates";
 import type { EnglishConfidence } from "@/types";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 6;
 
 interface Draft {
   name: string;
   dateOfBirth: string; // YYYY-MM-DD
   grade: string | null;
+  photoUrl: string | null;
   goesDeepOn: string[];
   fleesFrom: string[];
   englishConfidence: EnglishConfidence | null;
   primaryLanguage: string | null;
   interests: string[];
-  strengths: string[];
   struggles: string[];
 }
 
@@ -52,12 +52,12 @@ const EMPTY_DRAFT: Draft = {
   name: "",
   dateOfBirth: "",
   grade: null,
+  photoUrl: null,
   goesDeepOn: [],
   fleesFrom: [],
   englishConfidence: null,
   primaryLanguage: null,
   interests: [],
-  strengths: [],
   struggles: [],
 };
 
@@ -106,7 +106,7 @@ function ChildOnboardingBody() {
 
   const toggleArray = useCallback(
     (
-      key: "goesDeepOn" | "fleesFrom" | "interests" | "strengths" | "struggles",
+      key: "goesDeepOn" | "fleesFrom" | "interests" | "struggles",
       value: string,
     ) =>
       setData((d) => {
@@ -159,6 +159,7 @@ function ChildOnboardingBody() {
         age: ageYears,
         dateOfBirth: data.dateOfBirth,
         grade: data.grade!,
+        photoUrl: data.photoUrl,
         engagement: {
           goesDeepOn: data.goesDeepOn,
           fleesFrom: data.fleesFrom,
@@ -167,7 +168,10 @@ function ChildOnboardingBody() {
         englishConfidence: data.englishConfidence ?? "developing",
         primaryLanguage: data.primaryLanguage ?? "Other",
         interests: data.interests,
-        strengths: data.strengths,
+        // Strengths step was removed during onboarding compression. New
+        // children begin with no recorded strengths; the field remains in
+        // the type for legacy children created before the change.
+        strengths: [],
         struggles: data.struggles,
       });
       setActiveChild(child.id);
@@ -265,7 +269,7 @@ interface StepBodyProps {
   data: Draft;
   set: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
   toggleArray: (
-    key: "goesDeepOn" | "fleesFrom" | "interests" | "strengths" | "struggles",
+    key: "goesDeepOn" | "fleesFrom" | "interests" | "struggles",
     value: string,
   ) => void;
 }
@@ -273,51 +277,14 @@ interface StepBodyProps {
 function StepBody({ step, data, set, toggleArray }: StepBodyProps) {
   switch (step) {
     case 1:
-      return <Step1 data={data} set={set} />;
+      return <Step1Basics data={data} set={set} />;
     case 2:
-      return (
-        <ChipStep
-          header="What do they love doing?"
-          subtext="Activities they happily spend long stretches on."
-          options={GOES_DEEP_ON_OPTIONS}
-          selected={data.goesDeepOn}
-          onToggle={(v) => toggleArray("goesDeepOn", v)}
-          hint={recommendedHint(ONBOARDING_RECOMMENDED.goesDeepOn)}
-        />
-      );
+      return <Step2Engagement data={data} toggleArray={toggleArray} />;
     case 3:
-      return (
-        <ChipStep
-          header="What do they avoid?"
-          subtext="Honest answer. This is where we'll be gentle."
-          options={FLEES_FROM_OPTIONS}
-          selected={data.fleesFrom}
-          onToggle={(v) => toggleArray("fleesFrom", v)}
-          hint="Select all that apply, or skip if none fit."
-        />
-      );
+      return <Step3Language data={data} set={set} />;
     case 4:
-      return <Step4 data={data} set={set} />;
+      return <Step4Interests data={data} set={set} toggleArray={toggleArray} />;
     case 5:
-      return (
-        <Step5
-          data={data}
-          set={set}
-          toggleArray={toggleArray}
-        />
-      );
-    case 6:
-      return (
-        <ChipStep
-          header="What are they good at?"
-          subtext="Honest, not aspirational. What do you SEE?"
-          options={STRENGTH_OPTIONS}
-          selected={data.strengths}
-          onToggle={(v) => toggleArray("strengths", v)}
-          hint={recommendedHint(ONBOARDING_RECOMMENDED.strengths)}
-        />
-      );
-    case 7:
       return (
         <ChipStep
           header="Where do they get stuck?"
@@ -328,16 +295,16 @@ function StepBody({ step, data, set, toggleArray }: StepBodyProps) {
           hint="Select all that apply, or skip if none fit."
         />
       );
-    case 8:
-      return <Step8 data={data} />;
+    case 6:
+      return <Step6Closing data={data} />;
     default:
       return null;
   }
 }
 
-// ---------- step 1: name + DOB + grade ----------
+// ---------- step 1: name + DOB + grade + photo ----------
 
-function Step1({
+function Step1Basics({
   data,
   set,
 }: {
@@ -415,6 +382,11 @@ function Step1({
           ))}
         </div>
       </FieldGroup>
+
+      <ChildPhotoInput
+        value={data.photoUrl}
+        onChange={(url) => set("photoUrl", url)}
+      />
     </div>
   );
 }
@@ -426,9 +398,52 @@ function formatAge({ years, months }: { years: number; months: number }): string
   return `${y} and ${m}`;
 }
 
-// ---------- step 4: language ----------
+// ---------- step 2: merged engagement (deep + flees) ----------
 
-function Step4({
+function Step2Engagement({
+  data,
+  toggleArray,
+}: {
+  data: Draft;
+  toggleArray: (
+    key: "goesDeepOn" | "fleesFrom" | "interests" | "struggles",
+    value: string,
+  ) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-8">
+      <header>
+        <h1 className="font-display text-title-1 leading-[1.15] text-ink">
+          What they love. What they avoid.
+        </h1>
+        <p className="mt-2 text-body text-ink-secondary">
+          Two short lists — the things they happily lose time in, and the
+          things they try to escape.
+        </p>
+      </header>
+
+      <ChipBlock
+        eyebrow="Goes deep on"
+        options={GOES_DEEP_ON_OPTIONS}
+        selected={data.goesDeepOn}
+        onToggle={(v) => toggleArray("goesDeepOn", v)}
+        hint={recommendedHint(ONBOARDING_RECOMMENDED.goesDeepOn)}
+      />
+
+      <ChipBlock
+        eyebrow="Tries to get away from"
+        options={FLEES_FROM_OPTIONS}
+        selected={data.fleesFrom}
+        onToggle={(v) => toggleArray("fleesFrom", v)}
+        hint="Select all that apply, or skip if none fit."
+      />
+    </div>
+  );
+}
+
+// ---------- step 3: language ----------
+
+function Step3Language({
   data,
   set,
 }: {
@@ -503,9 +518,9 @@ function Step4({
   );
 }
 
-// ---------- step 5: interests with custom entries ----------
+// ---------- step 4: interests with custom entries ----------
 
-function Step5({
+function Step4Interests({
   data,
   set,
   toggleArray,
@@ -513,7 +528,7 @@ function Step5({
   data: Draft;
   set: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
   toggleArray: (
-    key: "goesDeepOn" | "fleesFrom" | "interests" | "strengths" | "struggles",
+    key: "goesDeepOn" | "fleesFrom" | "interests" | "struggles",
     value: string,
   ) => void;
 }) {
@@ -596,9 +611,9 @@ function Step5({
   );
 }
 
-// ---------- step 8: closing ----------
+// ---------- step 6: closing ----------
 
-function Step8({ data }: { data: Draft }) {
+function Step6Closing({ data }: { data: Draft }) {
   const name = data.name.trim() || "your child";
   return (
     <div className="flex flex-col gap-6 pt-8">
@@ -664,6 +679,43 @@ function ChipStep({
   );
 }
 
+function ChipBlock({
+  eyebrow,
+  options,
+  selected,
+  onToggle,
+  hint,
+}: {
+  eyebrow: string;
+  options: readonly string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+  hint: string;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <p
+        className="text-[11px] font-semibold uppercase text-ink-tertiary"
+        style={{ letterSpacing: "0.1em" }}
+      >
+        {eyebrow}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((opt) => (
+          <Chip
+            key={opt}
+            selected={selected.includes(opt)}
+            onClick={() => onToggle(opt)}
+          >
+            {opt}
+          </Chip>
+        ))}
+      </div>
+      <p className="text-footnote text-ink-tertiary">{hint}</p>
+    </div>
+  );
+}
+
 function FieldGroup({
   label,
   hint,
@@ -705,19 +757,17 @@ function stepValid(step: number, d: Draft): boolean {
       }
       return true;
     }
-    case 4:
-      // Keep Step 4 hard-required: the engine genuinely needs englishConfidence
+    case 3:
+      // Keep language hard-required: the engine genuinely needs englishConfidence
       // to score correctly (Rule 3). Defaulting it would silently mis-score
       // every new child. primaryLanguage is also referenced in copy.
       return d.englishConfidence != null && d.primaryLanguage != null;
     case 2:
-    case 3:
+    case 4:
     case 5:
-    case 6:
-    case 7:
       // Soft steps, always advanceable.
       return true;
-    case 8: {
+    case 6: {
       // Final commit re-checks the truly required fields.
       if (d.name.trim().length === 0) return false;
       if (d.grade == null) return false;

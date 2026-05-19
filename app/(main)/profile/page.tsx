@@ -27,13 +27,23 @@ interface ChildRow {
   sessionCount: number;
 }
 
-// Rotating swatches for the marker tags — purely visual, no hidden meaning.
-const MARKER_TONES = [
-  { bg: "var(--accent-bg)", text: "var(--accent-deep)" },
-  { bg: "var(--warm-bg)", text: "var(--warm-text)" },
-  { bg: "var(--coral-bg)", text: "var(--coral-text)" },
-  { bg: "var(--accent-pale)", text: "var(--accent-deep)" },
-];
+// Semantic tones for the "What [Name] loves" pills. Interests (things the
+// child is INTO) tint green; strengths/traits (who the child IS) tint coral.
+// Consistent within a kind — no rotating tones — so the parent gets a real
+// visual distinction between the two categories.
+const INTEREST_TONE = {
+  bg: "var(--accent-bg)",
+  text: "var(--accent-deep)",
+};
+const STRENGTH_TONE = {
+  bg: "var(--coral-bg)",
+  text: "var(--coral-text)",
+};
+
+interface Marker {
+  label: string;
+  kind: "interest" | "strength";
+}
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -163,6 +173,7 @@ export default function ProfilePage() {
                 name={featuredChild.child.name}
                 size="lg"
                 className="h-[88px] w-[88px] text-[36px]"
+                photoUrl={featuredChild.child.photoUrl}
               />
             </div>
             <p
@@ -172,31 +183,29 @@ export default function ProfilePage() {
               {featuredChild.child.name}
             </p>
             <p className="mt-1 text-[13px] text-ink-tertiary">
-              Age {featuredChild.child.age} ·{" "}
-              {featuredChild.sessionCount} moment
-              {featuredChild.sessionCount === 1 ? "" : "s"} together
+              {heroLineFor(featuredChild.child.age, featuredChild.child.grade, featuredChild.sessionCount)}
             </p>
           </div>
 
-          {/* Current Markers */}
           {markers.length > 0 ? (
             <section className="mt-7">
               <p className="mb-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-accent-mid">
-                Current Markers
+                What {featuredChild.child.name} loves
               </p>
               <div className="flex flex-wrap gap-2">
-                {markers.map((m, i) => {
-                  const tone = MARKER_TONES[i % MARKER_TONES.length]!;
+                {markers.map((m) => {
+                  const tone =
+                    m.kind === "interest" ? INTEREST_TONE : STRENGTH_TONE;
                   return (
                     <span
-                      key={m}
+                      key={`${m.kind}:${m.label}`}
                       className="inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-semibold"
                       style={{
                         backgroundColor: tone.bg,
                         color: tone.text,
                       }}
                     >
-                      {m}
+                      {m.label}
                     </span>
                   );
                 })}
@@ -234,6 +243,7 @@ export default function ProfilePage() {
                     name={child.name}
                     size="md"
                     className="h-12 w-12 text-[20px]"
+                    photoUrl={child.photoUrl}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
@@ -439,19 +449,38 @@ function WhereHeadingSection({
   );
 }
 
-function collectMarkers(child: Child): string[] {
+function collectMarkers(child: Child): Marker[] {
   // Markers are parent-supplied at onboarding: interests + strengths. They
   // are facts about the child the parent chose to share, not algorithm
-  // outputs. Surfacing them here as tag pills is the spec-safe equivalent
-  // of the design's "Current Markers" row.
+  // outputs. Tagged by kind so the renderer can apply semantic coloring:
+  // green for "what they're INTO", coral for "who they ARE".
   const seen = new Set<string>();
-  const out: string[] = [];
-  for (const t of [...child.interests, ...child.strengths]) {
-    const key = t.trim();
+  const out: Marker[] = [];
+  for (const label of child.interests) {
+    const key = label.trim();
     if (!key || seen.has(key)) continue;
     seen.add(key);
-    out.push(key);
-    if (out.length >= 6) break;
+    out.push({ label: key, kind: "interest" });
+    if (out.length >= 6) return out;
+  }
+  for (const label of child.strengths) {
+    const key = label.trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push({ label: key, kind: "strength" });
+    if (out.length >= 6) return out;
   }
   return out;
+}
+
+/**
+ * "Age 6 · 1st · 3 moments together" — emotionally appropriate variants
+ * for the profile child hero. Skip the moments count entirely when there
+ * are none yet; show "First moment together" for exactly one.
+ */
+function heroLineFor(age: number, grade: string, count: number): string {
+  const base = `Age ${age} · ${grade}`;
+  if (count === 0) return base;
+  if (count === 1) return `${base} · First moment together`;
+  return `${base} · ${count} moments together`;
 }

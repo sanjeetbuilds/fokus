@@ -6,6 +6,12 @@ type Size = "sm" | "md" | "lg";
 export interface AvatarProps extends HTMLAttributes<HTMLDivElement> {
   name: string;
   size?: Size;
+  /**
+   * Optional photo (typically a base64 data URL) shown in place of the
+   * letter avatar. When present, the colored circle and initial are
+   * replaced by the image, cropped to the same circle.
+   */
+  photoUrl?: string | null;
 }
 
 const SIZE: Record<Size, string> = {
@@ -24,9 +30,33 @@ function initialOf(name: string): string {
 export default function Avatar({
   name,
   size = "md",
+  photoUrl,
   className,
   ...rest
 }: AvatarProps) {
+  if (photoUrl) {
+    return (
+      <div
+        role="img"
+        aria-label={name}
+        className={cn(
+          "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-bg-alt",
+          SIZE[size],
+          className,
+        )}
+        {...rest}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={photoUrl}
+          alt=""
+          className="h-full w-full object-cover"
+          draggable={false}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       role="img"

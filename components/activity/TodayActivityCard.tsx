@@ -101,7 +101,7 @@ export default function TodayActivityCard({
           className="mt-[7px] inline-block h-1.5 w-1.5 shrink-0 rounded-full"
           style={{ backgroundColor: skill.color }}
         />
-        <span className="italic">&ldquo;{activity.oneLineToSay}&rdquo;</span>
+        <span className="italic">{activity.oneLineToSay}</span>
       </p>
 
       {/* Footer: skip + more on the left, primary CTA on the right */}

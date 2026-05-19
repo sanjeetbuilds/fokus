@@ -112,17 +112,9 @@ function Ruler() {
       <line x1={32} y1={52} x2={32} y2={62} />
       <line x1={60} y1={52} x2={60} y2={62} />
       <line x1={88} y1={52} x2={88} y2={62} />
-      <text
-        x={32}
-        y={44}
-        textAnchor="middle"
-        fontSize="8"
-        fontFamily="inherit"
-        fill="currentColor"
-        stroke="none"
-      >
-        marks
-      </text>
+      {/* One centered label with middots — three separate <text> tags at
+          x=32/60/88 collide at fontSize 8 in this 120-wide viewBox because
+          the inherited Fraunces face is wider than the tick spacing. */}
       <text
         x={60}
         y={44}
@@ -132,18 +124,7 @@ function Ruler() {
         fill="currentColor"
         stroke="none"
       >
-        behavior
-      </text>
-      <text
-        x={88}
-        y={44}
-        textAnchor="middle"
-        fontSize="8"
-        fontFamily="inherit"
-        fill="currentColor"
-        stroke="none"
-      >
-        speed
+        marks · behavior · speed
       </text>
     </svg>
   );

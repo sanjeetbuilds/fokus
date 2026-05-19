@@ -18,7 +18,10 @@ export const ACTIVITY_ICONS: Record<string, string> = {
 
   // -------------------- Language --------------------
   la1: "MessageCircle",
-  la2: "Image",
+  // "Image" (a generic photo-frame glyph) read as a broken-image placeholder
+  // on cards, so swap to ScanSearch — closer to the activity's intent of
+  // examining a picture together.
+  la2: "ScanSearch",
   la3: "BookOpen",
   la4: "Type",
   la5: "ShoppingBag",

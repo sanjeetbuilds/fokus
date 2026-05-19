@@ -13,7 +13,7 @@ import type { Child } from "@/types";
  * /today. Renders one of three layouts depending on how many sessions
  * the active child has logged.
  *
- *   0 sessions       → FULL card (profile summary + closing line)
+ *   0 sessions       → FULL card, capped at 2 lines (intro + closing)
  *   1-2 sessions     → MEDIUM card (eyebrow + bulleted focus list)
  *   3+ sessions      → COLLAPSED single-line caption
  *
@@ -48,24 +48,18 @@ function FullBlock({ child }: { child: Child }) {
   const sentences = buildFullReflection(child);
   return (
     <section
-      className="my-4 rounded-sm border border-line bg-bg-elevated p-5"
+      className="my-4 rounded-sm border border-line bg-bg-elevated px-5 py-4"
       aria-label={`What Fokus knows about ${child.name} so far`}
     >
       <Eyebrow>What Fokus knows about {child.name} so far</Eyebrow>
-      <div className="mt-3 space-y-1.5">
-        {sentences.map((s) => (
-          <p
-            key={s.id}
-            className="text-[15px] text-ink"
-            style={{ lineHeight: 1.5 }}
-          >
-            {s.text}
-          </p>
-        ))}
-      </div>
-      <hr className="my-3 border-t border-line-subtle" />
       <p
-        className="text-[14px] italic text-ink-secondary"
+        className="mt-2 text-[15px] text-ink"
+        style={{ lineHeight: 1.5 }}
+      >
+        {sentences[0]?.text}
+      </p>
+      <p
+        className="mt-2 text-[13px] italic text-ink-secondary"
         style={{ lineHeight: 1.5 }}
       >
         {fullReflectionClosing(child)}

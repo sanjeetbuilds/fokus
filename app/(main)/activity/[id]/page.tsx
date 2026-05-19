@@ -257,9 +257,20 @@ function ActivityHeader({ activity }: { activity: Activity }) {
         {activity.description}
       </p>
 
-      <p className="mt-4 text-[13px] text-ink-tertiary">
-        builds: {skill.description}
-      </p>
+      <div className="mt-5">
+        <p
+          className="text-[11px] font-semibold uppercase text-ink-tertiary"
+          style={{ letterSpacing: "0.1em" }}
+        >
+          What this builds
+        </p>
+        <p
+          className="mt-1.5 text-[14px] italic text-ink-secondary"
+          style={{ lineHeight: 1.55 }}
+        >
+          {skill.description}
+        </p>
+      </div>
     </header>
   );
 }

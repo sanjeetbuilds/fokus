@@ -293,22 +293,39 @@ export default function TodayPage() {
               )}
             </AnimatePresence>
 
-            {/* Weekly bar chart */}
+            {/* Weekly bar chart — hidden for first-time users; an empty
+                grid of bars would read as "nothing happening" rather than
+                "you haven't started." */}
             <section className="mt-6">
               <div className="mb-3 flex items-baseline justify-between">
                 <span className="text-[17px] font-bold text-ink">
                   This week
                 </span>
-                <button
-                  type="button"
-                  onClick={() => router.push("/map")}
-                  className="text-[13px] font-medium text-accent-mid hover:text-accent"
-                >
-                  Details →
-                </button>
+                {sessions.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => router.push("/map")}
+                    className="text-[13px] font-medium text-accent-mid hover:text-accent"
+                  >
+                    Details →
+                  </button>
+                ) : null}
               </div>
               <div className="rounded-[18px] bg-bg-elevated p-4 shadow-md">
-                <WeeklyBars sessions={sessions} today={new Date()} />
+                {sessions.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-6">
+                    <span
+                      aria-hidden
+                      className="h-1 w-1 rounded-full bg-accent"
+                    />
+                    <p className="mt-3 text-center text-[12px] text-ink-tertiary">
+                      Your week will fill in here. One small moment is all
+                      it takes.
+                    </p>
+                  </div>
+                ) : (
+                  <WeeklyBars sessions={sessions} today={new Date()} />
+                )}
               </div>
             </section>
 
@@ -333,12 +350,16 @@ export default function TodayPage() {
                 }
                 title="This month"
                 body={
-                  <>
-                    <span className="text-[18px] font-bold text-ink">
-                      {monthCount}
-                    </span>{" "}
-                    moment{monthCount === 1 ? "" : "s"} together.
-                  </>
+                  monthCount === 0 ? (
+                    "Your first moments are still ahead."
+                  ) : (
+                    <>
+                      <span className="text-[18px] font-bold text-ink">
+                        {monthCount}
+                      </span>{" "}
+                      moment{monthCount === 1 ? "" : "s"} together.
+                    </>
+                  )
                 }
               />
             </div>

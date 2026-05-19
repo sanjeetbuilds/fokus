@@ -42,68 +42,85 @@ function joinList(items: readonly string[]): string {
   return `${head}, and ${xs[xs.length - 1]}`;
 }
 
-/** Sentences for the FULL reflection block on /today (zero sessions). */
+/**
+ * Items typed from different onboarding chip groups can overlap (e.g.
+ * "Sitting still" lives in both fleesFrom and struggles, "Reading" in
+ * goesDeepOn and struggles). Resolve overlaps so the reflection layer
+ * mentions any given item exactly once.
+ *
+ * Priority (for negative framings):  struggles > fleesFrom > goesDeepOn.
+ */
+export function dedupedEngagement(child: Child): {
+  goesDeepOn: string[];
+  fleesFrom: string[];
+  struggles: string[];
+} {
+  const struggles = child.struggles;
+  const struggleSet = new Set(struggles);
+  const fleesFrom = child.engagement.fleesFrom.filter(
+    (x) => !struggleSet.has(x),
+  );
+  const negativeSet = new Set([...struggles, ...fleesFrom]);
+  const goesDeepOn = child.engagement.goesDeepOn.filter(
+    (x) => !negativeSet.has(x),
+  );
+  return { goesDeepOn, fleesFrom, struggles };
+}
+
+/**
+ * Compact /today reflection — capped at two lines regardless of how many
+ * profile fields the parent filled in. Line 1 is name + age + ONE prioritised
+ * engagement note ("Building English confidence." > "Goes deep on X." >
+ * "Working on X."). The fleesFrom field stays in the DB but is deliberately
+ * NOT echoed back on the home screen — it's used by the engine, not surfaced.
+ */
 export function buildFullReflection(child: Child): ReflectionSentence[] {
   const out: ReflectionSentence[] = [];
-
   const grade = child.grade?.trim();
+
+  const dedup = dedupedEngagement(child);
+
+  const note = (() => {
+    if (
+      child.englishConfidence === "hesitant" ||
+      child.englishConfidence === "developing"
+    ) {
+      return "Building English confidence.";
+    }
+    if (dedup.goesDeepOn.length > 0) {
+      return `Goes deep on ${sentenceCase(dedup.goesDeepOn[0]!)}.`;
+    }
+    if (dedup.struggles.length > 0) {
+      return `Working on ${sentenceCase(dedup.struggles[0]!)}.`;
+    }
+    return null;
+  })();
+
+  const intro = grade
+    ? `${child.name} is ${child.age}, in ${grade} standard.`
+    : `${child.name} is ${child.age}.`;
+
   out.push({
-    id: "age",
-    text: grade
-      ? `${child.name} is ${child.age}, in ${grade} standard.`
-      : `${child.name} is ${child.age}.`,
-  });
-
-  // Sentence 2 deliberately starts with the verb so it reads correctly
-  // regardless of the child's pronoun — avoids the "they goes" trap.
-  if (child.engagement.goesDeepOn.length > 0) {
-    out.push({
-      id: "goes-deep",
-      text: `Goes deep on ${joinList(child.engagement.goesDeepOn)}.`,
-    });
-  }
-
-  if (child.engagement.fleesFrom.length > 0) {
-    out.push({
-      id: "flees",
-      text: `Tries to get away from ${joinList(child.engagement.fleesFrom)}.`,
-    });
-  }
-
-  if (child.struggles.length > 0) {
-    const list =
-      child.struggles.length > 3
-        ? `${joinList(child.struggles.slice(0, 2))}, among other things`
-        : joinList(child.struggles);
-    out.push({ id: "struggles", text: `Gets stuck on ${list}.` });
-  }
-
-  const ec = child.englishConfidence;
-  out.push({
-    id: "english",
-    text:
-      ec === "hesitant"
-        ? "Hesitant with English."
-        : ec === "developing"
-          ? "Picking up English steadily."
-          : "Comfortable in English.",
+    id: "line-1",
+    text: note ? `${intro} ${note}` : intro,
   });
 
   return out;
 }
 
-export function fullReflectionClosing(child: Child): string {
-  return `The moments we share with ${child.name} will lean into these. Gently.`;
+export function fullReflectionClosing(_child: Child): string {
+  return "The moments we share will lean into this. Gently.";
 }
 
 /**
  * Bullets shared by the MEDIUM block (1-2 sessions) and the COLLAPSED
  * line (3+ sessions). At most 3, in priority order:
  *   1. Building English confidence    (hesitant or developing)
- *   2. Honoring their deep focus on X (first goesDeepOn item)
+ *   2. Honoring their deep focus on X (first goesDeepOn item, deduped)
  *   3. Practicing X                   (first struggle, lowercased)
  */
 export function todayFocusBullets(child: Child): string[] {
+  const dedup = dedupedEngagement(child);
   const out: string[] = [];
   if (
     child.englishConfidence === "hesitant" ||
@@ -111,58 +128,73 @@ export function todayFocusBullets(child: Child): string[] {
   ) {
     out.push("Building English confidence");
   }
-  if (child.engagement.goesDeepOn.length > 0) {
+  if (dedup.goesDeepOn.length > 0) {
     out.push(
-      `Honoring their deep focus on ${sentenceCase(child.engagement.goesDeepOn[0]!)}`,
+      `Honoring their deep focus on ${sentenceCase(dedup.goesDeepOn[0]!)}`,
     );
   }
-  if (child.struggles.length > 0) {
-    out.push(`Practicing ${sentenceCase(child.struggles[0]!)}`);
+  if (dedup.struggles.length > 0) {
+    out.push(`Practicing ${sentenceCase(dedup.struggles[0]!)}`);
   }
   return out.slice(0, 3);
+}
+
+/** Natural-language join of items the parent supplied. Pre-sentence-cased
+ *  so they can be dropped into the middle of a sentence ("big feelings"). */
+function joinSpecific(items: readonly string[]): string {
+  return joinList(items);
 }
 
 /**
  * Attributed focus rows for the Profile "what Fokus is paying attention
  * to" card. Up to 4 rows, priority: English > Goes-deep > specific
- * struggles > Curiosity fallback.
+ * struggles > Curiosity fallback. Reasons name the parent's exact picks
+ * — never collapse multiple selections into a vague "these moments."
  */
 export function profileFocusAreas(child: Child): FocusArea[] {
   const out: FocusArea[] = [];
+  const dedup = dedupedEngagement(child);
+  const name = child.name;
 
   if (child.englishConfidence === "hesitant") {
     out.push({
       title: "Building English confidence",
-      reason: "Because you said they're hesitant in English.",
+      reason: `Because you said ${name} is hesitant in English.`,
     });
   } else if (child.englishConfidence === "developing") {
     out.push({
       title: "Building English confidence",
-      reason: "Because you said they're still picking up English.",
+      reason: `Because you said ${name} is still picking up English.`,
     });
   }
 
-  if (child.engagement.goesDeepOn.length > 0) {
+  if (dedup.goesDeepOn.length > 0) {
     out.push({
-      title: `Honoring their deep focus on ${sentenceCase(child.engagement.goesDeepOn[0]!)}`,
-      reason: "Because you said they go deep when doing this.",
+      title: `Honoring their deep focus on ${sentenceCase(dedup.goesDeepOn[0]!)}`,
+      reason: `Because you said ${name} goes deep when doing this.`,
     });
   }
 
-  if (child.struggles.includes("Finishing what they start")) {
+  const finishingItems = dedup.struggles.filter(
+    (s) => s === "Finishing what they start",
+  );
+  if (finishingItems.length > 0) {
     out.push({
       title: "Practicing finishing things",
-      reason: "Because you said this is hard for them.",
+      reason: `Because you said finishing what they start is hard for ${name}.`,
     });
   }
 
-  if (
-    child.struggles.includes("Big feelings") ||
-    child.struggles.includes("Losing games")
-  ) {
+  const emotionalLabels = ["Big feelings", "Losing games"];
+  const emotionalItems = dedup.struggles.filter((s) =>
+    emotionalLabels.includes(s),
+  );
+  if (emotionalItems.length > 0) {
     out.push({
       title: "Building emotional steadiness",
-      reason: "Because you said these moments are hard.",
+      reason: `Because you said ${joinSpecific(emotionalItems)} ${
+        emotionalItems.length === 1 ? "is" : "are"
+      } hard for ${name}.`,
     });
   }
 

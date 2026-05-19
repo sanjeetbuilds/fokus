@@ -80,6 +80,13 @@ export interface Child {
   strengths: string[];
   struggles: string[];
 
+  /**
+   * Optional base64 data URL of a parent-uploaded photo, downscaled to
+   * 256x256 client-side before encoding. Null/undefined falls back to the
+   * letter Avatar everywhere a child face would appear.
+   */
+  photoUrl?: string | null;
+
   createdAt: string;
   updatedAt: string;
   _syncStatus?: SyncStatus;
