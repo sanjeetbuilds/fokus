@@ -18,9 +18,9 @@ export interface TabBarProps {
 }
 
 /**
- * Bottom navigation. Inactive tabs show icon + tiny label underneath.
- * Active tab collapses the label and renders icon + label inline inside a
- * light-green pill — mirrors the Fokus design's `.nb-pill` pattern.
+ * Round-4 bottom nav: icon stacked over label, inactive items render in
+ * gray-lt at 38% opacity, active item gets full purple. No background
+ * pill — selection is communicated via color + weight transitions only.
  */
 export default function TabBar({
   tabs,
@@ -37,12 +37,12 @@ export default function TabBar({
         className,
       )}
     >
-      <ul className="mx-auto flex w-full max-w-[540px] items-start justify-around pt-2">
+      <ul className="mx-auto flex w-full max-w-[540px] items-start justify-around pt-2.5">
         {tabs.slice(0, 4).map((tab) => {
           const isActive = tab.key === activeKey;
           const Icon = tab.icon;
           return (
-            <li key={tab.key} className="min-w-[56px]">
+            <li key={tab.key} className="min-w-[60px]">
               <button
                 type="button"
                 aria-current={isActive ? "page" : undefined}
@@ -51,31 +51,34 @@ export default function TabBar({
                   onChange?.(tab.key);
                 }}
                 className={cn(
-                  "flex h-14 w-full flex-col items-center justify-start gap-0.5 select-none",
-                  "transition-colors duration-fast ease-out",
-                  "focus-visible:outline-none focus-visible:rounded-full focus-visible:ring-2 focus-visible:ring-accent",
+                  "flex h-[68px] w-full flex-col items-center justify-start gap-[3px] select-none",
+                  "focus-visible:outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-accent",
                 )}
               >
                 <span
-                  className={cn(
-                    "inline-flex items-center gap-1 rounded-full transition-all duration-fast ease-out",
-                    isActive
-                      ? "bg-accent-bg px-3.5 py-1.5 text-accent-mid"
-                      : "px-2.5 py-1.5 text-ink-quaternary",
-                  )}
+                  aria-hidden
+                  className="transition-opacity duration-fast ease-out"
+                  style={{
+                    opacity: isActive ? 1 : 0.38,
+                    color: isActive ? "var(--accent)" : "var(--ink-quaternary)",
+                  }}
                 >
-                  <Icon size={20} strokeWidth={1.8} aria-hidden />
-                  {isActive ? (
-                    <span className="text-[13px] font-semibold leading-none">
-                      {tab.label}
-                    </span>
-                  ) : null}
+                  <Icon
+                    size={22}
+                    strokeWidth={2}
+                    aria-hidden
+                    stroke="currentColor"
+                  />
                 </span>
-                {!isActive ? (
-                  <span className="text-[11px] leading-none text-ink-tertiary">
-                    {tab.label}
-                  </span>
-                ) : null}
+                <span
+                  className="text-[11px] leading-none transition-colors duration-fast ease-out"
+                  style={{
+                    color: isActive ? "var(--accent)" : "var(--ink-quaternary)",
+                    fontWeight: isActive ? 700 : 500,
+                  }}
+                >
+                  {tab.label}
+                </span>
               </button>
             </li>
           );

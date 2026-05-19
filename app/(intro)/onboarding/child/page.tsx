@@ -1,67 +1,31 @@
 "use client";
 
-import { ChevronLeft, Plus } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-  type ReactNode,
-} from "react";
+import { Suspense, useCallback, useState } from "react";
 
-import ChildPhotoInput from "@/components/onboarding/ChildPhotoInput";
-import Button from "@/components/ui/Button";
-import Chip from "@/components/ui/Chip";
-import Input from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast";
-import {
-  ENGLISH_CONFIDENCE_OPTIONS,
-  FLEES_FROM_OPTIONS,
-  GOES_DEEP_ON_OPTIONS,
-  GRADE_OPTIONS,
-  INTEREST_OPTIONS,
-  ONBOARDING_RECOMMENDED,
-  PRIMARY_LANGUAGE_OPTIONS,
-  STRUGGLE_OPTIONS,
-  SUPPORTED_AGE_RANGE,
-} from "@/lib/content/onboarding";
 import { createChild, getCurrentParent } from "@/lib/db";
 import { useAppStore } from "@/lib/store/useAppStore";
-import { ageFromDob } from "@/lib/utils/dates";
-import type { EnglishConfidence } from "@/types";
 
-const TOTAL_STEPS = 6;
-
-interface Draft {
-  name: string;
-  dateOfBirth: string; // YYYY-MM-DD
-  grade: string | null;
-  photoUrl: string | null;
-  goesDeepOn: string[];
-  fleesFrom: string[];
-  englishConfidence: EnglishConfidence | null;
-  primaryLanguage: string | null;
-  interests: string[];
-  struggles: string[];
+interface AgeBand {
+  label: string;
+  age: number;
 }
+const AGE_BANDS: AgeBand[] = [
+  { label: "0–1 yr", age: 5 },
+  { label: "2–4 yrs", age: 5 },
+  { label: "4–6 yrs", age: 6 },
+  { label: "6–9 yrs", age: 9 },
+];
 
-const EMPTY_DRAFT: Draft = {
-  name: "",
-  dateOfBirth: "",
-  grade: null,
-  photoUrl: null,
-  goesDeepOn: [],
-  fleesFrom: [],
-  englishConfidence: null,
-  primaryLanguage: null,
-  interests: [],
-  struggles: [],
-};
-
-export default function ChildOnboardingPage() {
+/**
+ * Compact "add another child" form — same shape as the setup slide at the
+ * end of /intro but standalone, with a Back button. Reached from
+ * /profile via "Add another child". Engine fields fill in later via the
+ * post-setup nudge on /today.
+ */
+export default function AddChildPage() {
   return (
     <Suspense
       fallback={
@@ -70,109 +34,56 @@ export default function ChildOnboardingPage() {
         </main>
       }
     >
-      <ChildOnboardingBody />
+      <AddChildBody />
     </Suspense>
   );
 }
 
-function ChildOnboardingBody() {
+function AddChildBody() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const search = useSearchParams();
   const { toast } = useToast();
   const setActiveChild = useAppStore((s) => s.setActiveChild);
   const parentIdFromStore = useAppStore((s) => s.parentId);
 
-  // When invoked from /profile via "Add another child", we want to return
-  // to /profile after the new child is created (and active). Otherwise (first
-  // run) we send them to /today so they can immediately try a moment.
-  const returnTo =
-    searchParams?.get("return") === "profile" ? "/profile" : "/today";
+  const returnTo = search?.get("return") === "profile" ? "/profile" : "/today";
 
-  const [step, setStep] = useState<number>(1);
-  const [data, setData] = useState<Draft>(EMPTY_DRAFT);
+  const [name, setName] = useState("");
+  const [bandIdx, setBandIdx] = useState(2);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-    }
-  }, [step]);
-
-  const set = useCallback(
-    <K extends keyof Draft>(key: K, value: Draft[K]) =>
-      setData((d) => ({ ...d, [key]: value })),
-    [],
-  );
-
-  const toggleArray = useCallback(
-    (
-      key: "goesDeepOn" | "fleesFrom" | "interests" | "struggles",
-      value: string,
-    ) =>
-      setData((d) => {
-        const cur = d[key];
-        if (cur.includes(value)) {
-          return { ...d, [key]: cur.filter((v) => v !== value) };
-        }
-        return { ...d, [key]: [...cur, value] };
-      }),
-    [],
-  );
-
-  const valid = useMemo(() => stepValid(step, data), [step, data]);
-
-  const onBack = useCallback(() => {
-    if (step === 1) {
-      router.replace("/onboarding/parent");
+  const submit = useCallback(async () => {
+    if (busy) return;
+    const trimmed = name.trim();
+    if (!trimmed) {
+      toast("Add a name to continue.", { tone: "danger" });
       return;
     }
-    setStep((s) => s - 1);
-  }, [router, step]);
-
-  const onContinue = useCallback(async () => {
-    if (!valid || busy) return;
-
-    if (step < TOTAL_STEPS) {
-      setStep((s) => s + 1);
-      return;
-    }
-
     setBusy(true);
     try {
       let parentId = parentIdFromStore;
       if (!parentId) {
-        const parent = await getCurrentParent();
-        if (!parent) {
+        const p = await getCurrentParent();
+        if (!p) {
           toast("No parent profile. Restart onboarding.", { tone: "danger" });
           router.replace("/intro");
           return;
         }
-        parentId = parent.id;
+        parentId = p.id;
       }
-
-      const ageInfo = ageFromDob(data.dateOfBirth);
-      const ageYears = ageInfo?.years ?? 0;
-
+      const band = AGE_BANDS[bandIdx]!;
       const child = await createChild({
         parentId,
-        name: data.name.trim(),
-        age: ageYears,
-        dateOfBirth: data.dateOfBirth,
-        grade: data.grade!,
-        photoUrl: data.photoUrl,
-        engagement: {
-          goesDeepOn: data.goesDeepOn,
-          fleesFrom: data.fleesFrom,
-          inBetween: [],
-        },
-        englishConfidence: data.englishConfidence ?? "developing",
-        primaryLanguage: data.primaryLanguage ?? "Other",
-        interests: data.interests,
-        // Strengths step was removed during onboarding compression. New
-        // children begin with no recorded strengths; the field remains in
-        // the type for legacy children created before the change.
+        name: trimmed,
+        age: band.age,
+        ageBand: band.label,
+        grade: "",
+        engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
+        englishConfidence: "developing",
+        primaryLanguage: "Other",
+        interests: [],
         strengths: [],
-        struggles: data.struggles,
+        struggles: [],
       });
       setActiveChild(child.id);
       router.replace(returnTo);
@@ -182,600 +93,103 @@ function ChildOnboardingBody() {
       setBusy(false);
     }
   }, [
+    bandIdx,
     busy,
-    data,
+    name,
     parentIdFromStore,
     returnTo,
     router,
     setActiveChild,
-    step,
     toast,
-    valid,
   ]);
 
-  const continueLabel =
-    step === TOTAL_STEPS && data.name.trim()
-      ? `Start with ${data.name.trim()} →`
-      : "Continue";
-
   return (
-    <main className="relative flex min-h-[100svh] flex-col bg-bg">
-      <div className="px-5 pt-[calc(env(safe-area-inset-top)+12px)]">
-        <div className="-mx-2 flex h-9 items-center">
-          <button
-            type="button"
-            onClick={onBack}
-            disabled={busy}
-            aria-label="Back"
-            className="inline-flex h-9 items-center gap-1 rounded-md px-2 text-callout text-accent transition-colors duration-fast ease-out hover:text-accent-pressed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50"
-          >
-            <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
-            <span>Back</span>
-          </button>
-        </div>
-        {step < TOTAL_STEPS ? (
-          <ProgressBar current={step} total={TOTAL_STEPS} />
-        ) : null}
+    <main className="flex min-h-[100svh] flex-col bg-bg">
+      <div className="px-8 pt-[calc(env(safe-area-inset-top)+24px)]">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="Back"
+          className="-ml-2 inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] font-semibold text-accent transition-colors duration-fast hover:text-accent-pressed"
+        >
+          <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
+          Back
+        </button>
       </div>
 
-      <section className="flex-1 px-5 pb-32 pt-6">
-        <StepBody
-          step={step}
-          data={data}
-          set={set}
-          toggleArray={toggleArray}
-        />
-      </section>
-
-      <div className="sticky bottom-0 left-0 right-0 border-t border-line-subtle bg-bg px-5 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-4">
-        <Button
-          onClick={onContinue}
-          fullWidth
-          size="lg"
-          disabled={!valid || busy}
+      <div className="flex flex-1 flex-col px-8 pt-4">
+        <p
+          className="text-[11px] font-bold uppercase"
+          style={{ color: "var(--accent)", letterSpacing: "0.08em" }}
         >
-          {continueLabel}
-        </Button>
+          Add another child
+        </p>
+        <h1
+          className="mt-3 text-[38px] font-extrabold text-ink"
+          style={{ lineHeight: 1.1, letterSpacing: "-0.03em" }}
+        >
+          Their name first.
+        </h1>
+
+        <div className="mt-8 flex flex-col gap-3.5">
+          <div>
+            <label
+              className="mb-1.5 block text-[11px] font-bold uppercase"
+              style={{ color: "var(--ink-secondary)", letterSpacing: "0.05em" }}
+            >
+              Child&apos;s name
+            </label>
+            <input
+              className="h-[52px] w-full rounded-md border-[1.5px] bg-white px-4 text-[16px] text-ink"
+              style={{ borderColor: "var(--line)" }}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Sara"
+              autoFocus
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+          <div>
+            <label
+              className="mb-1.5 block text-[11px] font-bold uppercase"
+              style={{ color: "var(--ink-secondary)", letterSpacing: "0.05em" }}
+            >
+              Their age
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {AGE_BANDS.map((band, i) => {
+                const on = bandIdx === i;
+                return (
+                  <button
+                    type="button"
+                    key={band.label}
+                    onClick={() => setBandIdx(i)}
+                    className="rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors"
+                    style={{
+                      background: on ? "var(--ink)" : "var(--bg-alt)",
+                      color: on ? "#fff" : "var(--ink)",
+                    }}
+                  >
+                    {band.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-8 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-4">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || name.trim().length === 0}
+          className="h-[54px] w-full rounded-full bg-ink text-[16px] font-bold text-white transition-opacity disabled:opacity-50"
+        >
+          {busy ? "Adding…" : "Add child →"}
+        </button>
       </div>
     </main>
   );
-}
-
-// ---------- progress ----------
-
-function ProgressBar({ current, total }: { current: number; total: number }) {
-  return (
-    <ol
-      aria-label={`Step ${current} of ${total}`}
-      className="mt-2 flex gap-1.5"
-    >
-      {Array.from({ length: total }, (_, i) => (
-        <li
-          key={i}
-          aria-current={i + 1 === current ? "step" : undefined}
-          className={`h-1.5 flex-1 rounded-full transition-colors duration-200 ease-out ${
-            i + 1 <= current ? "bg-accent" : "bg-line"
-          }`}
-        />
-      ))}
-    </ol>
-  );
-}
-
-// ---------- step bodies ----------
-
-interface StepBodyProps {
-  step: number;
-  data: Draft;
-  set: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
-  toggleArray: (
-    key: "goesDeepOn" | "fleesFrom" | "interests" | "struggles",
-    value: string,
-  ) => void;
-}
-
-function StepBody({ step, data, set, toggleArray }: StepBodyProps) {
-  switch (step) {
-    case 1:
-      return <Step1Basics data={data} set={set} />;
-    case 2:
-      return <Step2Engagement data={data} toggleArray={toggleArray} />;
-    case 3:
-      return <Step3Language data={data} set={set} />;
-    case 4:
-      return <Step4Interests data={data} set={set} toggleArray={toggleArray} />;
-    case 5:
-      return (
-        <ChipStep
-          header="Where do they get stuck?"
-          subtext="Real challenges right now. We'll work on these gradually."
-          options={STRUGGLE_OPTIONS}
-          selected={data.struggles}
-          onToggle={(v) => toggleArray("struggles", v)}
-          hint="Select all that apply, or skip if none fit."
-        />
-      );
-    case 6:
-      return <Step6Closing data={data} />;
-    default:
-      return null;
-  }
-}
-
-// ---------- step 1: name + DOB + grade + photo ----------
-
-function Step1Basics({
-  data,
-  set,
-}: {
-  data: Draft;
-  set: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
-}) {
-  const today = useMemo(() => {
-    const d = new Date();
-    return d.toISOString().slice(0, 10);
-  }, []);
-  // Sensible max bound on the DOB input so the native picker doesn't let
-  // the user pick "tomorrow." Min bound is generous (20 years ago) so it
-  // doesn't fight legitimate input; we error post-hoc if age is out of range.
-  const minDob = useMemo(() => {
-    const d = new Date();
-    d.setFullYear(d.getFullYear() - 20);
-    return d.toISOString().slice(0, 10);
-  }, []);
-
-  const ageInfo = ageFromDob(data.dateOfBirth);
-  const ageError = (() => {
-    if (!data.dateOfBirth) return null;
-    if (!ageInfo) return "Pick a date in the past.";
-    if (ageInfo.years < SUPPORTED_AGE_RANGE.min) {
-      return `Fokus is built for ages ${SUPPORTED_AGE_RANGE.min}-${SUPPORTED_AGE_RANGE.max}. Come back when they're a little older.`;
-    }
-    if (ageInfo.years > SUPPORTED_AGE_RANGE.max) {
-      return `Fokus is built for ages ${SUPPORTED_AGE_RANGE.min}-${SUPPORTED_AGE_RANGE.max}. We don't yet cover older kids.`;
-    }
-    return null;
-  })();
-
-  const ageHint =
-    ageInfo && !ageError
-      ? `That makes them ${formatAge(ageInfo)}.`
-      : undefined;
-
-  return (
-    <div className="flex flex-col gap-8">
-      <header>
-        <h1 className="font-display text-title-1 leading-[1.15] text-ink">About your child</h1>
-      </header>
-
-      <Input
-        label="Their name"
-        value={data.name}
-        onChange={(e) => set("name", e.target.value)}
-        autoFocus
-        autoComplete="off"
-        spellCheck={false}
-        placeholder="e.g. Aarav"
-      />
-
-      <Input
-        label="Date of birth"
-        type="date"
-        value={data.dateOfBirth}
-        onChange={(e) => set("dateOfBirth", e.target.value)}
-        min={minDob}
-        max={today}
-        hint={ageHint}
-        error={ageError ?? undefined}
-      />
-
-      <FieldGroup label="Class">
-        <div className="flex flex-wrap gap-2">
-          {GRADE_OPTIONS.map((g) => (
-            <Chip
-              key={g}
-              selected={data.grade === g}
-              onClick={() => set("grade", g)}
-            >
-              {g}
-            </Chip>
-          ))}
-        </div>
-      </FieldGroup>
-
-      <ChildPhotoInput
-        value={data.photoUrl}
-        onChange={(url) => set("photoUrl", url)}
-      />
-    </div>
-  );
-}
-
-function formatAge({ years, months }: { years: number; months: number }): string {
-  const y = `${years} year${years === 1 ? "" : "s"}`;
-  if (months === 0) return y;
-  const m = `${months} month${months === 1 ? "" : "s"}`;
-  return `${y} and ${m}`;
-}
-
-// ---------- step 2: merged engagement (deep + flees) ----------
-
-function Step2Engagement({
-  data,
-  toggleArray,
-}: {
-  data: Draft;
-  toggleArray: (
-    key: "goesDeepOn" | "fleesFrom" | "interests" | "struggles",
-    value: string,
-  ) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-8">
-      <header>
-        <h1 className="font-display text-title-1 leading-[1.15] text-ink">
-          What they love. What they avoid.
-        </h1>
-        <p className="mt-2 text-body text-ink-secondary">
-          Two short lists — the things they happily lose time in, and the
-          things they try to escape.
-        </p>
-      </header>
-
-      <ChipBlock
-        eyebrow="Goes deep on"
-        options={GOES_DEEP_ON_OPTIONS}
-        selected={data.goesDeepOn}
-        onToggle={(v) => toggleArray("goesDeepOn", v)}
-        hint={recommendedHint(ONBOARDING_RECOMMENDED.goesDeepOn)}
-      />
-
-      <ChipBlock
-        eyebrow="Tries to get away from"
-        options={FLEES_FROM_OPTIONS}
-        selected={data.fleesFrom}
-        onToggle={(v) => toggleArray("fleesFrom", v)}
-        hint="Select all that apply, or skip if none fit."
-      />
-    </div>
-  );
-}
-
-// ---------- step 3: language ----------
-
-function Step3Language({
-  data,
-  set,
-}: {
-  data: Draft;
-  set: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
-}) {
-  const primaryForCopy = data.primaryLanguage ?? "";
-
-  return (
-    <div className="flex flex-col gap-8">
-      <header>
-        <h1 className="font-display text-title-1 leading-[1.15] text-ink">
-          How comfortable is your child with English?
-        </h1>
-      </header>
-
-      <div
-        role="radiogroup"
-        aria-label="English confidence"
-        className="flex flex-col gap-3"
-      >
-        {ENGLISH_CONFIDENCE_OPTIONS.map((opt) => {
-          const selected = data.englishConfidence === opt.value;
-          return (
-            <button
-              type="button"
-              key={opt.value}
-              role="radio"
-              aria-checked={selected}
-              onClick={() => set("englishConfidence", opt.value)}
-              className={`text-left rounded-lg border p-4 transition-colors duration-fast ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                selected
-                  ? "border-accent bg-accent-bg"
-                  : "border-line bg-bg-elevated hover:border-line"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span
-                  aria-hidden
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                    selected ? "border-accent" : "border-line"
-                  }`}
-                >
-                  {selected ? (
-                    <span className="h-2.5 w-2.5 rounded-full bg-accent" />
-                  ) : null}
-                </span>
-                <span className="text-headline text-ink">{opt.label}</span>
-              </div>
-              <p className="mt-2 pl-8 text-footnote text-ink-secondary">
-                {opt.description(primaryForCopy)}
-              </p>
-            </button>
-          );
-        })}
-      </div>
-
-      <FieldGroup label="Primary language at home">
-        <div className="flex flex-wrap gap-2">
-          {PRIMARY_LANGUAGE_OPTIONS.map((lang) => (
-            <Chip
-              key={lang}
-              selected={data.primaryLanguage === lang}
-              onClick={() => set("primaryLanguage", lang)}
-            >
-              {lang}
-            </Chip>
-          ))}
-        </div>
-      </FieldGroup>
-    </div>
-  );
-}
-
-// ---------- step 4: interests with custom entries ----------
-
-function Step4Interests({
-  data,
-  set,
-  toggleArray,
-}: {
-  data: Draft;
-  set: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
-  toggleArray: (
-    key: "goesDeepOn" | "fleesFrom" | "interests" | "struggles",
-    value: string,
-  ) => void;
-}) {
-  const [draft, setDraft] = useState("");
-  const presets = INTEREST_OPTIONS as readonly string[];
-  // Anything in data.interests that isn't a preset is a custom entry;
-  // render those as additional chips so the user sees what they typed.
-  const customInterests = useMemo(
-    () => data.interests.filter((i) => !presets.includes(i)),
-    [data.interests, presets],
-  );
-
-  const addCustom = (event?: FormEvent) => {
-    event?.preventDefault();
-    const trimmed = draft.trim();
-    if (!trimmed) return;
-    if (!data.interests.includes(trimmed)) {
-      set("interests", [...data.interests, trimmed]);
-    }
-    setDraft("");
-  };
-
-  return (
-    <div className="flex flex-col gap-6">
-      <header>
-        <h1 className="font-display text-title-1 leading-[1.15] text-ink">What lights them up?</h1>
-        <p className="mt-2 text-body text-ink-secondary">
-          The stuff they genuinely love. We use these to make activities feel
-          like THEIR thing.
-        </p>
-      </header>
-
-      <div className="flex flex-wrap gap-2">
-        {presets.map((opt) => (
-          <Chip
-            key={opt}
-            selected={data.interests.includes(opt)}
-            onClick={() => toggleArray("interests", opt)}
-          >
-            {opt}
-          </Chip>
-        ))}
-        {customInterests.map((opt) => (
-          <Chip
-            key={opt}
-            selected
-            onClick={() => toggleArray("interests", opt)}
-          >
-            {opt}
-          </Chip>
-        ))}
-      </div>
-
-      <p className="text-footnote text-ink-tertiary">
-        {recommendedHint(ONBOARDING_RECOMMENDED.interests)}
-      </p>
-
-      <form onSubmit={addCustom} className="flex items-end gap-2">
-        <div className="flex-1">
-          <Input
-            label="+ Add your own"
-            placeholder="e.g. Pokémon, F1 cars"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-        <Button
-          type="submit"
-          variant="secondary"
-          size="md"
-          disabled={!draft.trim()}
-          leftIcon={<Plus size={16} strokeWidth={1.75} aria-hidden />}
-        >
-          Add
-        </Button>
-      </form>
-    </div>
-  );
-}
-
-// ---------- step 6: closing ----------
-
-function Step6Closing({ data }: { data: Draft }) {
-  const name = data.name.trim() || "your child";
-  return (
-    <div className="flex flex-col gap-6 pt-8">
-      <h1 className="font-display text-title-1 leading-[1.15] text-ink">
-        You&apos;re ready.
-      </h1>
-
-      <p className="text-body-large text-ink-secondary">
-        Each day, Fokus gives you one moment to share with{" "}
-        <span className="text-ink">{name}</span>. Five to twenty-five minutes.
-        Whatever you have.
-      </p>
-
-      <p className="text-body-large text-ink-secondary">
-        After, log how it went. The app learns and adjusts.
-      </p>
-
-      <p className="text-body-large text-ink-secondary">
-        This is for you, not for {name}. They&apos;ll never see this app.
-        They&apos;ll just feel a parent who&apos;s quietly paying attention to
-        the right things.
-      </p>
-    </div>
-  );
-}
-
-// ---------- shared step pieces ----------
-
-function ChipStep({
-  header,
-  subtext,
-  options,
-  selected,
-  onToggle,
-  hint,
-}: {
-  header: string;
-  subtext: string;
-  options: readonly string[];
-  selected: string[];
-  onToggle: (value: string) => void;
-  hint: string;
-}) {
-  return (
-    <div className="flex flex-col gap-6">
-      <header>
-        <h1 className="font-display text-title-1 leading-[1.15] text-ink">{header}</h1>
-        <p className="mt-2 text-body text-ink-secondary">{subtext}</p>
-      </header>
-      <div className="flex flex-wrap gap-2">
-        {options.map((opt) => (
-          <Chip
-            key={opt}
-            selected={selected.includes(opt)}
-            onClick={() => onToggle(opt)}
-          >
-            {opt}
-          </Chip>
-        ))}
-      </div>
-      <p className="text-footnote text-ink-tertiary">{hint}</p>
-    </div>
-  );
-}
-
-function ChipBlock({
-  eyebrow,
-  options,
-  selected,
-  onToggle,
-  hint,
-}: {
-  eyebrow: string;
-  options: readonly string[];
-  selected: string[];
-  onToggle: (value: string) => void;
-  hint: string;
-}) {
-  return (
-    <div className="flex flex-col gap-3">
-      <p
-        className="text-[11px] font-semibold uppercase text-ink-tertiary"
-        style={{ letterSpacing: "0.1em" }}
-      >
-        {eyebrow}
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {options.map((opt) => (
-          <Chip
-            key={opt}
-            selected={selected.includes(opt)}
-            onClick={() => onToggle(opt)}
-          >
-            {opt}
-          </Chip>
-        ))}
-      </div>
-      <p className="text-footnote text-ink-tertiary">{hint}</p>
-    </div>
-  );
-}
-
-function FieldGroup({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-3">
-      <p className="text-footnote font-medium text-ink-secondary">{label}</p>
-      {children}
-      {hint ? (
-        <p className="text-footnote text-ink-tertiary">{hint}</p>
-      ) : null}
-    </div>
-  );
-}
-
-function recommendedHint(range: { min: number; max: number }): string {
-  return `Pick your top ${range.min} to ${range.max}. No need to be exhaustive.`;
-}
-
-// ---------- validation ----------
-
-function stepValid(step: number, d: Draft): boolean {
-  switch (step) {
-    case 1: {
-      if (d.name.trim().length === 0) return false;
-      if (d.grade == null) return false;
-      const age = ageFromDob(d.dateOfBirth);
-      if (!age) return false;
-      if (
-        age.years < SUPPORTED_AGE_RANGE.min ||
-        age.years > SUPPORTED_AGE_RANGE.max
-      ) {
-        return false;
-      }
-      return true;
-    }
-    case 3:
-      // Keep language hard-required: the engine genuinely needs englishConfidence
-      // to score correctly (Rule 3). Defaulting it would silently mis-score
-      // every new child. primaryLanguage is also referenced in copy.
-      return d.englishConfidence != null && d.primaryLanguage != null;
-    case 2:
-    case 4:
-    case 5:
-      // Soft steps, always advanceable.
-      return true;
-    case 6: {
-      // Final commit re-checks the truly required fields.
-      if (d.name.trim().length === 0) return false;
-      if (d.grade == null) return false;
-      const age = ageFromDob(d.dateOfBirth);
-      if (!age) return false;
-      return d.englishConfidence != null && d.primaryLanguage != null;
-    }
-    default:
-      return false;
-  }
 }

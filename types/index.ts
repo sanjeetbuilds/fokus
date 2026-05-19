@@ -87,6 +87,14 @@ export interface Child {
    */
   photoUrl?: string | null;
 
+  /**
+   * Compact age range as captured in the round-4 onboarding form
+   * ("0-1 yr" / "2-4 yrs" / "4-6 yrs" / "6-9 yrs"). The numeric `age` is
+   * derived from this when the deeper fields aren't filled yet; once the
+   * parent enters DOB via settings, `dateOfBirth` becomes authoritative.
+   */
+  ageBand?: string | null;
+
   createdAt: string;
   updatedAt: string;
   _syncStatus?: SyncStatus;

@@ -1,77 +1,93 @@
 /* ============================================================
-   Fokus design tokens — Round-3 identity (cream + green).
+   Fokus design tokens — Round-4 identity (purple + beige).
    Source of truth for color / type / spacing / motion.
-   Tailwind utilities map to these via var(--token).
 
-   Round-3 changes (light mode), from the Fokus.html design:
-     - Backgrounds → cream #F4F3EE on body, #FFFFFF on cards
-     - Accent → forest green #2A5C41 (replaces indigo #3A4FCC)
-     - Cards → pure white with soft drop shadow (no line border)
-     - New semantic warm/coral/mulberry palettes for tags + emphasis
-     - Wordmark dot, primary buttons, active states all pick up green
-   Typography (Fraunces display + Inter body) is preserved.
-   Dark mode kept on its prior set until it gets a dedicated pass.
+   Round-4 changes, from design/Fokus.html:
+     - Background: warm beige #E9E6DC on body, pure white #FFFFFF on cards
+     - Ink: near-black #252630 (used as primary button bg + text)
+     - Primary accent: lavender-purple #9CA5FF (replaces forest green)
+     - Supporting hues: amber, lavender, coral, green, lt-purple
+     - Typography: Plus Jakarta Sans, single family, weights 300-800
+     - Headings: 800 weight + very tight negative tracking (-0.025em / -0.035em)
+     - Skill tag tints: #EEF0FF / #FEF8E7 / #E8F9EE / #FCEEE9
    ============================================================ */
 
 :root {
-  /* ---- Color: light mode ---- */
-  --bg: #F4F3EE;             /* warm linen — body surface */
-  --bg-elevated: #FFFFFF;    /* card surface */
-  --bg-input: #ECECE7;       /* slightly inset surface — textareas */
-  --bg-alt: #EEECEA;         /* inactive chip bg, separators */
-  --bg-overlay: rgba(26, 26, 23, 0.5);
+  /* ---- Surfaces ---- */
+  --bg: #E9E6DC;             /* warm beige — body */
+  --bg-elevated: #FFFFFF;    /* white card surface */
+  --bg-input: #EFEDE4;       /* slightly inset (textareas, inputs at rest) */
+  --bg-alt: #E5E3DA;         /* gray-bd — pill bg, separators */
+  --bg-overlay: rgba(37, 38, 48, 0.55);
 
-  --ink: #1A1A17;            /* near-black */
-  --ink-secondary: #6B6B67;  /* AA on cream ~ 5.7:1 */
-  --ink-tertiary: #6B6B67;   /* collapsed to secondary for AA; hierarchy via weight */
-  --ink-quaternary: #ADADAA; /* non-text only (separators, faint dots) */
+  /* ---- Ink ---- */
+  --ink: #252630;            /* near-black */
+  --ink-secondary: #8E8D9B;  /* gray */
+  --ink-tertiary: #8E8D9B;   /* collapsed to gray; hierarchy via weight */
+  --ink-quaternary: #C2C0CB; /* gray-lt — placeholder, faint dots */
 
-  --line: #EEECEA;
-  --line-subtle: #F0EFEB;
+  --line: #E5E3DA;           /* gray-bd — card border */
+  --line-subtle: #EFEDE4;
 
-  /* ---- Accent: forest green ---- */
-  --accent: #2A5C41;         /* primary green — buttons, active states */
-  --accent-pressed: #1D3B2C;
-  --accent-bg: #EAF6EF;      /* very-light green tint */
-  --accent-deep: #1D3B2C;    /* deepest green, readable on cream */
-  --accent-mid: #3D7A5C;     /* mid green — eyebrow captions, links */
-  --accent-soft: #8EC9AC;    /* charts, midweight emphasis */
-  --accent-pale: #D4EDE0;    /* chip bg when selected secondary */
+  /* ---- Accent: lavender-purple ---- */
+  --accent: #9CA5FF;         /* primary purple — links, active states */
+  --accent-pressed: #7C86F0; /* darker on press */
+  --accent-bg: #EEF0FF;      /* very-light purple tint — chips, tags */
+  --accent-deep: #6F77E0;    /* deeper purple for text on tint */
+  --accent-mid: #9CA5FF;     /* mid (same as primary in this palette) */
+  --accent-soft: #B5BAFF;    /* lt-purple, midweight emphasis */
+  --accent-pale: #EEF0FF;    /* same as accent-bg in this palette */
 
-  /* ---- Warm secondary (peach) ---- */
-  --warm-text: #C8733A;
-  --warm-mid: #F5C4A8;
-  --warm-bg: #FAF0E8;
+  /* ---- Trait tones ---- */
+  --amber: #F4C84A;
+  --amber-bg: #FEF8E7;
+  --amber-text: #C09020;
 
-  /* ---- Coral / soft red ---- */
-  --coral-text: #B85858;
-  --coral-mid: #E8A8A8;
-  --coral-bg: #FAE8E8;
+  --lav: #C5BFEF;
+  --lav-bg: #EEF0FF;
 
-  /* ---- Mulberry — used for "today/now" emphasis ---- */
-  --mulberry: #7D3A4A;
+  --coral: #E8836A;
+  --coral-bg: #FCEEE9;
+  --coral-text: #B85838;
+
+  --green: #5DC87A;
+  --green-bg: #E8F9EE;
+  --green-text: #2A8A4A;
+
+  --lt-purple: #B5BAFF;
+
+  /* ---- Compat aliases for existing components (warm/coral/mulberry) ---- */
+  --warm-text: var(--amber-text);
+  --warm-mid: var(--amber);
+  --warm-bg: var(--amber-bg);
+
+  --coral-mid: var(--coral);
+  /* coral-text/coral-bg already defined above */
+
+  --mulberry: var(--coral);
 
   /* ---- Semantic ---- */
-  --success: #2A5C41;
-  --warning: #C8733A;
-  --danger: #B85858;
+  --success: var(--green);
+  --warning: var(--amber-text);
+  --danger: var(--coral-text);
 
   /* ---- Typography ---- */
   --font-sans:
     var(--font-body),
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  --text-display: 2.75rem;      /* 44px */
-  --text-title-1: 2rem;         /* 32px */
-  --text-title-2: 1.375rem;     /* 22px */
-  --text-title-3: 1.25rem;      /* 20px */
-  --text-headline: 1.0625rem;   /* 17px */
-  --text-body: 1.0625rem;       /* 17px */
-  --text-body-large: 1.1875rem; /* 19px */
-  --text-callout: 1rem;         /* 16px */
-  --text-subhead: 0.9375rem;    /* 15px */
-  --text-footnote: 0.8125rem;   /* 13px */
-  --text-caption: 0.75rem;      /* 12px */
+  --text-display: 3.125rem;     /* 50px — pg-title */
+  --text-title-1: 2.375rem;     /* 38px — obs-h, setup-h */
+  --text-title-2: 1.75rem;      /* 28px — child-name, stat2 */
+  --text-title-3: 1.375rem;     /* 22px — sec-h, sc-val */
+  --text-headline: 1.125rem;    /* 18px — di-name, brand */
+  --text-body: 1rem;            /* 16px — f-inp, cta, begin */
+  --text-body-large: 1.0625rem; /* 17px */
+  --text-callout: 0.9375rem;    /* 15px — di-icon labels */
+  --text-subhead: 0.875rem;     /* 14px — generic body */
+  --text-footnote: 0.8125rem;   /* 13px — pt, pill, menu-btn */
+  --text-caption: 0.75rem;      /* 12px — sc-lbl, mj-sub */
+  --text-micro: 0.6875rem;      /* 11px — f-lbl, sc-badge, nb-lbl */
 
   /* ---- Spacing ---- */
   --space-1: 4px;
@@ -87,61 +103,32 @@
   --space-20: 80px;
 
   /* ---- Radii ---- */
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  --radius-sm: 12px;            /* small pills */
+  --radius-md: 14px;            /* inputs */
+  --radius-lg: 20px;            /* cards */
+  --radius-xl: 22px;            /* large cards */
+  --radius-2xl: 27px;           /* primary CTAs */
   --radius-full: 9999px;
 
-  /* ---- Shadows (matched to design's soft card lift) ---- */
+  /* ---- Shadows ---- */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 2px 14px rgba(0, 0, 0, 0.055);
-  --shadow-lg: 0 16px 40px -16px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 2px 14px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04);
 
   /* ---- Motion ---- */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.06, 0.64, 1);
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-slow: 400ms;
 }
 
-/* ---- Color: dark mode ---- */
-/* Round-3 has not been re-keyed for dark; the prior set still applies. */
+/* Dark mode is intentionally not re-keyed — the new identity is light-only.
+   We keep .dark a no-op so next-themes doesn't crash if the user toggles it
+   from a stale preference. */
 .dark {
-  --bg: #000000;
-  --bg-elevated: #1C1C1E;
-  --bg-input: #1C1C1E;
-  --bg-alt: #2C2C2E;
-  --bg-overlay: rgba(0, 0, 0, 0.6);
-
-  --ink: #F5F5F7;
-  --ink-secondary: #AEAEB2;
-  --ink-tertiary: #8E8E93;
-  --ink-quaternary: #48484A;
-
-  --line: #38383A;
-  --line-subtle: #2C2C2E;
-
-  --accent: #3D7A5C;
-  --accent-pressed: #5BA37D;
-  --accent-bg: #0F2419;
-  --accent-deep: #5BA37D;
-  --accent-mid: #5BA37D;
-  --accent-soft: #2A5C41;
-  --accent-pale: #1D3B2C;
-
-  --warm-text: #E89B6F;
-  --warm-mid: #C8733A;
-  --warm-bg: #2A1A0F;
-
-  --coral-text: #E89494;
-  --coral-mid: #B85858;
-  --coral-bg: #2A1414;
-
-  --mulberry: #C58594;
-
-  --success: #5BA37D;
-  --warning: #E89B6F;
-  --danger: #E89494;
+  /* identical to :root above; the splash + onboarding render their own
+     dark surfaces via inline backgrounds, not via .dark. */
 }

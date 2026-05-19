@@ -1,27 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { OnboardingGate } from "@/components/shared/OnboardingGate";
 import SplashGate from "@/components/shared/SplashGate";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 
-// Display serif: Fraunces variable, with the optical-size axis so we get
-// the right cut at every headline size. Loaded as a CSS variable so we can
-// opt-in per-element via the Tailwind `font-display` utility; body text
-// continues to use Inter via --font-body.
-const fraunces = Fraunces({
+// Round-4 design uses a single family: Plus Jakarta Sans, weights 300-800.
+// Loaded as a CSS variable (`--font-body`) so the Tailwind `font-sans`
+// utility (and `font-display`, kept as an alias) both resolve to it.
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: "variable",
-  axes: ["opsz"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: "variable",
+  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-body",
   display: "swap",
 });
@@ -31,7 +21,7 @@ export const metadata: Metadata = {
     default: "Fokus",
     template: "%s · Fokus",
   },
-  description: "One small moment a day with your child.",
+  description: "A calm companion for the invisible moments that matter.",
   applicationName: "Fokus",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -56,16 +46,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  // Intentionally omit maximumScale, since pinch-to-zoom must stay enabled for
-  // low-vision accessibility (WCAG 2.5.4). Lighthouse fails meta-viewport
-  // when maximum-scale < 5 or user-scalable=no.
   viewportFit: "cover",
-  // Pinned to the cream regardless of OS preference. Default theme is "light"
-  // (see components/shared/ThemeProvider.tsx) so a fresh install on a dark
-  // phone still opens light; the status-bar tint should match.
-  themeColor: "#F4F3EE",
-  // Tells the UA we only render in light. Form controls + scrollbars stop
-  // auto-darkening; matches the defaultTheme="light" choice above.
+  // Warm beige bg in the new identity; status bar should match.
+  themeColor: "#E9E6DC",
   colorScheme: "light",
 };
 
@@ -76,9 +59,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`h-full ${fraunces.variable} ${inter.variable}`}
+      className={`h-full ${jakarta.variable}`}
     >
-      <body className="min-h-full bg-bg text-ink font-sans">
+      <body className="min-h-full bg-bg text-ink font-sans antialiased">
         <ThemeProvider>
           <ToastProvider>
             <SplashGate>

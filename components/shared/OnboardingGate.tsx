@@ -16,7 +16,9 @@ const FIRST_RUN_ALLOWED = (path: string): boolean =>
   path.startsWith("/dev");
 
 const CHILD_ONBOARDING_ALLOWED = (path: string): boolean =>
-  path === "/onboarding/child" || path.startsWith("/dev");
+  path === "/onboarding/child" ||
+  path === "/intro" ||
+  path.startsWith("/dev");
 
 /**
  * Client-side onboarding gate. Reads IndexedDB on mount, then:
@@ -68,9 +70,13 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
         if (cancelled) return;
 
         if (kids.length === 0) {
+          // Round-4: the parent record exists but no children yet — the
+          // setup form on /intro creates both at once, so send users there
+          // rather than into the standalone child onboarding (which is
+          // reserved for "add another child" from /profile).
           if (!CHILD_ONBOARDING_ALLOWED(pathname)) {
             navigatingRef.current = true;
-            router.replace("/onboarding/child");
+            router.replace("/intro");
           }
           setChecked(true);
           return;

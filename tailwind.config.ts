@@ -2,16 +2,11 @@ import type { Config } from "tailwindcss";
 
 /**
  * Fokus Tailwind config — maps CSS variables (see styles/tokens.css)
- * to utilities so colors / type / spacing stay in one source of truth
- * and switch automatically with .dark.
+ * to utilities so colors / type / spacing stay in one source of truth.
  *
- * Examples:
- *   bg-bg, bg-bg-elevated
- *   text-ink, text-ink-secondary
- *   border-line, border-line-subtle
- *   bg-accent, text-accent
- *   text-display, text-title-1, text-body, text-footnote
- *   rounded-lg, p-5, shadow-md
+ * Round-4 design (purple + beige) — Plus Jakarta Sans only, no display
+ * serif. Color names like accent-* still resolve so existing call sites
+ * don't have to be rewritten for the rebrand.
  */
 const config: Config = {
   darkMode: "class",
@@ -49,15 +44,32 @@ const config: Config = {
           soft: "var(--accent-soft)",
           pale: "var(--accent-pale)",
         },
+        amber: {
+          DEFAULT: "var(--amber)",
+          bg: "var(--amber-bg)",
+          text: "var(--amber-text)",
+        },
+        lav: {
+          DEFAULT: "var(--lav)",
+          bg: "var(--lav-bg)",
+        },
+        coral: {
+          DEFAULT: "var(--coral)",
+          bg: "var(--coral-bg)",
+          text: "var(--coral-text)",
+          mid: "var(--coral-mid)",
+        },
+        green: {
+          DEFAULT: "var(--green)",
+          bg: "var(--green-bg)",
+          text: "var(--green-text)",
+        },
+        "lt-purple": "var(--lt-purple)",
+        // Compat aliases for existing call sites
         warm: {
           text: "var(--warm-text)",
           mid: "var(--warm-mid)",
           bg: "var(--warm-bg)",
-        },
-        coral: {
-          text: "var(--coral-text)",
-          mid: "var(--coral-mid)",
-          bg: "var(--coral-bg)",
         },
         mulberry: "var(--mulberry)",
         success: "var(--success)",
@@ -65,8 +77,7 @@ const config: Config = {
         danger: "var(--danger)",
       },
       fontFamily: {
-        // Body — Inter (loaded by next/font in app/layout.tsx) with a system
-        // fallback for the brief paint before the font ships.
+        // Single family — Plus Jakarta Sans loaded by next/font.
         sans: [
           "var(--font-body)",
           "-apple-system",
@@ -75,34 +86,30 @@ const config: Config = {
           "Roboto",
           "sans-serif",
         ],
-        // Display — Fraunces variable serif. Opt-in via the `font-display`
-        // utility on headlines; body text continues to use sans.
+        // `font-display` retained as an alias to `font-sans` so existing
+        // call sites don't break; the new identity uses one family only.
         display: [
-          "var(--font-display)",
-          "'Iowan Old Style'",
-          "Palatino",
-          "Georgia",
-          "Cambria",
-          "serif",
+          "var(--font-body)",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "sans-serif",
         ],
       },
       fontSize: {
-        display: ["var(--text-display)", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
-        "title-1": ["var(--text-title-1)", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
-        "title-2": ["var(--text-title-2)", { lineHeight: "1.25", fontWeight: "600" }],
-        "title-3": ["var(--text-title-3)", { lineHeight: "1.3", fontWeight: "600" }],
-        headline: ["var(--text-headline)", { lineHeight: "1.4", fontWeight: "600" }],
+        display: ["var(--text-display)", { lineHeight: "1.05", letterSpacing: "-0.035em", fontWeight: "800" }],
+        "title-1": ["var(--text-title-1)", { lineHeight: "1.1", letterSpacing: "-0.03em", fontWeight: "800" }],
+        "title-2": ["var(--text-title-2)", { lineHeight: "1.15", letterSpacing: "-0.025em", fontWeight: "800" }],
+        "title-3": ["var(--text-title-3)", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+        headline: ["var(--text-headline)", { lineHeight: "1.3", fontWeight: "700" }],
         body: ["var(--text-body)", { lineHeight: "1.5", fontWeight: "400" }],
-        "body-large": ["var(--text-body-large)", { lineHeight: "1.6", fontWeight: "400" }],
-        callout: ["var(--text-callout)", { lineHeight: "1.5", fontWeight: "400" }],
+        "body-large": ["var(--text-body-large)", { lineHeight: "1.55", fontWeight: "400" }],
+        callout: ["var(--text-callout)", { lineHeight: "1.5", fontWeight: "500" }],
         subhead: ["var(--text-subhead)", { lineHeight: "1.5", fontWeight: "400" }],
-        // footnote + caption use weight 350 (one step lighter than body).
-        // Pairs with the light-mode --ink-tertiary collapse: now that
-        // secondary and tertiary share a color, the lighter weight on
-        // captions/footnotes is what restores the hierarchy. 350 is a
-        // variable-font weight; static fonts round to 400, which is fine.
-        footnote: ["var(--text-footnote)", { lineHeight: "1.45", fontWeight: "350" }],
-        caption: ["var(--text-caption)", { lineHeight: "1.4", fontWeight: "350" }],
+        footnote: ["var(--text-footnote)", { lineHeight: "1.5", fontWeight: "500" }],
+        caption: ["var(--text-caption)", { lineHeight: "1.4", fontWeight: "500" }],
+        micro: ["var(--text-micro)", { lineHeight: "1.4", letterSpacing: "0.05em", fontWeight: "700" }],
       },
       spacing: {
         1: "var(--space-1)",
@@ -122,16 +129,19 @@ const config: Config = {
         md: "var(--radius-md)",
         lg: "var(--radius-lg)",
         xl: "var(--radius-xl)",
+        "2xl": "var(--radius-2xl)",
         full: "var(--radius-full)",
       },
       boxShadow: {
         sm: "var(--shadow-sm)",
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
+        card: "var(--shadow-card)",
       },
       transitionTimingFunction: {
         out: "var(--ease-out)",
         "in-out": "var(--ease-in-out)",
+        spring: "var(--ease-spring)",
       },
       transitionDuration: {
         fast: "150ms",
