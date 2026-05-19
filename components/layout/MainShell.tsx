@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Compass, Home, User } from "lucide-react";
+import { Activity, BookOpen, Home, User } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -12,14 +12,14 @@ interface TabDef extends Omit<TabItem, "onClick"> {
 }
 
 /**
- * Tabs render only on each tab's root path. Detail routes under (main)
- * (activity/[id], log/[activityId], compass/skill/[skill], profile/settings)
- * deliberately hide the tab bar so detail screens get the full viewport.
+ * Spec-locked 4-tab nav: Today / Library / Track / Profile. Detail routes
+ * (activity/[id], log/[activityId], profile/settings) hide the tab bar so
+ * detail screens get the full viewport.
  */
 const TABS: TabDef[] = [
   { key: "today", label: "Today", icon: Home, path: "/today" },
   { key: "library", label: "Library", icon: BookOpen, path: "/library" },
-  { key: "compass", label: "Compass", icon: Compass, path: "/compass" },
+  { key: "track", label: "Track", icon: Activity, path: "/map" },
   { key: "profile", label: "Profile", icon: User, path: "/profile" },
 ];
 

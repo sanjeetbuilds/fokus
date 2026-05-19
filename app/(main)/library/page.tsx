@@ -4,98 +4,30 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import AppHeader from "@/components/layout/AppHeader";
 import { ACTIVITIES } from "@/lib/content/activities";
+import { SKILLS, SKILL_KEYS } from "@/lib/content/skills";
 import type { Activity, SkillKey } from "@/types";
 
-type FilterKey = "all" | "sensory" | "storytelling" | "movement" | "mindfulness";
+type FilterKey = "all" | SkillKey;
 
-interface FilterDef {
-  key: FilterKey;
-  label: string;
-  /** Skills whose activities fit this surface category. */
-  skills: SkillKey[];
-}
-
-const FILTERS: FilterDef[] = [
-  { key: "all", label: "All", skills: [] },
-  { key: "sensory", label: "Sensory", skills: ["observation"] },
-  { key: "storytelling", label: "Storytelling", skills: ["language", "creativity"] },
-  { key: "movement", label: "Movement", skills: ["decisiveness"] },
-  { key: "mindfulness", label: "Mindfulness", skills: ["emotional", "resilience"] },
-];
-
-// Skill → emoji + colored chip tint used in the activity-row icon square.
-const SKILL_VISUAL: Record<SkillKey, { emoji: string; bg: string; tagColor: string; tagBg: string; categoryLabel: string }> = {
-  curiosity: {
-    emoji: "🔮",
-    bg: "var(--amber-bg)",
-    tagColor: "var(--amber-text)",
-    tagBg: "var(--amber-bg)",
-    categoryLabel: "Curiosity",
-  },
-  thinking: {
-    emoji: "🧩",
-    bg: "var(--accent-bg)",
-    tagColor: "var(--accent-deep)",
-    tagBg: "var(--accent-bg)",
-    categoryLabel: "Thinking",
-  },
-  language: {
-    emoji: "📖",
-    bg: "var(--accent-bg)",
-    tagColor: "var(--accent-deep)",
-    tagBg: "var(--accent-bg)",
-    categoryLabel: "Storytelling",
-  },
-  emotional: {
-    emoji: "🪞",
-    bg: "var(--coral-bg)",
-    tagColor: "var(--coral-text)",
-    tagBg: "var(--coral-bg)",
-    categoryLabel: "Empathy",
-  },
-  resilience: {
-    emoji: "🌿",
-    bg: "var(--coral-bg)",
-    tagColor: "var(--coral-text)",
-    tagBg: "var(--coral-bg)",
-    categoryLabel: "Mindfulness",
-  },
-  creativity: {
-    emoji: "🎨",
-    bg: "var(--green-bg)",
-    tagColor: "var(--green-text)",
-    tagBg: "var(--green-bg)",
-    categoryLabel: "Creative",
-  },
-  observation: {
-    emoji: "🔍",
-    bg: "var(--green-bg)",
-    tagColor: "var(--green-text)",
-    tagBg: "var(--green-bg)",
-    categoryLabel: "Sensory",
-  },
-  decisiveness: {
-    emoji: "🏗️",
-    bg: "var(--accent-bg)",
-    tagColor: "var(--accent-deep)",
-    tagBg: "var(--accent-bg)",
-    categoryLabel: "Movement",
-  },
-};
-
+/**
+ * Library — pill filters across the 8 spec skills (no invented
+ * categories), purple Today's Pick hero, and a list of activity rows
+ * with contextual Lucide icons in skill-tinted squares.
+ */
 export default function LibraryPage() {
   const [filter, setFilter] = useState<FilterKey>("all");
 
-  const filtered = useMemo(() => {
-    if (filter === "all") return ACTIVITIES;
-    const def = FILTERS.find((f) => f.key === filter);
-    if (!def) return ACTIVITIES;
-    return ACTIVITIES.filter((a) => def.skills.includes(a.skill));
-  }, [filter]);
+  const filtered = useMemo(
+    () =>
+      filter === "all"
+        ? ACTIVITIES
+        : ACTIVITIES.filter((a) => a.skill === filter),
+    [filter],
+  );
 
-  // Featured = first activity in the active filter.
   const featured = filtered[0];
   const rest = featured ? filtered.slice(1) : filtered;
 
@@ -119,24 +51,21 @@ export default function LibraryPage() {
         </h1>
 
         <div className="-mr-6 mb-5 flex gap-2 overflow-x-auto pb-1">
-          {FILTERS.map((f) => {
-            const on = filter === f.key;
-            return (
-              <button
-                key={f.key}
-                type="button"
-                onClick={() => setFilter(f.key)}
-                className="whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors"
-                style={{
-                  background: on ? "var(--ink)" : "var(--bg-elevated)",
-                  border: `1.5px solid ${on ? "var(--ink)" : "var(--line)"}`,
-                  color: on ? "#fff" : "var(--ink)",
-                }}
-              >
-                {f.label}
-              </button>
-            );
-          })}
+          <FilterPill
+            label="All"
+            color={null}
+            active={filter === "all"}
+            onClick={() => setFilter("all")}
+          />
+          {SKILL_KEYS.map((k) => (
+            <FilterPill
+              key={k}
+              label={SKILLS[k].label}
+              color={SKILLS[k].color}
+              active={filter === k}
+              onClick={() => setFilter(k)}
+            />
+          ))}
         </div>
 
         {featured ? <FeaturedPick activity={featured} /> : null}
@@ -163,7 +92,7 @@ export default function LibraryPage() {
 
         {filtered.length === 0 ? (
           <p className="mt-10 text-center text-[14px] text-ink-tertiary">
-            No activities in this category yet.
+            No activities in this skill yet.
           </p>
         ) : null}
       </div>
@@ -171,64 +100,90 @@ export default function LibraryPage() {
   );
 }
 
+function FilterPill({
+  label,
+  color,
+  active,
+  onClick,
+}: {
+  label: string;
+  /** Skill color; null for the "All" pill. */
+  color: string | null;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors"
+      style={{
+        background: active ? "var(--ink)" : "var(--bg-elevated)",
+        border: `1.5px solid ${active ? "var(--ink)" : "var(--line)"}`,
+        color: active ? "#fff" : "var(--ink)",
+      }}
+    >
+      {color ? (
+        <span
+          aria-hidden
+          className="inline-block h-1.5 w-1.5 rounded-full"
+          style={{ background: color }}
+        />
+      ) : null}
+      {label}
+    </button>
+  );
+}
+
 function FeaturedPick({ activity }: { activity: Activity }) {
+  const skill = SKILLS[activity.skill];
   return (
     <Link
       href={`/activity/${activity.id}?from=library`}
       className="mb-6 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-[22px]"
     >
       <div
-        className="relative flex min-h-[120px] flex-col justify-between overflow-hidden rounded-[22px] p-4"
+        className="relative flex min-h-[128px] items-center gap-3.5 overflow-hidden rounded-[22px] p-4"
         style={{ background: "var(--accent)" }}
       >
-        <div>
+        <div className="min-w-0 flex-1">
           <p
             className="text-[12px] font-semibold"
             style={{ color: "rgba(255,255,255,0.68)", marginBottom: 6 }}
           >
-            Today&apos;s Pick
+            Today&apos;s pick
           </p>
           <p
             className="font-extrabold text-white"
-            style={{
-              fontSize: 26,
-              lineHeight: 1.15,
-              letterSpacing: "-0.025em",
-              maxWidth: "70%",
-            }}
+            style={{ fontSize: 22, lineHeight: 1.2, letterSpacing: "-0.025em" }}
           >
             {activity.title}
           </p>
           <p
-            className="mt-1 text-[11px]"
-            style={{ color: "rgba(255,255,255,0.6)", lineHeight: 1.4, maxWidth: "70%" }}
+            className="mt-1 text-[12px]"
+            style={{ color: "rgba(255,255,255,0.78)", lineHeight: 1.45 }}
           >
             {activity.description}
           </p>
+          <span
+            className="mt-2 inline-flex items-center gap-1 rounded-[10px] px-2.5 py-[3px] text-[11px] font-bold text-white"
+            style={{ background: "rgba(255,255,255,0.22)" }}
+          >
+            Start <ArrowRight size={11} strokeWidth={2.5} />
+          </span>
         </div>
-        <span
-          className="mt-2 inline-flex w-fit items-center gap-1 rounded-[10px] px-2.5 py-[3px] text-[11px] font-bold text-white"
-          style={{ background: "rgba(255,255,255,0.22)" }}
-        >
-          Start now <ArrowRight size={11} strokeWidth={2.5} />
-        </span>
-        <svg
+        <div
           aria-hidden
-          viewBox="0 0 170 38"
-          preserveAspectRatio="none"
-          className="pointer-events-none absolute bottom-0 left-0 right-0"
-          height={38}
-          width="100%"
+          className="flex h-[88px] w-[88px] shrink-0 items-center justify-center rounded-[14px]"
+          style={{ background: skill.color, color: "#fff" }}
         >
-          <path
-            d="M0 24C18 10 30 32 48 22C66 12 76 34 96 22C116 10 128 32 148 22C158 16 164 20 170 18"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            fill="none"
-            opacity={0.35}
+          <ActivityIcon
+            iconName={activity.iconName}
+            skill={activity.skill}
+            size={36}
+            strokeWidth={1.5}
           />
-        </svg>
+        </div>
       </div>
     </Link>
   );
@@ -241,7 +196,7 @@ function ActivityRow({
   activity: Activity;
   isLast: boolean;
 }) {
-  const visual = SKILL_VISUAL[activity.skill];
+  const skill = SKILLS[activity.skill];
   return (
     <div
       className={`flex items-center gap-3.5 py-3.5 ${
@@ -250,11 +205,16 @@ function ActivityRow({
       style={{ borderColor: "var(--line)" }}
     >
       <div
-        className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-[16px] text-[24px]"
-        style={{ background: visual.bg }}
+        className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-[16px]"
+        style={{ background: skill.color, color: "#fff" }}
         aria-hidden
       >
-        {visual.emoji}
+        <ActivityIcon
+          iconName={activity.iconName}
+          skill={activity.skill}
+          size={22}
+          strokeWidth={1.75}
+        />
       </div>
       <div className="min-w-0 flex-1">
         <p
@@ -269,9 +229,12 @@ function ActivityRow({
         <div className="mt-1 flex items-center gap-1.5">
           <span
             className="inline-flex items-center rounded-[10px] px-2 py-[3px] text-[11px] font-bold"
-            style={{ color: visual.tagColor, background: visual.tagBg }}
+            style={{
+              color: skill.color,
+              background: `${skill.color}1F`,
+            }}
           >
-            {visual.categoryLabel}
+            {skill.label}
           </span>
           <span className="text-[11px] text-ink-tertiary">
             {activity.duration} min

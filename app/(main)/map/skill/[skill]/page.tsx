@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 /**
- * Round-4 collapses the 8-skill drill-down — the new Compass surface
- * shows 4 traits instead. This legacy path redirects to /compass.
+ * The per-skill drill-down was retired during the round-4 rewrite and
+ * the round-5 Track surface doesn't reintroduce it. Old bookmarks land
+ * back on Track rather than a 404.
  */
 export default function LegacySkillRedirect() {
   const router = useRouter();
   useEffect(() => {
-    router.replace("/compass");
+    router.replace("/map");
   }, [router]);
   return null;
 }

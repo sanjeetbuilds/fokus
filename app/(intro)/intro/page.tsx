@@ -41,8 +41,8 @@ export default function IntroPage() {
   const setActiveChild = useAppStore((s) => s.setActiveChild);
 
   const [step, setStep] = useState(0); // 0..4 (slides) → 4 is setup
-  const [childName, setChildName] = useState("Leo");
-  const [parentName, setParentName] = useState("Jenny");
+  const [childName, setChildName] = useState("");
+  const [parentName, setParentName] = useState("");
   const [bandIdx, setBandIdx] = useState(1);
   const [busy, setBusy] = useState(false);
 
@@ -735,7 +735,7 @@ function SetupSlide({
               style={{ borderColor: "var(--line)" }}
               value={childName}
               onChange={(e) => setChildName(e.target.value)}
-              placeholder="e.g. Leo"
+              placeholder="Their name"
               autoComplete="off"
               spellCheck={false}
             />
@@ -746,7 +746,7 @@ function SetupSlide({
               style={{ borderColor: "var(--line)" }}
               value={parentName}
               onChange={(e) => setParentName(e.target.value)}
-              placeholder="e.g. Jenny"
+              placeholder="Your name"
               autoComplete="given-name"
               spellCheck={false}
             />

@@ -3,93 +3,63 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import TodayActivityCard from "@/components/activity/TodayActivityCard";
 import AppHeader from "@/components/layout/AppHeader";
+import ReflectionBlock from "@/components/today/ReflectionBlock";
 import ReflectSheet from "@/components/today/ReflectSheet";
-import TellMoreNudge from "@/components/today/TellMoreNudge";
 import { useToast } from "@/components/ui/Toast";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
-import { db, getChild, getSessionsByDate } from "@/lib/db";
+import { createSession, db, getChild, getSessionsByDate } from "@/lib/db";
 import { pickActivity, RestDayError } from "@/lib/engine";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { today as todayIso } from "@/lib/utils/dates";
 import type {
-  Activity,
   Child,
   ChildMood,
   Session,
-  SkillKey,
   TimeAvailable,
 } from "@/types";
 
-const TIME: TimeAvailable = "medium";
-const MOOD: ChildMood = "normal";
-
-interface CardSpec {
-  key: string;
-  label: string;
-  /** Background style for the colored card. */
-  bg: string;
-  /** Skill bias so each card surfaces a different kind of activity. */
-  preferredSkills?: SkillKey[];
-  /** Duration filter (minutes). */
-  durationCap?: number;
-  fallbackTitle: string;
-  fallbackBadge: string;
-}
-
-// The 2x2 grid surfaces 4 picks — primary engine pick, plus 3 themed
-// alternates filtered by skill bias and duration so each card lands on a
-// different kind of moment.
-const CARD_SPECS: CardSpec[] = [
-  {
-    key: "primary",
-    label: "Today's Activity",
-    bg: "var(--accent)",
-    fallbackTitle: "Observation Game",
-    fallbackBadge: "10 min · Empathy",
-  },
-  {
-    key: "theme",
-    label: "Today's Theme",
-    bg: "var(--amber)",
-    preferredSkills: ["curiosity", "thinking"],
-    fallbackTitle: "Curiosity & Wonder",
-    fallbackBadge: "Creative play",
-  },
-  {
-    key: "calm",
-    label: "Calm Practice",
-    bg: "var(--lav)",
-    preferredSkills: ["emotional"],
-    durationCap: 10,
-    fallbackTitle: "5 min Breathing",
-    fallbackBadge: "Mindfulness",
-  },
-  {
-    key: "movement",
-    label: "Movement",
-    bg: "var(--coral)",
-    preferredSkills: ["decisiveness", "creativity"],
-    fallbackTitle: "Active Adventure",
-    fallbackBadge: "Indoor play",
-  },
+const TIME_OPTIONS: { value: TimeAvailable; label: string }[] = [
+  { value: "short", label: "5 min" },
+  { value: "medium", label: "10–15 min" },
+  { value: "long", label: "20+ min" },
 ];
 
+const MOOD_OPTIONS: { value: ChildMood; label: string }[] = [
+  { value: "low", label: "Low energy" },
+  { value: "normal", label: "Steady" },
+  { value: "high", label: "Buzzing" },
+];
+
+/**
+ * Today — back to the SPEC shape after the round-4 detour:
+ *   header → page title → reflection block → time chips → mood chips →
+ *   single activity card.
+ *
+ * No 2x2 stat grid, no Child's Diary, no "tell us more" nudge — those
+ * either belonged on Track (the recent-moments memory) or had to go
+ * entirely (the nudge duplicated what the reflection block already says).
+ */
 export default function TodayPage() {
   const router = useRouter();
   const { toast } = useToast();
   const activeChildId = useAppStore((s) => s.activeChildId);
+  const setLastPickContext = useAppStore((s) => s.setLastPickContext);
 
   const [child, setChild] = useState<Child | null>(null);
-  const [allSessions, setAllSessions] = useState<Session[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [todaysSessions, setTodaysSessions] = useState<Session[]>([]);
   const [loaded, setLoaded] = useState(false);
+
+  const [time, setTime] = useState<TimeAvailable>("medium");
+  const [mood, setMood] = useState<ChildMood>("normal");
+  const [pickedActivityId, setPickedActivityId] = useState<string | null>(null);
+  const [restDay, setRestDay] = useState(false);
   const [reflectActivityId, setReflectActivityId] = useState<string | null>(
     null,
   );
-  const [diaryFilter, setDiaryFilter] = useState<
-    "today" | "yesterday" | "week" | "month"
-  >("today");
+  const [skipBusy, setSkipBusy] = useState(false);
 
   const todayDate = useMemo(() => todayIso(), []);
 
@@ -105,7 +75,7 @@ export default function TodayPage() {
         getSessionsByDate(activeChildId, todayDate),
       ]);
       setChild(c ?? null);
-      setAllSessions(all);
+      setSessions(all);
       setTodaysSessions(todays);
     } catch (err) {
       console.error("[/today] load:", err);
@@ -118,71 +88,80 @@ export default function TodayPage() {
     void reload();
   }, [reload]);
 
-  // Pick the four cards. The first is the engine's primary pick; the other
-  // three filter the library by skill bias / duration and pick the first
-  // match that isn't the primary, so the grid shows four distinct moments.
-  const cards = useMemo(() => {
+  // Re-pick whenever the active child or time/mood changes, if the parent
+  // hasn't yet logged anything today.
+  useEffect(() => {
     if (!child || todaysSessions.length > 0) {
-      return CARD_SPECS.map((spec) => ({ spec, activity: null as Activity | null }));
+      setRestDay(false);
+      return;
     }
-    const used = new Set<string>();
-    const out: Array<{ spec: CardSpec; activity: Activity | null }> = [];
-
-    const tryPrimary = () => {
-      try {
-        const r = pickActivity(
-          child,
-          allSessions,
-          { timeAvailable: TIME, childMood: MOOD },
-          new Date(),
-          ACTIVITIES,
-        );
-        used.add(r.pick.id);
-        return r.pick;
-      } catch (err) {
-        if (err instanceof RestDayError) return null;
-        console.error("[/today] pickActivity:", err);
-        return null;
-      }
-    };
-
-    const primary = tryPrimary();
-    out.push({ spec: CARD_SPECS[0]!, activity: primary });
-
-    for (let i = 1; i < CARD_SPECS.length; i++) {
-      const spec = CARD_SPECS[i]!;
-      const pool = ACTIVITIES.filter((a) => {
-        if (used.has(a.id)) return false;
-        if (spec.preferredSkills && !spec.preferredSkills.includes(a.skill))
-          return false;
-        if (spec.durationCap && a.duration > spec.durationCap) return false;
-        if (a.ageRange[0] > child.age || a.ageRange[1] < child.age)
-          return false;
-        return true;
+    try {
+      const r = pickActivity(
+        child,
+        sessions,
+        { timeAvailable: time, childMood: mood },
+        new Date(),
+        ACTIVITIES,
+      );
+      setPickedActivityId(r.pick.id);
+      setRestDay(false);
+      setLastPickContext({
+        childId: child.id,
+        activityId: r.pick.id,
+        time,
+        mood,
+        date: todayDate,
       });
-      const pick = pool[0] ?? null;
-      if (pick) used.add(pick.id);
-      out.push({ spec, activity: pick });
+    } catch (err) {
+      if (err instanceof RestDayError) {
+        setPickedActivityId(null);
+        setRestDay(true);
+        return;
+      }
+      console.error("[/today] pickActivity:", err);
     }
-    return out;
-  }, [allSessions, child, todaysSessions.length]);
+  }, [child, sessions, todaysSessions.length, time, mood, todayDate, setLastPickContext]);
 
-  const diaryRows = useMemo(() => {
-    if (!child) return [];
-    const now = new Date();
-    const cutoff = new Date(now);
-    if (diaryFilter === "today") cutoff.setHours(0, 0, 0, 0);
-    else if (diaryFilter === "yesterday") {
-      cutoff.setDate(cutoff.getDate() - 1);
-      cutoff.setHours(0, 0, 0, 0);
-    } else if (diaryFilter === "week") cutoff.setDate(cutoff.getDate() - 7);
-    else cutoff.setDate(cutoff.getDate() - 30);
-    const cutoffIso = cutoff.toISOString().slice(0, 10);
-    return allSessions
-      .filter((s) => s.date >= cutoffIso)
-      .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
-      .slice(0, 6);
-  }, [allSessions, child, diaryFilter]);
+  const pickedActivity = useMemo(
+    () => (pickedActivityId ? getActivityById(pickedActivityId) ?? null : null),
+    [pickedActivityId],
+  );
+
+  const truncatedHowTo = useMemo(
+    () => (pickedActivity ? truncateWords(pickedActivity.howTo, 38) : ""),
+    [pickedActivity],
+  );
+
+  const onMoreDetail = useCallback(() => {
+    if (!pickedActivity) return;
+    const qs = new URLSearchParams({ time, mood, from: "today" });
+    router.push(`/activity/${pickedActivity.id}?${qs.toString()}`);
+  }, [mood, pickedActivity, router, time]);
+
+  const onSkipToday = useCallback(async () => {
+    if (!pickedActivity || !activeChildId || skipBusy) return;
+    setSkipBusy(true);
+    try {
+      await createSession({
+        childId: activeChildId,
+        activityId: pickedActivity.id,
+        date: todayDate,
+        response: "skipped",
+        context: { timeAvailable: time, childMood: mood },
+      });
+      await reload();
+    } catch (err) {
+      console.error("[/today] skip:", err);
+      toast("Couldn't save. Try again.", { tone: "danger" });
+    } finally {
+      setSkipBusy(false);
+    }
+  }, [activeChildId, mood, pickedActivity, reload, skipBusy, time, todayDate, toast]);
+
+  const onReflected = useCallback(async () => {
+    setReflectActivityId(null);
+    await reload();
+  }, [reload]);
 
   if (!loaded) {
     return (
@@ -200,26 +179,11 @@ export default function TodayPage() {
     );
   }
 
-  const onCardTap = (activity: Activity | null) => {
-    if (!activity) return;
-    setReflectActivityId(activity.id);
-  };
-
-  const onReflected = async () => {
-    setReflectActivityId(null);
-    await reload();
-    toast("Logged. See you tomorrow.");
-  };
-
   const reflectActivity = reflectActivityId
-    ? getActivityById(reflectActivityId)
+    ? getActivityById(reflectActivityId) ?? null
     : null;
-
-  const needsDeeperProfile =
-    child.englishConfidence === "developing" &&
-    child.interests.length === 0 &&
-    child.struggles.length === 0 &&
-    child.engagement.goesDeepOn.length === 0;
+  const alreadyLogged = todaysSessions.length > 0;
+  const childName = child.name;
 
   return (
     <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col bg-bg pb-[calc(env(safe-area-inset-bottom)+96px)] pt-[calc(env(safe-area-inset-top)+8px)]">
@@ -237,76 +201,58 @@ export default function TodayPage() {
         >
           Today&apos;s
           <br />
-          Focus
+          focus.
         </h1>
 
-        {needsDeeperProfile ? (
-          <TellMoreNudge childName={child.name} />
+        <ReflectionBlock child={child} sessionCount={sessions.length} />
+
+        {!alreadyLogged ? (
+          <>
+            <ChipRow
+              eyebrow="How much time do you have?"
+              options={TIME_OPTIONS}
+              value={time}
+              onChange={setTime}
+            />
+            <ChipRow
+              eyebrow={`How is ${childName} right now?`}
+              options={MOOD_OPTIONS}
+              value={mood}
+              onChange={setMood}
+            />
+          </>
         ) : null}
 
-        <div className="grid grid-cols-2 gap-3" style={{ marginBottom: 30 }}>
-          {cards.map(({ spec, activity }) => (
-            <StatCard
-              key={spec.key}
-              spec={spec}
-              activity={activity}
-              onTap={() => onCardTap(activity)}
+        {restDay ? (
+          <RestDay childName={childName} />
+        ) : alreadyLogged ? (
+          <DoneForToday
+            childName={childName}
+            lastSession={todaysSessions[todaysSessions.length - 1]!}
+          />
+        ) : pickedActivity ? (
+          <div className="mt-2">
+            <TodayActivityCard
+              activity={pickedActivity}
+              onMore={onMoreDetail}
+              onDidIt={() => setReflectActivityId(pickedActivity.id)}
+              onSkip={() => void onSkipToday()}
+              skipBusy={skipBusy}
+              truncatedHowTo={truncatedHowTo}
             />
-          ))}
-        </div>
-
-        <h2
-          className="text-[22px] font-bold text-ink"
-          style={{ letterSpacing: "-0.02em", marginBottom: 16 }}
-        >
-          Child&apos;s Diary
-        </h2>
-
-        <div className="-mr-6 mb-5 flex gap-2 overflow-x-auto pb-1">
-          {(["today", "yesterday", "week", "month"] as const).map((k) => {
-            const on = diaryFilter === k;
-            return (
-              <button
-                key={k}
-                type="button"
-                onClick={() => setDiaryFilter(k)}
-                className="whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors"
-                style={{
-                  background: on ? "var(--ink)" : "var(--bg-elevated)",
-                  border: `1.5px solid ${on ? "var(--ink)" : "var(--line)"}`,
-                  color: on ? "#fff" : "var(--ink)",
-                }}
-              >
-                {k[0]!.toUpperCase() + k.slice(1)}
-              </button>
-            );
-          })}
-        </div>
-
-        <ul className="flex flex-col">
-          {diaryRows.length === 0 ? (
-            <li className="rounded-[20px] border-[1.5px] border-dashed border-ink-quaternary p-5">
-              <p className="text-[14px] text-ink-secondary" style={{ lineHeight: 1.55 }}>
-                Your first logged moment will land here. Tap a card above to
-                begin.
-              </p>
-            </li>
-          ) : null}
-          {diaryRows.map((s, i) => (
-            <DiaryRow
-              key={s.id}
-              session={s}
-              isLast={i === diaryRows.length - 1}
-            />
-          ))}
-        </ul>
+          </div>
+        ) : (
+          <p className="mt-10 text-center text-footnote text-ink-tertiary">
+            No activity matches that filter right now.
+          </p>
+        )}
       </div>
 
       <ReflectSheet
         open={reflectActivity !== null}
-        activity={reflectActivity ?? null}
+        activity={reflectActivity}
         childId={activeChildId}
-        childName={child.name}
+        childName={childName}
         onClose={() => setReflectActivityId(null)}
         onLogged={() => void onReflected()}
       />
@@ -314,162 +260,99 @@ export default function TodayPage() {
   );
 }
 
-// ---------- Stat card (2x2 grid) ----------
-
-function StatCard({
-  spec,
-  activity,
-  onTap,
+function ChipRow<T extends string>({
+  eyebrow,
+  options,
+  value,
+  onChange,
 }: {
-  spec: CardSpec;
-  activity: Activity | null;
-  onTap: () => void;
+  eyebrow: string;
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
 }) {
-  const title = activity ? activity.title : spec.fallbackTitle;
-  const badge = activity
-    ? `${activity.duration} min · ${badgeWord(activity.skill)}`
-    : spec.fallbackBadge;
-
   return (
-    <button
-      type="button"
-      onClick={onTap}
-      className="relative flex min-h-[152px] flex-col justify-between overflow-hidden rounded-[22px] p-4 text-left transition-transform duration-fast active:scale-[0.99]"
-      style={{ background: spec.bg }}
-    >
-      <div>
-        <p
-          className="text-[12px] font-semibold"
-          style={{ color: "rgba(255,255,255,0.68)", marginBottom: 6 }}
-        >
-          {spec.label}
-        </p>
-        <p
-          className="font-extrabold text-white"
-          style={{
-            fontSize: title.length > 18 ? 20 : 22,
-            lineHeight: 1.15,
-            letterSpacing: "-0.025em",
-          }}
-        >
-          {title}
-        </p>
-      </div>
-      <span
-        className="inline-flex items-center gap-1 rounded-[10px] px-2.5 py-[3px] text-[11px] font-bold"
-        style={{
-          background: "rgba(255,255,255,0.22)",
-          color: "rgba(255,255,255,0.92)",
-          width: "fit-content",
-        }}
+    <section className="mb-4">
+      <p
+        className="mb-2 text-[12px] font-semibold uppercase"
+        style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
       >
-        {badge}
-      </span>
-      {spec.key === "primary" || spec.key === "compass" ? (
-        <svg
-          aria-hidden
-          viewBox="0 0 170 38"
-          preserveAspectRatio="none"
-          className="pointer-events-none absolute bottom-0 left-0 right-0"
-          height={38}
-          width="100%"
-        >
-          <path
-            d="M0 24C18 10 30 32 48 22C66 12 76 34 96 22C116 10 128 32 148 22C158 16 164 20 170 18"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            fill="none"
-            opacity={0.35}
-          />
-        </svg>
-      ) : null}
-    </button>
+        {eyebrow}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((opt) => {
+          const on = value === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              className="rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors"
+              style={{
+                background: on ? "var(--ink)" : "var(--bg-elevated)",
+                border: `1.5px solid ${on ? "var(--ink)" : "var(--line)"}`,
+                color: on ? "#fff" : "var(--ink)",
+              }}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
-function badgeWord(skill: SkillKey): string {
-  switch (skill) {
-    case "emotional":
-      return "Empathy";
-    case "creativity":
-      return "Creative";
-    case "language":
-      return "Confidence";
-    case "decisiveness":
-      return "Confidence";
-    case "curiosity":
-      return "Curiosity";
-    case "thinking":
-      return "Curiosity";
-    case "resilience":
-      return "Resilience";
-    case "observation":
-      return "Resilience";
-  }
-}
-
-// ---------- Diary row ----------
-
-function DiaryRow({ session, isLast }: { session: Session; isLast: boolean }) {
-  const activity = getActivityById(session.activityId);
-  const created = new Date(session.createdAt);
-  const ago = relativeTime(created, new Date());
-  const time = created.toLocaleTimeString([], {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-  const duration = activity ? `${activity.duration} minutes` : "";
-
+function RestDay({ childName }: { childName: string }) {
   return (
-    <li className="flex items-start gap-3.5">
-      <div className="flex flex-col items-center">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-dashed border-ink-quaternary">
-          <span
-            aria-hidden
-            className="grid grid-cols-2 gap-[3px]"
-            style={{ width: 9, height: 9 }}
-          >
-            <span className="block h-[3.5px] w-[3.5px] rounded-sm bg-ink-quaternary" />
-            <span className="block h-[3.5px] w-[3.5px] rounded-sm bg-ink-quaternary" />
-            <span className="block h-[3.5px] w-[3.5px] rounded-sm bg-ink-quaternary" />
-            <span className="block h-[3.5px] w-[3.5px] rounded-sm bg-ink-quaternary" />
-          </span>
-        </div>
-        {!isLast ? <span className="my-1 block h-5 w-[1.5px] bg-line" /> : null}
-      </div>
-      <div className="flex-1 pb-5">
-        <div className="flex justify-between text-[12px] text-ink-tertiary">
-          <span>{ago}</span>
-          <span>{time}</span>
-        </div>
-        <p
-          className="text-[18px] font-bold text-ink"
-          style={{ letterSpacing: "-0.01em" }}
-        >
-          {activity?.title ?? "Logged moment"}
-        </p>
-        <p
-          className="text-[14px] font-semibold"
-          style={{
-            color:
-              session.response === "skipped"
-                ? "var(--ink-tertiary)"
-                : "var(--accent)",
-            marginTop: 1,
-          }}
-        >
-          {session.response === "skipped" ? "Skipped" : duration}
-        </p>
-      </div>
-    </li>
+    <section
+      className="mt-2 rounded-[22px] bg-bg-elevated p-5"
+      style={{ border: "1.5px solid var(--line)" }}
+    >
+      <p className="text-[17px] text-ink" style={{ lineHeight: 1.55 }}>
+        Take today off. Just be with{" "}
+        <span className="font-bold">{childName}</span>. The work is the
+        relationship.
+      </p>
+    </section>
   );
 }
 
-function relativeTime(then: Date, now: Date): string {
-  const diff = (now.getTime() - then.getTime()) / 1000;
-  if (diff < 60) return "Just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+function DoneForToday({
+  childName,
+  lastSession,
+}: {
+  childName: string;
+  lastSession: Session;
+}) {
+  const activity = getActivityById(lastSession.activityId);
+  const wasSkipped = lastSession.response === "skipped";
+  return (
+    <section
+      className="mt-2 flex flex-col items-center rounded-[22px] bg-bg-elevated p-6 text-center"
+      style={{ border: "1.5px solid var(--line)" }}
+    >
+      <span aria-hidden className="h-2 w-2 rounded-full bg-ink" />
+      <p
+        className="mt-4 text-[18px] font-bold text-ink"
+        style={{ letterSpacing: "-0.01em" }}
+      >
+        {wasSkipped ? "Marked as skipped." : "Done for today."}
+      </p>
+      {activity ? (
+        <p className="mt-1.5 text-[13px] text-ink-tertiary">
+          {wasSkipped
+            ? `Skipped ${activity.title}.`
+            : `You and ${childName} did ${activity.title}.`}
+        </p>
+      ) : null}
+      <p className="mt-4 text-[13px] text-ink-tertiary">See you tomorrow.</p>
+    </section>
+  );
+}
+
+function truncateWords(text: string, maxWords: number): string {
+  const words = text.split(/\s+/);
+  if (words.length <= maxWords) return text;
+  return words.slice(0, maxWords).join(" ").replace(/[,.;:]$/, "") + "…";
 }

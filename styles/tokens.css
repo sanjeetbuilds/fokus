@@ -14,20 +14,20 @@
 
 :root {
   /* ---- Surfaces ---- */
-  --bg: #E9E6DC;             /* warm beige — body */
-  --bg-elevated: #FFFFFF;    /* white card surface */
-  --bg-input: #EFEDE4;       /* slightly inset (textareas, inputs at rest) */
-  --bg-alt: #E5E3DA;         /* gray-bd — pill bg, separators */
+  --bg: #FFFFFF;             /* pure white body — round-5 reset */
+  --bg-elevated: #FAFAFA;    /* barely-warmer card lift surface */
+  --bg-input: #F4F2EC;       /* slightly inset (textareas, inputs at rest) */
+  --bg-alt: #EEECE5;         /* pill bg, separators — readable on white */
   --bg-overlay: rgba(37, 38, 48, 0.55);
 
   /* ---- Ink ---- */
   --ink: #252630;            /* near-black */
-  --ink-secondary: #8E8D9B;  /* gray */
-  --ink-tertiary: #8E8D9B;   /* collapsed to gray; hierarchy via weight */
-  --ink-quaternary: #C2C0CB; /* gray-lt — placeholder, faint dots */
+  --ink-secondary: #4F4E5A;  /* AA on white (~8:1) */
+  --ink-tertiary: #6E6E73;   /* AA on white (~5.7:1) — caption/footnote */
+  --ink-quaternary: #B8B7C3; /* non-text only (placeholders, faint dots) */
 
-  --line: #E5E3DA;           /* gray-bd — card border */
-  --line-subtle: #EFEDE4;
+  --line: #E8E6DD;           /* card border, visible on white */
+  --line-subtle: #F2F0EA;
 
   /* ---- Accent: lavender-purple ---- */
   --accent: #9CA5FF;         /* primary purple — links, active states */

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import AppHeader from "@/components/layout/AppHeader";
+import SkillFrequencyTiles from "@/components/track/SkillFrequencyTiles";
 import Avatar from "@/components/ui/Avatar";
 import Sheet from "@/components/ui/Sheet";
 import { useToast } from "@/components/ui/Toast";
@@ -18,8 +19,12 @@ import {
 import { useAppStore } from "@/lib/store/useAppStore";
 import type { Child, Session } from "@/types";
 
-const WEEKLY_GOAL_MINUTES = 15 * 60; // 15 hours in minutes
-
+/**
+ * Profile — child journey for the parent. SPEC §2 means no goals, no
+ * scores, no "growing fast" editorializing. The page is identity +
+ * markers + at-a-glance frequency + the parent's own switching/settings
+ * affordances.
+ */
 export default function ProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -100,21 +105,7 @@ export default function ProfilePage() {
   }
 
   const featuredSessions = sessions.filter((s) => s.childId === featured.id);
-  const weeklyMinutes = computeWeeklyMinutes(featuredSessions);
-  const weeklyHours = (weeklyMinutes / 60).toFixed(1);
-  const weeklyPct = Math.min(
-    100,
-    Math.round((weeklyMinutes / WEEKLY_GOAL_MINUTES) * 100),
-  );
-
-  const activitiesTotal = featuredSessions.filter(
-    (s) => s.response !== "skipped",
-  ).length;
-  const skillsTouched = new Set(
-    featuredSessions
-      .filter((s) => s.response !== "skipped")
-      .map((s) => s.activityId),
-  ).size;
+  const subtitle = ageSubtitle(featured);
 
   return (
     <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col bg-bg pb-[calc(env(safe-area-inset-bottom)+96px)] pt-[calc(env(safe-area-inset-top)+8px)]">
@@ -132,40 +123,20 @@ export default function ProfilePage() {
         >
           {featured.name}&apos;s
           <br />
-          Journey
+          journey.
         </h1>
 
-        <ChildHero child={featured} />
+        <ChildHero child={featured} subtitle={subtitle} />
 
         <MarkersSection child={featured} />
 
-        <WeeklyCard
-          weeklyHours={weeklyHours}
-          weeklyPct={weeklyPct}
-          weeklyMinutes={weeklyMinutes}
-        />
-
-        <div className="grid grid-cols-2 gap-3" style={{ marginBottom: 20 }}>
-          <SmallStat
-            label="Activities"
-            value={`${activitiesTotal}`}
-            bg="var(--green)"
-          />
-          <SmallStat
-            label="Skills earned"
-            value={`${String(skillsTouched).padStart(2, "0")}`}
-            bg="var(--lt-purple)"
-          />
-        </div>
-
-        <h2
-          className="text-[22px] font-bold text-ink"
-          style={{ letterSpacing: "-0.02em", marginBottom: 16 }}
+        <p
+          className="mb-3 text-[12px] font-bold uppercase"
+          style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
         >
-          Milestones journal
-        </h2>
-
-        <MilestonesScroll sessions={featuredSessions.slice(0, 6)} />
+          At a glance
+        </p>
+        <SkillFrequencyTiles sessions={featuredSessions} />
 
         <ChildrenList
           children={children}
@@ -229,44 +200,47 @@ export default function ProfilePage() {
   );
 }
 
-function ChildHero({ child }: { child: Child }) {
+function ChildHero({ child, subtitle }: { child: Child; subtitle: string }) {
   return (
     <div className="mb-6 flex flex-col items-center">
-      <div
-        className="mb-3.5 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full text-[50px] text-white"
-        style={{
-          background:
-            "linear-gradient(145deg, #5BC8F5, #29A8E0 60%, #1888C0)",
-          boxShadow: "0 8px 28px rgba(41,168,224,0.38)",
-        }}
-      >
-        {child.photoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={child.photoUrl}
-            alt=""
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          "🙂"
-        )}
-      </div>
+      <Avatar
+        name={child.name}
+        size="lg"
+        photoUrl={child.photoUrl}
+        className="h-24 w-24 text-[40px]"
+      />
       <p
-        className="text-center text-[28px] font-extrabold text-ink"
+        className="mt-4 text-center text-[28px] font-extrabold text-ink"
         style={{ letterSpacing: "-0.025em", marginBottom: 3 }}
       >
         {child.name}
       </p>
-      <p className="text-center text-[14px] text-ink-tertiary">
-        {child.ageBand ?? `Age ${child.age}`} · Growing fast
-      </p>
+      <p className="text-center text-[14px] text-ink-tertiary">{subtitle}</p>
     </div>
   );
 }
 
 function MarkersSection({ child }: { child: Child }) {
   const markers = collectMarkers(child);
-  if (markers.length === 0) return null;
+  if (markers.length === 0) {
+    return (
+      <section className="mb-5">
+        <p
+          className="mb-2.5 text-[12px] font-bold uppercase"
+          style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
+        >
+          What {child.name} loves
+        </p>
+        <Link
+          href="/profile/settings"
+          className="inline-flex rounded-full px-3 py-1.5 text-[12px] font-semibold"
+          style={{ background: "var(--bg-alt)", color: "var(--ink)" }}
+        >
+          + Add interests
+        </Link>
+      </section>
+    );
+  }
   return (
     <section className="mb-5">
       <p
@@ -290,189 +264,8 @@ function MarkersSection({ child }: { child: Child }) {
             {m.label}
           </span>
         ))}
-        <Link
-          href="/profile/settings"
-          className="rounded-full px-3 py-1.5 text-[12px] font-semibold"
-          style={{ background: "var(--bg-alt)", color: "var(--ink)" }}
-        >
-          + Add
-        </Link>
       </div>
     </section>
-  );
-}
-
-function WeeklyCard({
-  weeklyHours,
-  weeklyPct,
-  weeklyMinutes,
-}: {
-  weeklyHours: string;
-  weeklyPct: number;
-  weeklyMinutes: number;
-}) {
-  return (
-    <div
-      className="rounded-[20px] border-[1.5px] border-dashed bg-bg-elevated p-[18px]"
-      style={{ borderColor: "var(--ink-quaternary)", marginBottom: 12 }}
-    >
-      <p className="mb-1 text-[13px] text-ink-tertiary">Weekly activity</p>
-      <div className="mb-2.5 flex items-baseline justify-between">
-        <span
-          className="text-[32px] font-extrabold text-ink"
-          style={{ letterSpacing: "-0.03em" }}
-        >
-          {weeklyHours} hrs
-        </span>
-        <span className="text-[13px] text-ink-quaternary">Goal 15 hrs</span>
-      </div>
-      <div className="h-2 rounded-full bg-bg-alt">
-        <div
-          className="h-full rounded-full"
-          style={{
-            width: `${weeklyPct}%`,
-            background:
-              "linear-gradient(90deg, var(--accent), var(--amber))",
-          }}
-        />
-      </div>
-      <p className="mt-2 text-[12px] text-ink-tertiary">
-        {weeklyMinutes > 0
-          ? `${weeklyMinutes} minutes this week`
-          : "No minutes logged yet this week"}
-      </p>
-    </div>
-  );
-}
-
-function SmallStat({
-  label,
-  value,
-  bg,
-}: {
-  label: string;
-  value: string;
-  bg: string;
-}) {
-  return (
-    <div
-      className="relative flex min-h-[130px] flex-col justify-between overflow-hidden rounded-[20px] p-4"
-      style={{ background: bg }}
-    >
-      <div>
-        <p
-          className="text-[12px] font-semibold"
-          style={{ color: "rgba(255,255,255,0.65)", marginBottom: 8 }}
-        >
-          {label}
-        </p>
-        <p
-          className="text-[28px] font-extrabold text-white"
-          style={{ letterSpacing: "-0.025em", lineHeight: 1 }}
-        >
-          {value}
-        </p>
-      </div>
-      <svg
-        aria-hidden
-        viewBox="0 0 140 32"
-        preserveAspectRatio="none"
-        className="pointer-events-none absolute bottom-0 left-0 right-0"
-        height={32}
-        width="100%"
-      >
-        <path
-          d="M0 20C20 8 30 26 50 18C70 10 80 26 100 18C120 10 130 22 140 16"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          fill="none"
-          opacity={0.35}
-        />
-      </svg>
-    </div>
-  );
-}
-
-function MilestonesScroll({ sessions }: { sessions: Session[] }) {
-  const cardTones = [
-    "var(--accent-bg)",
-    "var(--green-bg)",
-    "var(--amber-bg)",
-    "var(--coral-bg)",
-  ];
-
-  if (sessions.length === 0) {
-    return (
-      <div
-        className="mb-6 rounded-[20px] border-[1.5px] border-dashed p-5 text-center"
-        style={{ borderColor: "var(--ink-quaternary)" }}
-      >
-        <p className="text-[14px] text-ink-secondary" style={{ lineHeight: 1.55 }}>
-          Your first milestones will land here. Log a moment from Today to fill
-          this space.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="-mr-6 mb-6 flex gap-3 overflow-x-auto pb-1"
-      style={{ scrollSnapType: "x mandatory" }}
-    >
-      {sessions.map((s, i) => (
-        <div
-          key={s.id}
-          className="flex min-w-[148px] flex-shrink-0 flex-col rounded-[18px] p-3.5"
-          style={{
-            background: cardTones[i % cardTones.length],
-            scrollSnapAlign: "start",
-          }}
-        >
-          <p
-            className="mb-2.5 text-[10px] font-bold uppercase"
-            style={{ color: "var(--ink-tertiary)", letterSpacing: "0.05em" }}
-          >
-            {formatShortDate(s.date)}
-          </p>
-          <div
-            className="relative mb-2.5 flex h-[68px] items-center justify-center overflow-hidden rounded-[12px]"
-            style={{ background: "rgba(255,255,255,0.55)" }}
-          >
-            <span
-              aria-hidden
-              className="absolute inset-0"
-              style={{
-                background:
-                  "repeating-linear-gradient(-45deg, transparent, transparent 7px, rgba(0,0,0,0.04) 7px, rgba(0,0,0,0.04) 14px)",
-              }}
-            />
-            <span
-              className="relative text-[9px]"
-              style={{ fontFamily: "monospace", color: "var(--ink-tertiary)" }}
-            >
-              memory
-            </span>
-          </div>
-          <p
-            className="text-[13px] font-bold text-ink"
-            style={{ lineHeight: 1.3 }}
-          >
-            {s.response === "loved"
-              ? "Loved this moment!"
-              : s.response === "engaged"
-                ? "Engaged together."
-                : s.response === "skipped"
-                  ? "Skipped today."
-                  : "Worked through it."}
-          </p>
-          <p className="mt-1 text-[11px] text-ink-tertiary">
-            {s.note ?? "Quiet attention."}
-          </p>
-        </div>
-      ))}
-    </div>
   );
 }
 
@@ -488,7 +281,7 @@ function ChildrenList({
   onDelete: (c: Child) => void;
 }) {
   return (
-    <section className="mt-3">
+    <section className="mt-2">
       <p
         className="mb-2.5 text-[12px] font-bold uppercase"
         style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
@@ -501,7 +294,8 @@ function ChildrenList({
           return (
             <li
               key={c.id}
-              className="flex items-center gap-3.5 rounded-[18px] bg-bg-elevated p-3.5 shadow-card"
+              className="flex items-center gap-3.5 rounded-[18px] bg-bg-elevated p-3.5"
+              style={{ border: "1.5px solid var(--line)" }}
             >
               <Avatar
                 name={c.name}
@@ -527,7 +321,7 @@ function ChildrenList({
                   ) : null}
                 </div>
                 <p className="text-[12px] text-ink-tertiary">
-                  {c.ageBand ?? `Age ${c.age}`}
+                  {ageSubtitle(c)}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -581,33 +375,26 @@ function collectMarkers(child: Child): Marker[] {
     if (!key || seen.has(key)) continue;
     seen.add(key);
     out.push({ label: key, kind: "interest" });
-    if (out.length >= 5) return out;
+    if (out.length >= 6) return out;
   }
   for (const label of child.strengths) {
     const key = label.trim();
     if (!key || seen.has(key)) continue;
     seen.add(key);
     out.push({ label: key, kind: "strength" });
-    if (out.length >= 5) return out;
+    if (out.length >= 6) return out;
   }
   return out;
 }
 
-function computeWeeklyMinutes(sessions: readonly Session[]): number {
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - 7);
-  const iso = cutoff.toISOString().slice(0, 10);
-  let total = 0;
-  for (const s of sessions) {
-    if (s.date < iso) continue;
-    if (s.response === "skipped") continue;
-    total += s.duration ?? 10;
-  }
-  return total;
-}
-
-function formatShortDate(iso: string): string {
-  const d = new Date(iso);
-  const m = d.toLocaleString(undefined, { month: "short" }).toUpperCase();
-  return `${m} ${d.getDate()}`;
+/**
+ * "Age 6" or "Age 6 · 1st standard" — no editorialised growth verb. The
+ * round-4 "Growing fast" / "Growing well" subtitle implies judgment;
+ * SPEC §2 keeps observations factual.
+ */
+function ageSubtitle(child: Child): string {
+  const grade = (child.grade ?? "").trim();
+  const ageBit = child.ageBand?.trim() || `Age ${child.age}`;
+  if (grade) return `${ageBit} · ${grade} standard`;
+  return ageBit;
 }

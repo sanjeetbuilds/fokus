@@ -208,11 +208,14 @@ export default function ReflectSheet({
               </p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  "Fine motor",
                   "Curiosity",
-                  "Focus",
-                  "Sensory play",
-                  "Empathy",
+                  "Language confidence",
+                  "Emotional awareness",
+                  "Thinking clarity",
+                  "Resilience",
+                  "Creativity",
+                  "Observation",
+                  "Decisiveness",
                 ].map((tag) => {
                   const on = focusAreas.includes(tag);
                   return (

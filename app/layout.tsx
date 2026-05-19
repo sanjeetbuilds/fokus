@@ -47,8 +47,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  // Warm beige bg in the new identity; status bar should match.
-  themeColor: "#E9E6DC",
+  // Round-5 light-mode bg is pure white; status bar matches.
+  themeColor: "#FFFFFF",
   colorScheme: "light",
 };
 
