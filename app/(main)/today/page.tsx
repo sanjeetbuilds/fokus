@@ -221,7 +221,7 @@ export default function TodayPage() {
           className="text-ink-tertiary"
           style={{
             fontSize: 11,
-            fontWeight: 600,
+            fontWeight: 800,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
           }}
@@ -229,11 +229,11 @@ export default function TodayPage() {
           Tonight with {childName}
         </p>
         <h1
-          className="font-display text-ink"
+          className="text-ink"
           style={{
             marginTop: 6,
             fontSize: 28,
-            fontWeight: 500,
+            fontWeight: 800,
             lineHeight: 1.1,
             letterSpacing: "-0.01em",
           }}
@@ -273,7 +273,7 @@ export default function TodayPage() {
               className="text-ink-tertiary"
               style={{
                 fontSize: 11,
-                fontWeight: 600,
+                fontWeight: 800,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
               }}
@@ -301,7 +301,7 @@ export default function TodayPage() {
             <button
               type="button"
               onClick={() => setPickSalt((s) => s + 1)}
-              className="mt-3 text-[13px] font-semibold transition-colors hover:underline"
+              className="mt-3 text-[13px] font-extrabold transition-colors hover:underline"
               style={{ color: "var(--accent-deep)" }}
             >
               Pick a different activity
@@ -323,7 +323,7 @@ export default function TodayPage() {
             style={{
               color: "var(--accent-deep)",
               fontSize: 13,
-              fontWeight: 600,
+              fontWeight: 800,
             }}
           >
             + Tell us more about {childName} →
@@ -367,7 +367,7 @@ function CompactChipRow<T extends string>({
             key={opt.value}
             type="button"
             onClick={() => onChange(opt.value)}
-            className="rounded-full px-3 text-[12px] font-semibold transition-colors"
+            className="rounded-full px-3 text-[12px] font-extrabold transition-colors"
             style={{
               height: 36,
               background: on ? "var(--ink)" : "var(--bg-elevated)",
@@ -391,7 +391,7 @@ function RestDay({ childName }: { childName: string }) {
     >
       <p className="text-[16px] text-ink" style={{ lineHeight: 1.55 }}>
         Take today off. Just be with{" "}
-        <span className="font-bold">{childName}</span>. The work is the
+        <span className="font-extrabold">{childName}</span>. The work is the
         relationship.
       </p>
     </section>
@@ -414,7 +414,7 @@ function DoneForToday({
     >
       <span aria-hidden className="h-2 w-2 rounded-full bg-ink" />
       <p
-        className="mt-4 text-[18px] font-bold text-ink"
+        className="mt-4 text-[18px] font-extrabold text-ink"
         style={{ letterSpacing: "-0.01em" }}
       >
         {wasSkipped ? "Marked as skipped." : "Done for today."}

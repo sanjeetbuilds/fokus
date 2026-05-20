@@ -149,7 +149,7 @@ function ActivityDetailBody() {
           type="button"
           onClick={onBack}
           aria-label="Back"
-          className="inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] font-medium text-ink-secondary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] font-extrabold text-ink-secondary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
           <span>Back</span>
@@ -162,7 +162,7 @@ function ActivityDetailBody() {
       {/* PRIMARY: What to do tonight — no card wrapper, full-flow */}
       <section className="mt-8">
         <p
-          className="text-[13px] font-semibold uppercase"
+          className="text-[13px] font-extrabold uppercase"
           style={{ color: "var(--accent-deep)", letterSpacing: "0.1em" }}
         >
           What to do tonight
@@ -178,7 +178,7 @@ function ActivityDetailBody() {
       {/* SECONDARY: Example — subtle left-border inset, no card bg */}
       <section className="mt-7">
         <p
-          className="text-[12px] font-semibold uppercase"
+          className="text-[12px] font-extrabold uppercase"
           style={{ color: "var(--ink-secondary)", letterSpacing: "0.1em" }}
         >
           Example
@@ -206,7 +206,7 @@ function ActivityDetailBody() {
           <button
             type="button"
             onClick={onLeftCta}
-            className="h-11 flex-[0_0_38%] rounded-full bg-bg-elevated text-[14px] font-semibold text-ink"
+            className="h-11 flex-[0_0_38%] rounded-full bg-bg-elevated text-[14px] font-extrabold text-ink"
             style={{ border: "1.5px solid var(--line)" }}
           >
             {fromLibrary ? "Back to library" : "Pick another"}
@@ -214,7 +214,7 @@ function ActivityDetailBody() {
           <button
             type="button"
             onClick={onLogIt}
-            className="inline-flex h-11 flex-1 items-center justify-center rounded-full text-[14px] font-semibold text-white"
+            className="inline-flex h-11 flex-1 items-center justify-center rounded-full text-[14px] font-extrabold text-white"
             style={{
               background: "var(--accent)",
               boxShadow: "0 4px 14px -4px rgba(156,165,255,0.45)",
@@ -252,7 +252,7 @@ function ActivityHeader({ activity }: { activity: Activity }) {
         />
       </div>
 
-      <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.12em] text-ink-secondary">
+      <p className="mt-4 text-[12px] font-extrabold uppercase tracking-[0.12em] text-ink-secondary">
         <span style={{ color: skill.color }}>{skill.label}</span>
         <span className="text-ink-quaternary"> · </span>
         <span>{activity.duration} min</span>
@@ -261,10 +261,10 @@ function ActivityHeader({ activity }: { activity: Activity }) {
       </p>
 
       <h1
-        className="mt-3 font-display text-ink"
+        className="mt-3 text-ink"
         style={{
           fontSize: 30,
-          fontWeight: 500,
+          fontWeight: 800,
           lineHeight: 1.15,
           letterSpacing: "-0.015em",
         }}
@@ -359,7 +359,7 @@ function LearnMoreSection({ activity }: { activity: Activity }) {
   return (
     <section className="mt-10">
       <p
-        className="text-[11px] font-semibold uppercase"
+        className="text-[11px] font-extrabold uppercase"
         style={{ color: "var(--ink-tertiary)", letterSpacing: "0.1em" }}
       >
         Learn more ↓
@@ -406,13 +406,13 @@ function LearnMoreSection({ activity }: { activity: Activity }) {
         </CollapsibleRow>
         <CollapsibleRow label="If it's too easy or too hard">
           <p className="text-[15px] text-ink" style={{ lineHeight: 1.6 }}>
-            <span className="font-semibold">Easier:</span> {activity.adapt.easier}
+            <span className="font-extrabold">Easier:</span> {activity.adapt.easier}
           </p>
           <p
             className="mt-2 text-[15px] text-ink"
             style={{ lineHeight: 1.6 }}
           >
-            <span className="font-semibold">Harder:</span> {activity.adapt.harder}
+            <span className="font-extrabold">Harder:</span> {activity.adapt.harder}
           </p>
         </CollapsibleRow>
       </div>
@@ -457,7 +457,7 @@ function CollapsibleRow({
         className="flex w-full items-center justify-between rounded-[8px] py-3.5 pl-4 pr-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         <span
-          className="text-[12px] font-semibold uppercase"
+          className="text-[12px] font-extrabold uppercase"
           style={{ color: labelColor, letterSpacing: "0.08em" }}
         >
           {label}

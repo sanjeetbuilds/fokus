@@ -96,7 +96,7 @@ export default function WeeklyBars({ sessions, today }: WeeklyBarsProps) {
             <span
               className={`text-[11px] ${
                 b.isToday
-                  ? "font-semibold text-mulberry"
+                  ? "font-extrabold text-mulberry"
                   : "text-ink-tertiary"
               }`}
             >

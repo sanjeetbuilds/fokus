@@ -44,14 +44,14 @@ export default function SessionCard({ session }: SessionCardProps) {
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.1em]">
+        <div className="flex items-center justify-between gap-2 text-[11px] font-extrabold uppercase tracking-[0.1em]">
           <span style={{ color: skill?.color ?? "var(--ink-secondary)" }}>
             {skill?.label ?? "Unknown skill"}
           </span>
           <span className="text-ink-tertiary">{formatDate(session.date)}</span>
         </div>
 
-        <h3 className="mt-1 text-[17px] font-semibold leading-[1.3] text-ink">
+        <h3 className="mt-1 text-[17px] font-extrabold leading-[1.3] text-ink">
           {activity?.title ?? session.activityId}
         </h3>
 

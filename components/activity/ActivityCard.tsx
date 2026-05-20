@@ -37,7 +37,7 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.1em]">
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.1em]">
           <span style={{ color: skill.color }}>{skill.label}</span>
           <span className="text-ink-quaternary"> · </span>
           <span className="text-ink-secondary">{activity.duration} min</span>
@@ -47,7 +47,7 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
           </span>
         </p>
 
-        <h3 className="mt-1 text-[17px] font-semibold leading-[1.3] text-ink">
+        <h3 className="mt-1 text-[17px] font-extrabold leading-[1.3] text-ink">
           {activity.title}
         </h3>
 

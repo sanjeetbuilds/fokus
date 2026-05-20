@@ -40,7 +40,7 @@ export default function GreetBar() {
           <p className="text-[12px] text-ink-tertiary leading-tight">
             Welcome back,
           </p>
-          <p className="text-[17px] font-bold leading-tight text-accent-mid">
+          <p className="text-[17px] font-extrabold leading-tight text-accent-mid">
             {name ?? "there"}
           </p>
         </div>

@@ -71,7 +71,7 @@ export default function LibraryPage() {
         {featured ? <FeaturedPick activity={featured} /> : null}
 
         <h2
-          className="text-[22px] font-bold text-ink"
+          className="text-[22px] font-extrabold text-ink"
           style={{ letterSpacing: "-0.02em", marginBottom: 16 }}
         >
           All activities
@@ -116,7 +116,7 @@ function FilterPill({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors"
+      className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-extrabold transition-colors"
       style={{
         background: active ? "var(--ink)" : "var(--bg-elevated)",
         border: `1.5px solid ${active ? "var(--ink)" : "var(--line)"}`,
@@ -148,7 +148,7 @@ function FeaturedPick({ activity }: { activity: Activity }) {
       >
         <div className="min-w-0 flex-1">
           <p
-            className="text-[12px] font-semibold"
+            className="text-[12px] font-extrabold"
             style={{ color: "rgba(255,255,255,0.68)", marginBottom: 6 }}
           >
             Today&apos;s pick
@@ -166,7 +166,7 @@ function FeaturedPick({ activity }: { activity: Activity }) {
             {activity.description}
           </p>
           <span
-            className="mt-2 inline-flex items-center gap-1 rounded-[10px] px-2.5 py-[3px] text-[11px] font-bold text-white"
+            className="mt-2 inline-flex items-center gap-1 rounded-[10px] px-2.5 py-[3px] text-[11px] font-extrabold text-white"
             style={{ background: "rgba(255,255,255,0.22)" }}
           >
             Start <ArrowRight size={11} strokeWidth={2.5} />
@@ -218,7 +218,7 @@ function ActivityRow({
       </div>
       <div className="min-w-0 flex-1">
         <p
-          className="text-[16px] font-bold text-ink"
+          className="text-[16px] font-extrabold text-ink"
           style={{ marginBottom: 3 }}
         >
           {activity.title}
@@ -228,7 +228,7 @@ function ActivityRow({
         </p>
         <div className="mt-1 flex items-center gap-1.5">
           <span
-            className="inline-flex items-center rounded-[10px] px-2 py-[3px] text-[11px] font-bold"
+            className="inline-flex items-center rounded-[10px] px-2 py-[3px] text-[11px] font-extrabold"
             style={{
               color: skill.color,
               background: `${skill.color}1F`,

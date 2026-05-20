@@ -8,7 +8,7 @@ const FADE_MS = 250;
 
 /**
  * Round-6 cold-open splash. White background, centered: a pulsing accent
- * dot, the Fraunces "fokus." wordmark, and an italic two-line tagline.
+ * dot, the Inter 800 "fokus." wordmark, and an italic two-line tagline.
  * Holds HOLD_MS, fades for FADE_MS, then unmounts. Per-session via
  * sessionStorage so warm reloads skip it.
  *
@@ -83,11 +83,11 @@ export default function SplashGate({ children }: { children: ReactNode }) {
           }}
         />
         <p
-          className="font-display text-ink"
+          className="text-ink"
           style={{
             marginTop: 24,
             fontSize: 36,
-            fontWeight: 500,
+            fontWeight: 800,
             letterSpacing: "-0.01em",
             lineHeight: 1,
           }}

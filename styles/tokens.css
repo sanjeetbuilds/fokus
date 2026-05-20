@@ -7,7 +7,7 @@
      - Ink: near-black #252630 (used as primary button bg + text)
      - Primary accent: lavender-purple #9CA5FF (replaces forest green)
      - Supporting hues: amber, lavender, coral, green, lt-purple
-     - Typography: Plus Jakarta Sans, single family, weights 300-800
+     - Typography: Inter, weights 400 and 800 only
      - Headings: 800 weight + very tight negative tracking (-0.025em / -0.035em)
      - Skill tag tints: #EEF0FF / #FEF8E7 / #E8F9EE / #FCEEE9
    ============================================================ */
@@ -72,9 +72,7 @@
   --danger: var(--coral-text);
 
   /* ---- Typography ---- */
-  --font-sans:
-    var(--font-body),
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: var(--font-inter), sans-serif;
 
   --text-display: 3.125rem;     /* 50px — pg-title */
   --text-title-1: 2.375rem;     /* 38px — obs-h, setup-h */

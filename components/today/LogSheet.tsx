@@ -87,7 +87,7 @@ export default function LogSheet({
   return (
     <Sheet open={open} onClose={onClose}>
       <div className="pb-2">
-        <h2 className="text-[22px] font-semibold tracking-[-0.01em] text-ink">
+        <h2 className="text-[22px] font-extrabold tracking-[-0.01em] text-ink">
           How was it?
         </h2>
         {activity ? (
@@ -105,7 +105,7 @@ export default function LogSheet({
                 type="button"
                 onClick={() => void onPick(opt.value)}
                 disabled={busy}
-                className={`flex h-12 items-center justify-center rounded-md text-[14px] font-medium transition-colors duration-fast ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed ${
+                className={`flex h-12 items-center justify-center rounded-md text-[14px] font-extrabold transition-colors duration-fast ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed ${
                   isPicked
                     ? "bg-accent text-white"
                     : "border border-line bg-bg-elevated text-ink hover:border-accent"

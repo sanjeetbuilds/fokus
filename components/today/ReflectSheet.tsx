@@ -122,7 +122,7 @@ export default function ReflectSheet({
           <div className="flex-1 overflow-y-auto px-6 pb-[calc(env(safe-area-inset-bottom)+24px)]">
             <div className="mb-6">
               <span
-                className="inline-flex items-center rounded-[12px] bg-accent-bg px-3 py-1 text-[12px] font-bold"
+                className="inline-flex items-center rounded-[12px] bg-accent-bg px-3 py-1 text-[12px] font-extrabold"
                 style={{ color: "var(--accent-deep)" }}
               >
                 {activity.title}
@@ -148,7 +148,7 @@ export default function ReflectSheet({
               style={{ borderColor: "var(--line)", marginBottom: 16 }}
             >
               <p
-                className="mb-4 text-center text-[15px] font-bold text-ink"
+                className="mb-4 text-center text-[15px] font-extrabold text-ink"
               >
                 The child&apos;s response
               </p>
@@ -177,7 +177,7 @@ export default function ReflectSheet({
                         className="text-[13px]"
                         style={{
                           color: on ? "var(--ink)" : "var(--ink-secondary)",
-                          fontWeight: on ? 700 : 500,
+                          fontWeight: on ? 800 : 400,
                         }}
                       >
                         {m.label}
@@ -189,7 +189,7 @@ export default function ReflectSheet({
 
               <hr className="my-4.5 border-t" style={{ borderColor: "var(--line)" }} />
 
-              <p className="mb-2.5 text-[15px] font-bold text-ink">
+              <p className="mb-2.5 text-[15px] font-extrabold text-ink">
                 Your observations
               </p>
               <textarea
@@ -203,7 +203,7 @@ export default function ReflectSheet({
 
               <hr className="my-4.5 border-t" style={{ borderColor: "var(--line)" }} />
 
-              <p className="mb-3 text-[15px] font-bold text-ink">
+              <p className="mb-3 text-[15px] font-extrabold text-ink">
                 Key focus areas
               </p>
               <div className="flex flex-wrap gap-2">
@@ -229,7 +229,7 @@ export default function ReflectSheet({
                             : [...prev, tag],
                         )
                       }
-                      className="rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors"
+                      className="rounded-full px-3 py-1.5 text-[12px] font-extrabold transition-colors"
                       style={{
                         background: on ? "var(--ink)" : "var(--bg-alt)",
                         color: on ? "#fff" : "var(--ink)",
@@ -246,7 +246,7 @@ export default function ReflectSheet({
               type="button"
               disabled={busy || moodIdx === null}
               onClick={() => void submit()}
-              className="h-[54px] w-full rounded-full bg-ink text-[16px] font-bold text-white transition-opacity disabled:opacity-50"
+              className="h-[54px] w-full rounded-full bg-ink text-[16px] font-extrabold text-white transition-opacity disabled:opacity-50"
             >
               {busy ? "Logging…" : "Log progress"}
             </button>

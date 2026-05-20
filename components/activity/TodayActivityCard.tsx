@@ -43,7 +43,7 @@ export default function TodayActivityCard({
       {/* Top row: skill tag + difficulty mini-pill */}
       <div className="flex items-start justify-between gap-3">
         <span
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-extrabold"
           style={{
             backgroundColor: `${skill.color}1F`,
             color: skill.color,
@@ -56,14 +56,14 @@ export default function TodayActivityCard({
           />
           {skill.label}
         </span>
-        <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink-tertiary">
+        <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-ink-tertiary">
           {activity.duration} min · {DIFFICULTY_LABEL[activity.difficulty]}
         </span>
       </div>
 
       {/* Title */}
       <h2
-        className="mt-3 font-display text-[24px] font-bold leading-[1.2] tracking-[-0.01em]"
+        className="mt-3 text-[24px] font-extrabold leading-[1.2] tracking-[-0.01em]"
         style={{ color: skill.color }}
       >
         {activity.title}
@@ -118,7 +118,7 @@ export default function TodayActivityCard({
           <button
             type="button"
             onClick={onMore}
-            className="text-[13px] font-medium text-accent-mid transition-colors duration-fast ease-out hover:text-accent"
+            className="text-[13px] font-extrabold text-accent-mid transition-colors duration-fast ease-out hover:text-accent"
           >
             More →
           </button>
@@ -126,7 +126,7 @@ export default function TodayActivityCard({
         <button
           type="button"
           onClick={onDidIt}
-          className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_4px_12px_-2px_rgba(42,92,65,0.25)] transition-colors duration-fast ease-out hover:bg-accent-pressed"
+          className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-[13px] font-extrabold text-white shadow-[0_4px_12px_-2px_rgba(42,92,65,0.25)] transition-colors duration-fast ease-out hover:bg-accent-pressed"
         >
           Did it
           <ArrowRight size={13} strokeWidth={2.5} aria-hidden />

@@ -65,7 +65,7 @@ export default function ChildPhotoInput({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-footnote font-medium text-ink-secondary">{label}</p>
+      <p className="text-footnote font-extrabold text-ink-secondary">{label}</p>
       <div className="flex items-center gap-4">
         <button
           type="button"
@@ -107,7 +107,7 @@ export default function ChildPhotoInput({
             <button
               type="button"
               onClick={onClear}
-              className="mt-1 inline-flex items-center gap-1 self-start text-[12px] font-medium text-ink-tertiary transition-colors duration-fast ease-out hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
+              className="mt-1 inline-flex items-center gap-1 self-start text-[12px] font-extrabold text-ink-tertiary transition-colors duration-fast ease-out hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
             >
               <X size={12} strokeWidth={2} aria-hidden />
               Remove

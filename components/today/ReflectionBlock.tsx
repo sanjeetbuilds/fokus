@@ -36,7 +36,7 @@ export default function ReflectionBlock({
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
     <p
-      className="text-[11px] font-semibold uppercase text-ink-tertiary"
+      className="text-[11px] font-extrabold uppercase text-ink-tertiary"
       style={{ letterSpacing: "0.1em" }}
     >
       {children}

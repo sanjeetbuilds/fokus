@@ -22,7 +22,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       {label ? (
         <label
           htmlFor={inputId}
-          className="text-footnote font-medium text-ink-secondary"
+          className="text-footnote font-extrabold text-ink-secondary"
         >
           {label}
         </label>

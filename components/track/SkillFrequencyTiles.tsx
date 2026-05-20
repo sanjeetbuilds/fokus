@@ -104,7 +104,7 @@ export default function SkillFrequencyTiles({
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold transition-colors"
+        className="mt-3 inline-flex items-center gap-1 text-[13px] font-extrabold transition-colors"
         style={{ color: "var(--accent-deep)" }}
       >
         {expanded ? "Show fewer ←" : "View all 8 skills →"}
@@ -133,7 +133,7 @@ function SkillTile({
       }}
     >
       <p
-        className="text-[11px] font-bold uppercase"
+        className="text-[11px] font-extrabold uppercase"
         style={{
           color: "rgba(255,255,255,0.78)",
           letterSpacing: "0.06em",

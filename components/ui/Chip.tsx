@@ -36,8 +36,8 @@ export default function Chip({
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
         "disabled:pointer-events-none disabled:opacity-50",
         selected
-          ? "border border-transparent bg-accent font-semibold text-white shadow-sm"
-          : "border border-transparent bg-bg-alt font-medium text-ink-secondary hover:bg-line",
+          ? "border border-transparent bg-accent font-extrabold text-white shadow-sm"
+          : "border border-transparent bg-bg-alt font-extrabold text-ink-secondary hover:bg-line",
         className,
       )}
       {...rest}

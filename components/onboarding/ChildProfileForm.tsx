@@ -66,7 +66,7 @@ export default function ChildProfileForm({ child }: { child: Child }) {
     <div className="flex flex-col gap-6">
       <section>
         <p
-          className="mb-2.5 text-[11px] font-bold uppercase"
+          className="mb-2.5 text-[11px] font-extrabold uppercase"
           style={{ color: "var(--ink-secondary)", letterSpacing: "0.06em" }}
         >
           English confidence
@@ -85,7 +85,7 @@ export default function ChildProfileForm({ child }: { child: Child }) {
                   background: on ? "var(--accent-bg)" : "var(--bg-elevated)",
                 }}
               >
-                <p className="text-[14px] font-bold text-ink">{opt.label}</p>
+                <p className="text-[14px] font-extrabold text-ink">{opt.label}</p>
                 <p
                   className="mt-1 text-[12px] text-ink-secondary"
                   style={{ lineHeight: 1.5 }}
@@ -159,7 +159,7 @@ function ChipGroup({
   return (
     <section>
       <p
-        className="mb-2.5 text-[11px] font-bold uppercase"
+        className="mb-2.5 text-[11px] font-extrabold uppercase"
         style={{ color: "var(--ink-secondary)", letterSpacing: "0.06em" }}
       >
         {label}
@@ -172,7 +172,7 @@ function ChipGroup({
               key={opt}
               type="button"
               onClick={() => onToggle(opt)}
-              className="rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors"
+              className="rounded-full px-3 py-1.5 text-[12px] font-extrabold transition-colors"
               style={{
                 background: on ? "var(--ink)" : "var(--bg-alt)",
                 color: on ? "#fff" : "var(--ink)",

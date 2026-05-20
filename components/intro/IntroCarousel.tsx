@@ -161,7 +161,7 @@ export function IntroCarousel({
           <button
             type="button"
             onClick={onComplete}
-            className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-accent text-[16px] font-semibold text-white transition-transform duration-fast ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+            className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-accent text-[16px] font-extrabold text-white transition-transform duration-fast ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             style={{
               boxShadow: "0 6px 16px -4px rgba(42, 92, 65, 0.32)",
             }}
@@ -174,7 +174,7 @@ export function IntroCarousel({
             <button
               type="button"
               onClick={onComplete}
-              className="rounded-md px-2 py-2 text-[15px] font-medium text-ink-tertiary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="rounded-md px-2 py-2 text-[15px] font-extrabold text-ink-tertiary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               Skip
             </button>

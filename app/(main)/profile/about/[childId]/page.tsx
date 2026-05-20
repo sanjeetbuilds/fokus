@@ -183,7 +183,7 @@ function TellUsMoreBody() {
           type="button"
           onClick={() => router.replace("/profile")}
           aria-label="Back"
-          className="-ml-2 inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] font-semibold text-accent-deep transition-colors hover:text-accent-pressed"
+          className="-ml-2 inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] font-extrabold text-accent-deep transition-colors hover:text-accent-pressed"
         >
           <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
           Back
@@ -191,7 +191,7 @@ function TellUsMoreBody() {
         <button
           type="button"
           onClick={skip}
-          className="rounded-md px-2 py-1.5 text-[13px] font-medium text-ink-tertiary hover:text-ink"
+          className="rounded-md px-2 py-1.5 text-[13px] font-extrabold text-ink-tertiary hover:text-ink"
         >
           Skip for now
         </button>
@@ -206,10 +206,10 @@ function TellUsMoreBody() {
 
       <div className="flex flex-1 flex-col px-6 pt-6 pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <h1
-          className="font-display text-ink"
+          className="text-ink"
           style={{
             fontSize: 30,
-            fontWeight: 500,
+            fontWeight: 800,
             lineHeight: 1.15,
             letterSpacing: "-0.01em",
             marginBottom: 6,
@@ -274,7 +274,7 @@ function TellUsMoreBody() {
             type="button"
             onClick={() => void save()}
             disabled={busy}
-            className="h-[54px] w-full rounded-full bg-ink text-[16px] font-semibold text-white transition-opacity disabled:opacity-60"
+            className="h-[54px] w-full rounded-full bg-ink text-[16px] font-extrabold text-white transition-opacity disabled:opacity-60"
           >
             {busy ? "Saving…" : isLast ? "Save and finish" : "Save and continue"}
           </button>
@@ -346,7 +346,7 @@ function BasicsStep({
           className="mb-2 text-ink-tertiary"
           style={{
             fontSize: 11,
-            fontWeight: 600,
+            fontWeight: 800,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
           }}
@@ -368,7 +368,7 @@ function BasicsStep({
           className="mb-2 text-ink-tertiary"
           style={{
             fontSize: 11,
-            fontWeight: 600,
+            fontWeight: 800,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
           }}
@@ -383,7 +383,7 @@ function BasicsStep({
                 key={g}
                 type="button"
                 onClick={() => setGrade(on ? null : g)}
-                className="rounded-full px-3 py-1.5 text-[13px] font-semibold"
+                className="rounded-full px-3 py-1.5 text-[13px] font-extrabold"
                 style={{
                   background: on ? "var(--ink)" : "var(--bg-elevated)",
                   color: on ? "#fff" : "var(--ink)",
@@ -427,7 +427,7 @@ function GenderStep({
               background: on ? "var(--accent-bg)" : "var(--bg-elevated)",
             }}
           >
-            <p className="text-[15px] font-semibold text-ink">{opt.label}</p>
+            <p className="text-[15px] font-extrabold text-ink">{opt.label}</p>
           </button>
         );
       })}
@@ -521,7 +521,7 @@ function InterestsStep({
               key={p}
               type="button"
               onClick={() => toggle(p)}
-              className="rounded-full px-3 py-1.5 text-[13px] font-semibold"
+              className="rounded-full px-3 py-1.5 text-[13px] font-extrabold"
               style={{
                 background: on ? "var(--ink)" : "var(--bg-elevated)",
                 color: on ? "#fff" : "var(--ink)",
@@ -537,7 +537,7 @@ function InterestsStep({
             key={p}
             type="button"
             onClick={() => toggle(p)}
-            className="rounded-full px-3 py-1.5 text-[13px] font-semibold"
+            className="rounded-full px-3 py-1.5 text-[13px] font-extrabold"
             style={{
               background: "var(--ink)",
               color: "#fff",
@@ -555,7 +555,7 @@ function InterestsStep({
             className="mb-2 text-ink-tertiary"
             style={{
               fontSize: 11,
-              fontWeight: 600,
+              fontWeight: 800,
               letterSpacing: "0.1em",
               textTransform: "uppercase",
             }}
@@ -575,7 +575,7 @@ function InterestsStep({
         <button
           type="submit"
           disabled={!draft.trim()}
-          className="inline-flex h-[44px] items-center gap-1 rounded-full px-3.5 text-[13px] font-semibold text-ink disabled:opacity-40"
+          className="inline-flex h-[44px] items-center gap-1 rounded-full px-3.5 text-[13px] font-extrabold text-ink disabled:opacity-40"
           style={{ background: "var(--bg-alt)" }}
         >
           <Plus size={14} strokeWidth={2} aria-hidden />
@@ -605,7 +605,7 @@ function ChipGroupLabelled({
         className="mb-2 text-ink-tertiary"
         style={{
           fontSize: 11,
-          fontWeight: 600,
+          fontWeight: 800,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
         }}
@@ -638,7 +638,7 @@ function ChipGroup({
               key={opt}
               type="button"
               onClick={() => onToggle(opt)}
-              className="rounded-full px-3 py-1.5 text-[13px] font-semibold"
+              className="rounded-full px-3 py-1.5 text-[13px] font-extrabold"
               style={{
                 background: on ? "var(--ink)" : "var(--bg-elevated)",
                 color: on ? "#fff" : "var(--ink)",

@@ -1,28 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { OnboardingGate } from "@/components/shared/OnboardingGate";
 import SplashGate from "@/components/shared/SplashGate";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 
-// Body — Plus Jakarta Sans, weights 300-800.
-const jakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-body",
-  display: "swap",
-});
-
-// Display — Fraunces (variable, with optical-size axis). Opt-in per-element
-// via the Tailwind `font-display` utility. Used on splash wordmark, intro
-// titles, onboarding title, welcome-modal title.
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: "variable",
-  axes: ["opsz"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
+  weight: ["400", "800"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -69,7 +56,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`h-full ${jakarta.variable} ${fraunces.variable}`}
+      className={`h-full ${inter.variable}`}
     >
       <body className="min-h-full bg-bg text-ink font-sans antialiased">
         <ThemeProvider>

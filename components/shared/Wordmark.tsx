@@ -18,14 +18,14 @@ export interface WordmarkProps {
 const SIZES: Record<Size, { text: string; dot: string; gap: string; offset: string }> = {
   // sm: top of every main screen header
   sm: {
-    text: "text-[19px] font-bold uppercase tracking-[0.04em]",
+    text: "text-[19px] font-extrabold uppercase tracking-[0.04em]",
     dot: "h-1.5 w-1.5",
     gap: "gap-2",
     offset: "translate-y-[-1px]",
   },
   // md: onboarding final / install splash
   md: {
-    text: "text-[24px] font-bold uppercase tracking-[0.04em]",
+    text: "text-[24px] font-extrabold uppercase tracking-[0.04em]",
     dot: "h-2 w-2",
     gap: "gap-2.5",
     offset: "translate-y-[-2px]",
@@ -45,10 +45,8 @@ const TONE_CLASS: Record<NonNullable<WordmarkProps["tone"]>, { text: string; dot
 };
 
 /**
- * Fokus wordmark: Fraunces serif, uppercase, ink letterforms with a single
- * accent-blue dot as the brand mark. The dot is offset upward so it visually
- * aligns with the cap-height baseline rather than centring on the text
- * baseline (looks anchored otherwise).
+ * Fokus wordmark: Inter 800, uppercase, ink letterforms with a single
+ * accent-blue dot offset to the cap-height baseline.
  */
 export default function Wordmark({
   size = "sm",
@@ -61,7 +59,7 @@ export default function Wordmark({
   return (
     <span
       className={cn(
-        "inline-flex items-center select-none font-display",
+        "inline-flex items-center select-none",
         s.gap,
         t.text,
         className,

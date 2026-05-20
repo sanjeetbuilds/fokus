@@ -4,9 +4,9 @@ import type { Config } from "tailwindcss";
  * Fokus Tailwind config — maps CSS variables (see styles/tokens.css)
  * to utilities so colors / type / spacing stay in one source of truth.
  *
- * Round-4 design (purple + beige) — Plus Jakarta Sans only, no display
- * serif. Color names like accent-* still resolve so existing call sites
- * don't have to be rewritten for the rebrand.
+ * Inter only, weights 400/800. Headlines use letterSpacing -0.02em.
+ * Color names like accent-* still resolve so existing call sites
+ * do not have to be rewritten for the rebrand.
  */
 const config: Config = {
   darkMode: "class",
@@ -77,40 +77,21 @@ const config: Config = {
         danger: "var(--danger)",
       },
       fontFamily: {
-        // Single family — Plus Jakarta Sans loaded by next/font.
-        sans: [
-          "var(--font-body)",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "sans-serif",
-        ],
-        // Display — Fraunces (variable serif). Restored for splash wordmark,
-        // intro titles, onboarding title, welcome modal title. Body text
-        // keeps Plus Jakarta Sans via font-sans.
-        display: [
-          "var(--font-display)",
-          "'Iowan Old Style'",
-          "Palatino",
-          "Georgia",
-          "Cambria",
-          "serif",
-        ],
+        sans: ["var(--font-inter)", "sans-serif"],
       },
       fontSize: {
-        display: ["var(--text-display)", { lineHeight: "1.05", letterSpacing: "-0.035em", fontWeight: "800" }],
-        "title-1": ["var(--text-title-1)", { lineHeight: "1.1", letterSpacing: "-0.03em", fontWeight: "800" }],
-        "title-2": ["var(--text-title-2)", { lineHeight: "1.15", letterSpacing: "-0.025em", fontWeight: "800" }],
-        "title-3": ["var(--text-title-3)", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
-        headline: ["var(--text-headline)", { lineHeight: "1.3", fontWeight: "700" }],
+        display: ["var(--text-display)", { lineHeight: "1.05", letterSpacing: "-0.02em", fontWeight: "800" }],
+        "title-1": ["var(--text-title-1)", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "800" }],
+        "title-2": ["var(--text-title-2)", { lineHeight: "1.15", letterSpacing: "-0.02em", fontWeight: "800" }],
+        "title-3": ["var(--text-title-3)", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "800" }],
+        headline: ["var(--text-headline)", { lineHeight: "1.3", fontWeight: "800" }],
         body: ["var(--text-body)", { lineHeight: "1.5", fontWeight: "400" }],
         "body-large": ["var(--text-body-large)", { lineHeight: "1.55", fontWeight: "400" }],
-        callout: ["var(--text-callout)", { lineHeight: "1.5", fontWeight: "500" }],
+        callout: ["var(--text-callout)", { lineHeight: "1.5", fontWeight: "400" }],
         subhead: ["var(--text-subhead)", { lineHeight: "1.5", fontWeight: "400" }],
-        footnote: ["var(--text-footnote)", { lineHeight: "1.5", fontWeight: "500" }],
-        caption: ["var(--text-caption)", { lineHeight: "1.4", fontWeight: "500" }],
-        micro: ["var(--text-micro)", { lineHeight: "1.4", letterSpacing: "0.05em", fontWeight: "700" }],
+        footnote: ["var(--text-footnote)", { lineHeight: "1.5", fontWeight: "400" }],
+        caption: ["var(--text-caption)", { lineHeight: "1.4", fontWeight: "400" }],
+        micro: ["var(--text-micro)", { lineHeight: "1.4", letterSpacing: "0.05em", fontWeight: "800" }],
       },
       spacing: {
         1: "var(--space-1)",

@@ -65,7 +65,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textare
       {label ? (
         <label
           htmlFor={textareaId}
-          className="text-footnote font-medium text-ink-secondary"
+          className="text-footnote font-extrabold text-ink-secondary"
         >
           {label}
         </label>

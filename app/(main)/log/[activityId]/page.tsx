@@ -170,7 +170,7 @@ function LogSessionBody() {
 
       <header>
         <h1
-          className="font-display text-[40px] font-semibold tracking-[-0.02em] text-ink"
+          className="text-[40px] font-extrabold tracking-[-0.02em] text-ink"
           style={{ lineHeight: 1.05 }}
         >
           How did it go?
@@ -179,7 +179,7 @@ function LogSessionBody() {
       </header>
 
       <section className="mt-8">
-        <p className="text-caption uppercase tracking-[0.12em] font-medium text-ink-tertiary">
+        <p className="text-caption uppercase tracking-[0.12em] font-extrabold text-ink-tertiary">
           How did {childName ?? "they"} respond?
         </p>
         <div
@@ -201,7 +201,7 @@ function LogSessionBody() {
 
       <section className="mt-8">
         <div className="mb-2 flex items-baseline gap-2">
-          <p className="text-caption uppercase tracking-[0.12em] font-medium text-ink-tertiary">
+          <p className="text-caption uppercase tracking-[0.12em] font-extrabold text-ink-tertiary">
             {noteLabel}
           </p>
           {response !== "skipped" ? (

@@ -62,7 +62,7 @@ export default function Avatar({
       role="img"
       aria-label={name}
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full bg-accent-bg font-semibold text-accent-deep",
+        "inline-flex shrink-0 items-center justify-center rounded-full bg-accent-bg font-extrabold text-accent-deep",
         SIZE[size],
         className,
       )}

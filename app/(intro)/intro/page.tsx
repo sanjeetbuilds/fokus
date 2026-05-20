@@ -47,7 +47,7 @@ export default function IntroPage() {
           <button
             type="button"
             onClick={skip}
-            className="rounded-md px-2 py-1.5 text-[14px] font-medium text-ink-tertiary transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="rounded-md px-2 py-1.5 text-[14px] font-extrabold text-ink-tertiary transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             Skip
           </button>
@@ -93,7 +93,7 @@ export default function IntroPage() {
             <button
               type="button"
               onClick={() => router.replace("/onboarding")}
-              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-accent text-[16px] font-semibold text-white transition-transform duration-fast active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-accent text-[16px] font-extrabold text-white transition-transform duration-fast active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               style={{
                 boxShadow: "0 6px 16px -4px rgba(156,165,255,0.4)",
                 letterSpacing: "-0.01em",
@@ -151,10 +151,10 @@ function SlideShell({
     <>
       <IlloHalo>{illustration}</IlloHalo>
       <h1
-        className="mt-10 text-center font-display text-ink"
+        className="mt-10 text-center text-ink"
         style={{
           fontSize: 32,
-          fontWeight: 500,
+          fontWeight: 800,
           lineHeight: 1.15,
           letterSpacing: "-0.01em",
         }}
@@ -213,8 +213,8 @@ function Slide0() {
             y="80"
             textAnchor="middle"
             fontSize="7.5"
-            fontFamily="var(--font-body)"
-            fontWeight="500"
+            fontFamily="var(--font-inter)"
+            fontWeight="800"
             fill="var(--ink-tertiary)"
           >
             marks · behavior · speed

@@ -110,7 +110,7 @@ function AddChildBody() {
           type="button"
           onClick={() => router.back()}
           aria-label="Back"
-          className="-ml-2 inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] font-semibold text-accent transition-colors duration-fast hover:text-accent-pressed"
+          className="-ml-2 inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] font-extrabold text-accent transition-colors duration-fast hover:text-accent-pressed"
         >
           <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
           Back
@@ -119,7 +119,7 @@ function AddChildBody() {
 
       <div className="flex flex-1 flex-col px-8 pt-4">
         <p
-          className="text-[11px] font-bold uppercase"
+          className="text-[11px] font-extrabold uppercase"
           style={{ color: "var(--accent)", letterSpacing: "0.08em" }}
         >
           Add another child
@@ -134,7 +134,7 @@ function AddChildBody() {
         <div className="mt-8 flex flex-col gap-3.5">
           <div>
             <label
-              className="mb-1.5 block text-[11px] font-bold uppercase"
+              className="mb-1.5 block text-[11px] font-extrabold uppercase"
               style={{ color: "var(--ink-secondary)", letterSpacing: "0.05em" }}
             >
               Child&apos;s name
@@ -152,7 +152,7 @@ function AddChildBody() {
           </div>
           <div>
             <label
-              className="mb-1.5 block text-[11px] font-bold uppercase"
+              className="mb-1.5 block text-[11px] font-extrabold uppercase"
               style={{ color: "var(--ink-secondary)", letterSpacing: "0.05em" }}
             >
               Their age
@@ -165,7 +165,7 @@ function AddChildBody() {
                     type="button"
                     key={band.label}
                     onClick={() => setBandIdx(i)}
-                    className="rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors"
+                    className="rounded-full px-3 py-1.5 text-[12px] font-extrabold transition-colors"
                     style={{
                       background: on ? "var(--ink)" : "var(--bg-alt)",
                       color: on ? "#fff" : "var(--ink)",
@@ -185,7 +185,7 @@ function AddChildBody() {
           type="button"
           onClick={submit}
           disabled={busy || name.trim().length === 0}
-          className="h-[54px] w-full rounded-full bg-ink text-[16px] font-bold text-white transition-opacity disabled:opacity-50"
+          className="h-[54px] w-full rounded-full bg-ink text-[16px] font-extrabold text-white transition-opacity disabled:opacity-50"
         >
           {busy ? "Adding…" : "Add child →"}
         </button>

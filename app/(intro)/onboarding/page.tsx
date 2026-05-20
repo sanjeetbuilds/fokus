@@ -145,10 +145,10 @@ export default function OnboardingPage() {
 
       <div className="flex flex-1 flex-col px-6 pt-[60px]">
         <h1
-          className="font-display text-ink"
+          className="text-ink"
           style={{
             fontSize: 36,
-            fontWeight: 500,
+            fontWeight: 800,
             lineHeight: 1.1,
             letterSpacing: "-0.01em",
           }}
@@ -206,7 +206,7 @@ export default function OnboardingPage() {
                     type="button"
                     key={opt.value}
                     onClick={() => setEnglish(opt.value)}
-                    className="flex-1 rounded-full text-[14px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="flex-1 rounded-full text-[14px] font-extrabold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     style={{
                       height: 50,
                       background: on ? "var(--accent)" : "var(--bg-elevated)",
@@ -229,7 +229,7 @@ export default function OnboardingPage() {
             type="button"
             onClick={() => void submit()}
             disabled={!valid || busy}
-            className="h-[56px] w-full rounded-[6px] text-[16px] font-semibold text-white transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+            className="h-[56px] w-full rounded-[6px] text-[16px] font-extrabold text-white transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             style={{
               background: "var(--accent)",
               boxShadow: "0 4px 14px -4px rgba(156,165,255,0.4)",
@@ -276,7 +276,7 @@ function Field({
         className="mb-2 text-ink-tertiary"
         style={{
           fontSize: 11,
-          fontWeight: 600,
+          fontWeight: 800,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
         }}

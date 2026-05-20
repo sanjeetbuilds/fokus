@@ -195,12 +195,12 @@ export default function ContentDevPage() {
                   <table className="w-full text-left text-footnote">
                     <thead className="border-b border-line-subtle bg-bg text-caption uppercase tracking-[0.08em] text-ink-tertiary">
                       <tr>
-                        <th className="px-4 py-3 font-medium">ID</th>
-                        <th className="px-4 py-3 font-medium">Title</th>
-                        <th className="px-4 py-3 font-medium">Min</th>
-                        <th className="px-4 py-3 font-medium">Diff</th>
-                        <th className="px-4 py-3 font-medium">Ages</th>
-                        <th className="px-4 py-3 font-medium">Requires</th>
+                        <th className="px-4 py-3 font-extrabold">ID</th>
+                        <th className="px-4 py-3 font-extrabold">Title</th>
+                        <th className="px-4 py-3 font-extrabold">Min</th>
+                        <th className="px-4 py-3 font-extrabold">Diff</th>
+                        <th className="px-4 py-3 font-extrabold">Ages</th>
+                        <th className="px-4 py-3 font-extrabold">Requires</th>
                       </tr>
                     </thead>
                     <tbody>

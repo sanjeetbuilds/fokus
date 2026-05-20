@@ -95,7 +95,7 @@ export default function ProfilePage() {
         <p className="text-body text-ink-secondary">No children yet.</p>
         <Link
           href="/onboarding/child"
-          className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-[13px] font-bold text-white"
+          className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-[13px] font-extrabold text-white"
         >
           <UserPlus size={14} strokeWidth={2} />
           Add a child
@@ -131,7 +131,7 @@ export default function ProfilePage() {
         <MarkersSection child={featured} />
 
         <p
-          className="mb-3 text-[12px] font-bold uppercase"
+          className="mb-3 text-[12px] font-extrabold uppercase"
           style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
         >
           At a glance
@@ -153,7 +153,7 @@ export default function ProfilePage() {
             Signed in as {parentName}.{" "}
             <Link
               href="/profile/settings"
-              className="inline-flex items-center gap-1 font-semibold text-accent-deep hover:text-accent-pressed"
+              className="inline-flex items-center gap-1 font-extrabold text-accent-deep hover:text-accent-pressed"
             >
               <Settings size={11} strokeWidth={2} />
               Settings
@@ -179,7 +179,7 @@ export default function ProfilePage() {
                 type="button"
                 onClick={() => setConfirmDelete(null)}
                 disabled={busy}
-                className="h-[48px] flex-1 rounded-full bg-bg-alt text-[14px] font-bold text-ink"
+                className="h-[48px] flex-1 rounded-full bg-bg-alt text-[14px] font-extrabold text-ink"
               >
                 Cancel
               </button>
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                 type="button"
                 onClick={() => void onConfirmDelete()}
                 disabled={busy}
-                className="h-[48px] flex-1 rounded-full text-[14px] font-bold text-white disabled:opacity-50"
+                className="h-[48px] flex-1 rounded-full text-[14px] font-extrabold text-white disabled:opacity-50"
                 style={{ background: "var(--coral)" }}
               >
                 {busy ? "Removing…" : "Remove"}
@@ -226,14 +226,14 @@ function MarkersSection({ child }: { child: Child }) {
     return (
       <section className="mb-5">
         <p
-          className="mb-2.5 text-[12px] font-bold uppercase"
+          className="mb-2.5 text-[12px] font-extrabold uppercase"
           style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
         >
           What {child.name} loves
         </p>
         <Link
           href="/profile/settings"
-          className="inline-flex rounded-full px-3 py-1.5 text-[12px] font-semibold"
+          className="inline-flex rounded-full px-3 py-1.5 text-[12px] font-extrabold"
           style={{ background: "var(--bg-alt)", color: "var(--ink)" }}
         >
           + Add interests
@@ -244,7 +244,7 @@ function MarkersSection({ child }: { child: Child }) {
   return (
     <section className="mb-5">
       <p
-        className="mb-2.5 text-[12px] font-bold uppercase"
+        className="mb-2.5 text-[12px] font-extrabold uppercase"
         style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
       >
         What {child.name} loves
@@ -253,7 +253,7 @@ function MarkersSection({ child }: { child: Child }) {
         {markers.map((m) => (
           <span
             key={`${m.kind}:${m.label}`}
-            className="rounded-full px-3 py-1.5 text-[12px] font-semibold"
+            className="rounded-full px-3 py-1.5 text-[12px] font-extrabold"
             style={{
               background:
                 m.kind === "interest" ? "var(--accent-bg)" : "var(--coral-bg)",
@@ -283,7 +283,7 @@ function ChildrenList({
   return (
     <section className="mt-2">
       <p
-        className="mb-2.5 text-[12px] font-bold uppercase"
+        className="mb-2.5 text-[12px] font-extrabold uppercase"
         style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
       >
         Children
@@ -305,12 +305,12 @@ function ChildrenList({
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-[15px] font-bold text-ink">
+                  <p className="truncate text-[15px] font-extrabold text-ink">
                     {c.name}
                   </p>
                   {isActive && children.length > 1 ? (
                     <span
-                      className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+                      className="rounded-full px-2 py-0.5 text-[11px] font-extrabold"
                       style={{
                         background: "var(--accent-bg)",
                         color: "var(--accent-deep)",
@@ -329,7 +329,7 @@ function ChildrenList({
                   <button
                     type="button"
                     onClick={() => onSwitch(c.id)}
-                    className="rounded-full bg-bg-alt px-3 py-1.5 text-[12px] font-bold text-ink"
+                    className="rounded-full bg-bg-alt px-3 py-1.5 text-[12px] font-extrabold text-ink"
                   >
                     Switch
                   </button>

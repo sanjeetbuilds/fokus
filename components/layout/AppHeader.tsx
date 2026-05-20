@@ -20,7 +20,7 @@ export default function AppHeader() {
       <button
         type="button"
         onClick={() => router.push("/profile/settings")}
-        className="flex items-center gap-1.5 text-[13px] font-semibold text-ink-secondary transition-colors hover:text-ink"
+        className="flex items-center gap-1.5 text-[13px] font-extrabold text-ink-secondary transition-colors hover:text-ink"
         aria-label="Menu"
       >
         <span

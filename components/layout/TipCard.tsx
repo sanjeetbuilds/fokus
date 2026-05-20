@@ -34,7 +34,7 @@ export default function TipCard({
   return (
     <div className={cn("flex-1 rounded-[18px] p-4", t.bg, className)}>
       {icon ? <div className="mb-1.5 text-[18px]">{icon}</div> : null}
-      <p className={cn("text-[14px] font-bold", t.text)}>{title}</p>
+      <p className={cn("text-[14px] font-extrabold", t.text)}>{title}</p>
       <p className="mt-1 text-[12px] leading-[1.5] text-ink-secondary">
         {body}
       </p>

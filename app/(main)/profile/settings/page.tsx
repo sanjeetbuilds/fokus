@@ -197,7 +197,7 @@ export default function SettingsPage() {
       {child ? (
         <section className="mt-10">
           <p
-            className="mb-2 text-[12px] font-bold uppercase"
+            className="mb-2 text-[12px] font-extrabold uppercase"
             style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
           >
             Tell us more about {child.name}
@@ -215,7 +215,7 @@ export default function SettingsPage() {
 
       {/* Theme */}
       <section className="mt-10">
-        <p className="text-caption uppercase tracking-[0.12em] font-medium text-ink-tertiary">
+        <p className="text-caption uppercase tracking-[0.12em] font-extrabold text-ink-tertiary">
           Theme
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -233,7 +233,7 @@ export default function SettingsPage() {
 
       {/* Reminder */}
       <section className="mt-10">
-        <p className="text-caption uppercase tracking-[0.12em] font-medium text-ink-tertiary">
+        <p className="text-caption uppercase tracking-[0.12em] font-extrabold text-ink-tertiary">
           Daily reminder
         </p>
         <Card className="mt-3 flex flex-col gap-4">
@@ -284,7 +284,7 @@ export default function SettingsPage() {
 
       {/* Data */}
       <section className="mt-10">
-        <p className="text-caption uppercase tracking-[0.12em] font-medium text-ink-tertiary">
+        <p className="text-caption uppercase tracking-[0.12em] font-extrabold text-ink-tertiary">
           Data
         </p>
         <div className="mt-3 flex flex-col gap-3">
@@ -304,7 +304,7 @@ export default function SettingsPage() {
 
       {/* About */}
       <section className="mt-10">
-        <p className="text-caption uppercase tracking-[0.12em] font-medium text-ink-tertiary">
+        <p className="text-caption uppercase tracking-[0.12em] font-extrabold text-ink-tertiary">
           About
         </p>
         <Card className="mt-3">

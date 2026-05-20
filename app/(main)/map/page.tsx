@@ -98,7 +98,7 @@ export default function TrackPage() {
         <SkillFrequencyTiles sessions={sessions} />
 
         <p
-          className="mb-3 mt-2 text-[12px] font-bold uppercase"
+          className="mb-3 mt-2 text-[12px] font-extrabold uppercase"
           style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
         >
           Recent moments

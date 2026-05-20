@@ -106,7 +106,7 @@ export default function WelcomeModal({
               className="text-center"
               style={{
                 fontSize: 11,
-                fontWeight: 600,
+                fontWeight: 800,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 color: "#3A2418",
@@ -118,10 +118,10 @@ export default function WelcomeModal({
             {/* Title (medium) */}
             <h2
               id="welcome-title"
-              className="mt-3 text-center font-display"
+              className="mt-3 text-center"
               style={{
                 fontSize: 22,
-                fontWeight: 500,
+                fontWeight: 800,
                 lineHeight: 1.2,
                 letterSpacing: "-0.005em",
                 color: "#3A2418",
@@ -132,7 +132,7 @@ export default function WelcomeModal({
 
             {/* Hero line (LARGEST — the thesis of the app) */}
             <p
-              className="mt-7 text-center font-display"
+              className="mt-7 text-center"
               style={{
                 fontSize: 26,
                 fontWeight: 400,
@@ -165,7 +165,7 @@ export default function WelcomeModal({
               style={{
                 background: "#2A1F14",
                 fontSize: 16,
-                fontWeight: 600,
+                fontWeight: 800,
                 letterSpacing: "-0.005em",
               }}
             >

@@ -74,7 +74,7 @@ export default function TabBar({
                   className="text-[11px] leading-none transition-colors duration-fast ease-out"
                   style={{
                     color: isActive ? "var(--accent)" : "var(--ink-quaternary)",
-                    fontWeight: isActive ? 700 : 500,
+                    fontWeight: isActive ? 800 : 400,
                   }}
                 >
                   {tab.label}
