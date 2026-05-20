@@ -2,7 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 
-import ActivityIcon from "@/components/activity/ActivityIcon";
+import SkillIcon from "@/components/SkillIcon";
 import { SKILLS } from "@/lib/content/skills";
 import type { Activity } from "@/types";
 
@@ -24,18 +24,11 @@ export default function ActivityRow({ activity }: ActivityRowProps) {
 
   return (
     <div className="flex items-center gap-3.5 rounded-[18px] bg-bg-elevated p-3.5 shadow-md transition-transform duration-fast ease-out active:scale-[0.99]">
-      <div
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px]"
-        style={{ backgroundColor: skill.color, color: "#FFFFFF" }}
-        aria-hidden
-      >
-        <ActivityIcon
-          iconName={activity.iconName}
-          skill={activity.skill}
-          size={22}
-          strokeWidth={1.75}
-        />
-      </div>
+      <SkillIcon
+        skillId={activity.skill}
+        size="sm"
+        iconName={activity.iconName}
+      />
 
       <div className="min-w-0 flex-1">
         <p className="text-[15px] font-extrabold leading-tight text-ink">

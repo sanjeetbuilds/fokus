@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 
-import ActivityIcon from "@/components/activity/ActivityIcon";
+import SkillIcon from "@/components/SkillIcon";
 import Wordmark from "@/components/shared/Wordmark";
 import Button from "@/components/ui/Button";
 import { getActivityById } from "@/lib/content/activities";
@@ -235,22 +235,11 @@ function ActivityHeader({ activity }: { activity: Activity }) {
 
   return (
     <header>
-      {/* Big skill-coloured icon hero. Reduced from round-3's 80px to 72px
-          so the hero title below has more breathing room. */}
-      <div
-        className="flex h-[72px] w-[72px] items-center justify-center rounded-[20px]"
-        style={{
-          backgroundColor: skill.color,
-          color: "#FFFFFF",
-        }}
-      >
-        <ActivityIcon
-          iconName={activity.iconName}
-          skill={activity.skill}
-          size={34}
-          strokeWidth={1.75}
-        />
-      </div>
+      <SkillIcon
+        skillId={activity.skill}
+        size="lg"
+        iconName={activity.iconName}
+      />
 
       <p className="mt-4 text-[12px] font-extrabold uppercase tracking-[0.12em] text-ink-secondary">
         <span style={{ color: skill.color }}>{skill.label}</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import ActivityIcon from "@/components/activity/ActivityIcon";
+import SkillIcon from "@/components/SkillIcon";
 import { getActivityById } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
 import { formatDate } from "@/lib/utils/dates";
@@ -25,23 +25,24 @@ export default function SessionCard({ session }: SessionCardProps) {
 
   return (
     <div className="flex items-start gap-4 rounded-[18px] bg-bg-elevated p-4 shadow-md">
-      <div
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px]"
-        style={{
-          backgroundColor: skill?.color ?? "var(--ink-quaternary)",
-          color: "#FFFFFF",
-        }}
-        aria-hidden
-      >
-        {activity ? (
-          <ActivityIcon
-            iconName={activity.iconName}
-            skill={activity.skill}
-            size={22}
-            strokeWidth={1.75}
-          />
-        ) : null}
-      </div>
+      {activity ? (
+        <SkillIcon
+          skillId={activity.skill}
+          size="sm"
+          iconName={activity.iconName}
+        />
+      ) : (
+        <span
+          aria-hidden
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 14,
+            background: "var(--ink-quaternary)",
+            flexShrink: 0,
+          }}
+        />
+      )}
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2 text-[11px] font-extrabold uppercase tracking-[0.1em]">

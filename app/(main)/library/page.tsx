@@ -4,7 +4,7 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import ActivityIcon from "@/components/activity/ActivityIcon";
+import SkillIcon from "@/components/SkillIcon";
 import AppHeader from "@/components/layout/AppHeader";
 import { ACTIVITIES } from "@/lib/content/activities";
 import { SKILLS, SKILL_KEYS } from "@/lib/content/skills";
@@ -168,18 +168,11 @@ function FeaturedPick({ activity }: { activity: Activity }) {
             Start <ArrowRight size={11} strokeWidth={2.5} />
           </span>
         </div>
-        <div
-          aria-hidden
-          className="flex h-[88px] w-[88px] shrink-0 items-center justify-center rounded-[14px]"
-          style={{ background: skill.color, color: "#fff" }}
-        >
-          <ActivityIcon
-            iconName={activity.iconName}
-            skill={activity.skill}
-            size={36}
-            strokeWidth={1.5}
-          />
-        </div>
+        <SkillIcon
+          skillId={activity.skill}
+          size="lg"
+          iconName={activity.iconName}
+        />
       </div>
     </Link>
   );
@@ -200,18 +193,11 @@ function ActivityRow({
       }`}
       style={{ borderColor: "var(--line)" }}
     >
-      <div
-        className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-[16px]"
-        style={{ background: skill.color, color: "#fff" }}
-        aria-hidden
-      >
-        <ActivityIcon
-          iconName={activity.iconName}
-          skill={activity.skill}
-          size={22}
-          strokeWidth={1.75}
-        />
-      </div>
+      <SkillIcon
+        skillId={activity.skill}
+        size="sm"
+        iconName={activity.iconName}
+      />
       <div className="min-w-0 flex-1">
         <p
           className="text-[16px] font-extrabold text-ink"

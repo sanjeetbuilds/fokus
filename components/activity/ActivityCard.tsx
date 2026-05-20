@@ -1,6 +1,6 @@
 "use client";
 
-import ActivityIcon from "@/components/activity/ActivityIcon";
+import SkillIcon from "@/components/SkillIcon";
 import { SKILLS } from "@/lib/content/skills";
 import type { Activity, ActivityDifficulty } from "@/types";
 
@@ -23,18 +23,11 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
       tabIndex={-1}
       className="flex items-start gap-4 rounded-[18px] bg-bg-elevated p-4 shadow-md transition-transform duration-fast ease-out active:scale-[0.99]"
     >
-      <div
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px]"
-        style={{ backgroundColor: skill.color, color: "#FFFFFF" }}
-        aria-hidden
-      >
-        <ActivityIcon
-          iconName={activity.iconName}
-          skill={activity.skill}
-          size={22}
-          strokeWidth={1.75}
-        />
-      </div>
+      <SkillIcon
+        skillId={activity.skill}
+        size="sm"
+        iconName={activity.iconName}
+      />
 
       <div className="min-w-0 flex-1">
         <p className="text-[11px] font-extrabold uppercase tracking-[0.1em]">
