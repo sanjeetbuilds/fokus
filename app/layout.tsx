@@ -1,18 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { OnboardingGate } from "@/components/shared/OnboardingGate";
 import SplashGate from "@/components/shared/SplashGate";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 
-// Round-4 design uses a single family: Plus Jakarta Sans, weights 300-800.
-// Loaded as a CSS variable (`--font-body`) so the Tailwind `font-sans`
-// utility (and `font-display`, kept as an alias) both resolve to it.
+// Body — Plus Jakarta Sans, weights 300-800.
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-body",
+  display: "swap",
+});
+
+// Display — Fraunces (variable, with optical-size axis). Opt-in per-element
+// via the Tailwind `font-display` utility. Used on splash wordmark, intro
+// titles, onboarding title, welcome-modal title.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: "variable",
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -59,7 +69,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`h-full ${jakarta.variable}`}
+      className={`h-full ${jakarta.variable} ${fraunces.variable}`}
     >
       <body className="min-h-full bg-bg text-ink font-sans antialiased">
         <ThemeProvider>

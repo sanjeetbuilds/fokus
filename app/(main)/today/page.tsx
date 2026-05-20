@@ -3,13 +3,23 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import Link from "next/link";
+
 import TodayActivityCard from "@/components/activity/TodayActivityCard";
 import AppHeader from "@/components/layout/AppHeader";
 import ReflectionBlock from "@/components/today/ReflectionBlock";
 import ReflectSheet from "@/components/today/ReflectSheet";
+import WelcomeModal from "@/components/today/WelcomeModal";
 import { useToast } from "@/components/ui/Toast";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
-import { createSession, db, getChild, getSessionsByDate } from "@/lib/db";
+import { isThinProfile } from "@/lib/content/reflection";
+import {
+  createSession,
+  db,
+  getChild,
+  getCurrentParent,
+  getSessionsByDate,
+} from "@/lib/db";
 import { pickActivity, RestDayError } from "@/lib/engine";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { today as todayIso } from "@/lib/utils/dates";
@@ -51,6 +61,8 @@ export default function TodayPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [todaysSessions, setTodaysSessions] = useState<Session[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [parentId, setParentId] = useState<string | null>(null);
+  const [welcomeAlreadySeen, setWelcomeAlreadySeen] = useState(true);
 
   const [time, setTime] = useState<TimeAvailable>("medium");
   const [mood, setMood] = useState<ChildMood>("normal");
@@ -69,14 +81,19 @@ export default function TodayPage() {
       return;
     }
     try {
-      const [c, all, todays] = await Promise.all([
+      const [c, all, todays, parent] = await Promise.all([
         getChild(activeChildId),
         db.sessions.where("childId").equals(activeChildId).toArray(),
         getSessionsByDate(activeChildId, todayDate),
+        getCurrentParent(),
       ]);
       setChild(c ?? null);
       setSessions(all);
       setTodaysSessions(todays);
+      setParentId(parent?.id ?? null);
+      setWelcomeAlreadySeen(
+        parent?.preferences?.hasSeenWelcomeModal === true,
+      );
     } catch (err) {
       console.error("[/today] load:", err);
     } finally {
@@ -206,6 +223,16 @@ export default function TodayPage() {
 
         <ReflectionBlock child={child} sessionCount={sessions.length} />
 
+        {isThinProfile(child) ? (
+          <Link
+            href={`/profile/about/${child.id}`}
+            className="-mt-2 mb-4 inline-flex items-center gap-1 text-[14px] font-semibold transition-colors"
+            style={{ color: "var(--accent-deep)" }}
+          >
+            + Tell us more about {child.name} →
+          </Link>
+        ) : null}
+
         {!alreadyLogged ? (
           <>
             <ChipRow
@@ -256,9 +283,16 @@ export default function TodayPage() {
         onClose={() => setReflectActivityId(null)}
         onLogged={() => void onReflected()}
       />
+
+      <WelcomeModal
+        childName={childName}
+        parentId={parentId}
+        alreadySeen={welcomeAlreadySeen}
+      />
     </main>
   );
 }
+
 
 function ChipRow<T extends string>({
   eyebrow,

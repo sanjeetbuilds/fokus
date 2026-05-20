@@ -1,813 +1,310 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import { useToast } from "@/components/ui/Toast";
-import { createChild, createParent, getCurrentParent } from "@/lib/db";
-import { useAppStore } from "@/lib/store/useAppStore";
+import Wordmark from "@/components/shared/Wordmark";
 
 /**
- * Round-4 onboarding flow: four dark narrative slides (the "why" of Fokus)
- * followed by a single light setup form. The form captures only:
+ * Round-6 intro: three light-background narrative screens with line-art
+ * illustrations on a soft accent-tinted circle. No setup form here —
+ * pressing "Set up Fokus →" on screen 3 routes to /onboarding, which
+ * captures the 20-second form (name + age + English).
  *
- *   - parent name
- *   - child name
- *   - child age band ("0-1" / "2-4" / "4-6" / "6-9")
- *
- * The engine's deeper fields (englishConfidence, interests, struggles,
- * goesDeepOn / fleesFrom, photo) are filled in later via the post-setup
- * nudge surfaced on /today. Until then, scoring uses safe defaults and
- * the engine picks from the unfiltered library.
+ * The previous five-slide intro (which embedded the setup form on slide 5
+ * and used dark mood-board imagery) was replaced wholesale. This intro is
+ * the parent's first taste of the product's calmness; nothing on it
+ * should feel like a sales pitch.
  */
 
-interface AgeBand {
-  label: string;
-  /** Derived numeric age, clamped to the activity library's 5-10 window. */
-  age: number;
-}
-
-const AGE_BANDS: AgeBand[] = [
-  { label: "0–1 yr", age: 5 },   // clamped — engine cap
-  { label: "2–4 yrs", age: 5 },  // clamped — engine cap
-  { label: "4–6 yrs", age: 6 },
-  { label: "6–9 yrs", age: 9 },
-];
+const TOTAL_SCREENS = 3;
 
 export default function IntroPage() {
   const router = useRouter();
-  const { toast } = useToast();
-  const setParent = useAppStore((s) => s.setParent);
-  const setActiveChild = useAppStore((s) => s.setActiveChild);
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
 
-  const [step, setStep] = useState(0); // 0..4 (slides) → 4 is setup
-  const [childName, setChildName] = useState("");
-  const [parentName, setParentName] = useState("");
-  const [bandIdx, setBandIdx] = useState(1);
-  const [busy, setBusy] = useState(false);
+  const go = useCallback(
+    (next: number) => {
+      if (next < 0 || next > TOTAL_SCREENS - 1) return;
+      setDirection(next > step ? 1 : -1);
+      setStep(next);
+    },
+    [step],
+  );
 
-  const next = useCallback(() => setStep((s) => Math.min(4, s + 1)), []);
-
-  const begin = useCallback(async () => {
-    if (busy) return;
-    const c = childName.trim();
-    const p = parentName.trim();
-    if (!c || !p) {
-      toast("Both names are needed.", { tone: "danger" });
-      return;
-    }
-    setBusy(true);
-    try {
-      let parent = await getCurrentParent();
-      if (!parent) {
-        parent = await createParent(p);
-      }
-      setParent(parent.id);
-
-      const band = AGE_BANDS[bandIdx]!;
-      const child = await createChild({
-        parentId: parent.id,
-        name: c,
-        age: band.age,
-        ageBand: band.label,
-        grade: "",
-        engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
-        englishConfidence: "developing",
-        primaryLanguage: "Other",
-        interests: [],
-        strengths: [],
-        struggles: [],
-      });
-      setActiveChild(child.id);
-      router.replace("/today");
-    } catch (err) {
-      console.error("[/intro] begin:", err);
-      toast("Couldn't save. Try again.", { tone: "danger" });
-      setBusy(false);
-    }
-  }, [
-    bandIdx,
-    busy,
-    childName,
-    parentName,
-    router,
-    setActiveChild,
-    setParent,
-    toast,
-  ]);
+  const skip = useCallback(() => {
+    router.replace("/onboarding");
+  }, [router]);
 
   return (
-    <main
-      className="relative flex min-h-[100svh] flex-col"
-      style={{ background: step < 4 ? "var(--ink)" : "var(--bg)" }}
-    >
-      <StatusBar dark={step < 4} />
-
-      <div className="relative flex-1 overflow-hidden">
-        {step === 0 ? <Slide0 /> : null}
-        {step === 1 ? <Slide1 /> : null}
-        {step === 2 ? <Slide2 /> : null}
-        {step === 3 ? <Slide3 /> : null}
-        {step === 4 ? (
-          <SetupSlide
-            childName={childName}
-            setChildName={setChildName}
-            parentName={parentName}
-            setParentName={setParentName}
-            bandIdx={bandIdx}
-            setBandIdx={setBandIdx}
-            onBegin={begin}
-            busy={busy}
-          />
-        ) : null}
-      </div>
-
-      {step < 4 ? (
-        <div className="px-8 pb-[calc(env(safe-area-inset-bottom)+24px)]">
-          <Dots active={step} total={5} dark />
+    <main className="relative flex min-h-[100svh] flex-col bg-bg">
+      <header className="flex items-center justify-between px-6 pt-[calc(env(safe-area-inset-top)+16px)]">
+        <Wordmark size="sm" />
+        {step < TOTAL_SCREENS - 1 ? (
           <button
             type="button"
-            onClick={next}
-            className="mt-4 h-[54px] w-full rounded-full border-[1.5px] text-[16px] font-semibold transition-colors"
-            style={{
-              borderColor: "rgba(255,255,255,0.22)",
-              color: "rgba(255,255,255,0.82)",
-              letterSpacing: "-0.01em",
-            }}
+            onClick={skip}
+            className="rounded-md px-2 py-1.5 text-[14px] font-medium text-ink-tertiary transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
-            Continue
+            Skip
           </button>
+        ) : (
+          <span aria-hidden className="h-9 w-9" />
+        )}
+      </header>
+
+      <section className="relative flex-1 overflow-hidden">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: direction * 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -direction * 24 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 flex flex-col items-center px-8 pt-12"
+          >
+            {step === 0 ? <Slide0 /> : null}
+            {step === 1 ? <Slide1 /> : null}
+            {step === 2 ? <Slide2 /> : null}
+          </motion.div>
+        </AnimatePresence>
+      </section>
+
+      <footer className="px-6 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-2">
+        <Dots active={step} total={TOTAL_SCREENS} />
+        <div className="mt-5">
+          {step < TOTAL_SCREENS - 1 ? (
+            <div className="flex items-center justify-between">
+              <span aria-hidden className="h-12 w-12" />
+              <button
+                type="button"
+                onClick={() => go(step + 1)}
+                aria-label="Next"
+                className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white transition-transform duration-fast active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                style={{ boxShadow: "0 6px 16px -4px rgba(156,165,255,0.4)" }}
+              >
+                <ArrowRight size={22} strokeWidth={2.25} aria-hidden />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => router.replace("/onboarding")}
+              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-accent text-[16px] font-semibold text-white transition-transform duration-fast active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              style={{
+                boxShadow: "0 6px 16px -4px rgba(156,165,255,0.4)",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Set up Fokus
+              <ArrowRight size={18} strokeWidth={2.25} aria-hidden />
+            </button>
+          )}
         </div>
-      ) : null}
+      </footer>
     </main>
   );
 }
 
-function StatusBar({ dark }: { dark: boolean }) {
-  // Faux iPhone status bar baseline, matched to the design HTML's spacing.
-  // Doesn't render time — it's invisible furniture so the layout above
-  // the dynamic island is consistent.
-  return (
-    <div
-      aria-hidden
-      style={{
-        height: 54,
-        flexShrink: 0,
-        color: dark ? "rgba(255,255,255,0.55)" : "var(--ink-secondary)",
-      }}
-    />
-  );
-}
-
-function Dots({
-  active,
-  total,
-  dark,
-}: {
-  active: number;
-  total: number;
-  dark?: boolean;
-}) {
+function Dots({ active, total }: { active: number; total: number }) {
   return (
     <ol
       aria-label={`Step ${active + 1} of ${total}`}
-      className="flex justify-center gap-1.5"
+      className="flex items-center justify-center gap-1.5"
     >
-      {Array.from({ length: total }, (_, i) => (
-        <li
-          key={i}
-          aria-current={i === active ? "step" : undefined}
-          className="h-1.5 rounded-full transition-all duration-300"
-          style={{
-            width: i === active ? 20 : 6,
-            backgroundColor:
-              i === active
-                ? dark
-                  ? "rgba(255,255,255,0.82)"
-                  : "var(--ink)"
-                : dark
-                  ? "rgba(255,255,255,0.18)"
-                  : "rgba(37,38,48,0.14)",
-          }}
-        />
-      ))}
+      {Array.from({ length: total }, (_, i) => {
+        const on = i === active;
+        return (
+          <li
+            key={i}
+            aria-current={on ? "step" : undefined}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: on ? 22 : 6,
+              height: 6,
+              background: on
+                ? "var(--accent)"
+                : "rgba(37,38,48,0.16)",
+            }}
+          />
+        );
+      })}
     </ol>
   );
 }
 
-// ---------- Slide 0: Schools measure ----------
-
-function Slide0() {
-  return (
-    <SlideShell illustration={<MeasureIllo />}>
-      <h1
-        className="text-[38px] font-extrabold text-white"
-        style={{ lineHeight: 1.1, letterSpacing: "-0.03em" }}
-      >
-        Schools measure
-        <br />
-        visible things.
-      </h1>
-      <p
-        className="mt-3 text-[18px] font-light"
-        style={{
-          color: "rgba(255,255,255,0.38)",
-          lineHeight: 1.6,
-        }}
-      >
-        But invisible traits
-        <br />
-        shape lives.
-      </p>
-    </SlideShell>
-  );
-}
-
-// ---------- Slide 1: Four traits ----------
-
-function Slide1() {
-  return (
-    <SlideShell illustration={<TraitsIllo />}>
-      <h1
-        className="text-[30px] font-extrabold text-white"
-        style={{ lineHeight: 1.15, letterSpacing: "-0.03em" }}
-      >
-        Confidence.
-        <br />
-        Curiosity.
-        <br />
-        Resilience.
-        <br />
-        Empathy.
-      </h1>
-      <p
-        className="mt-3 text-[18px] font-light"
-        style={{ color: "rgba(255,255,255,0.38)", lineHeight: 1.6 }}
-      >
-        Built quietly
-        <br />
-        in daily moments.
-      </p>
-    </SlideShell>
-  );
-}
-
-// ---------- Slide 2: Parents don't need pressure ----------
-
-function Slide2() {
-  return (
-    <SlideShell illustration={<ParentChildIllo />}>
-      <h1
-        className="text-[38px] font-extrabold text-white"
-        style={{ lineHeight: 1.1, letterSpacing: "-0.03em" }}
-      >
-        Parents don&apos;t need
-        <br />
-        more pressure.
-      </h1>
-      <p
-        className="mt-3 text-[18px] font-light"
-        style={{ color: "rgba(255,255,255,0.38)", lineHeight: 1.6 }}
-      >
-        They need
-        <br />
-        clearer attention.
-      </p>
-    </SlideShell>
-  );
-}
-
-// ---------- Slide 3: One interaction ----------
-
-function Slide3() {
-  return (
-    <SlideShell illustration={<RingsIllo />}>
-      <h1
-        className="text-[38px] font-extrabold text-white"
-        style={{ lineHeight: 1.1, letterSpacing: "-0.03em" }}
-      >
-        One meaningful
-        <br />
-        interaction a day
-        <br />
-        is enough.
-      </h1>
-    </SlideShell>
-  );
-}
+// ---------- Slide shells (illustration + title + body) ----------
 
 function SlideShell({
   illustration,
-  children,
+  title,
+  body,
 }: {
   illustration: React.ReactNode;
-  children: React.ReactNode;
+  title: string;
+  body: string;
 }) {
   return (
-    <section
-      className="flex h-full flex-col"
-      style={{ animation: "fokusObFade 0.5s cubic-bezier(.22,1,.36,1)" }}
-    >
-      <div className="relative h-[256px] flex-shrink-0 overflow-hidden">
-        {illustration}
-      </div>
-      <div className="flex flex-1 flex-col justify-center px-8 pt-6 pb-4">
-        {children}
-      </div>
-      <style jsx global>{`
-        @keyframes fokusObFade {
-          from { opacity: 0; transform: translateY(14px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fokusBlob1 {
-          0%, 100% { transform: translate(0, 0); }
-          50% { transform: translate(10px, 14px); }
-        }
-        @keyframes fokusBlob2 {
-          0%, 100% { transform: translate(0, 0); }
-          50% { transform: translate(-12px, 10px); }
-        }
-        @keyframes fokusBlob3 {
-          0%, 100% { transform: translate(0, 0); }
-          50% { transform: translate(14px, -10px); }
-        }
-        @keyframes fokusBlob4 {
-          0%, 100% { transform: translate(0, 0); }
-          50% { transform: translate(-10px, -14px); }
-        }
-        @keyframes fokusTraitPulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.04); }
-        }
-        @keyframes fokusRingOut {
-          0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0.45; }
-          100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-        }
-        @keyframes fokusBreathe {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.055); }
-        }
-        @keyframes fokusCenterGlow {
-          0%, 100% {
-            box-shadow:
-              0 0 28px rgba(156,165,255,0.55),
-              0 0 56px rgba(156,165,255,0.2);
-          }
-          50% {
-            box-shadow:
-              0 0 50px rgba(156,165,255,0.85),
-              0 0 100px rgba(156,165,255,0.4);
-          }
-        }
-      `}</style>
-    </section>
+    <>
+      <IlloHalo>{illustration}</IlloHalo>
+      <h1
+        className="mt-10 text-center font-display text-ink"
+        style={{
+          fontSize: 32,
+          fontWeight: 500,
+          lineHeight: 1.15,
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {title}
+      </h1>
+      <p
+        className="mt-4 max-w-[320px] text-center text-ink-secondary"
+        style={{ fontSize: 17, fontWeight: 400, lineHeight: 1.5 }}
+      >
+        {body}
+      </p>
+    </>
   );
 }
 
-// ---------- Illustrations ----------
-
-function Blob({
-  width,
-  height,
-  top,
-  left,
-  right,
-  bottom,
-  color,
-  blur,
-  opacity,
-  animation,
-}: {
-  width: number;
-  height: number;
-  top?: number;
-  left?: number;
-  right?: number;
-  bottom?: number;
-  color: string;
-  blur: number;
-  opacity: number;
-  animation: string;
-}) {
+function IlloHalo({ children }: { children: React.ReactNode }) {
   return (
-    <span
-      aria-hidden
-      className="absolute rounded-full"
+    <div
+      className="flex items-center justify-center rounded-full"
       style={{
-        width,
-        height,
-        top,
-        left,
-        right,
-        bottom,
-        background: color,
-        filter: `blur(${blur}px)`,
-        opacity,
-        animation,
+        width: 180,
+        height: 180,
+        background: "var(--accent-bg)",
       }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ---------- Slide 0: ruler / marks · behavior · speed ----------
+
+function Slide0() {
+  return (
+    <SlideShell
+      illustration={
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden>
+          {/* Three tick marks above the bar */}
+          <line x1="32" y1="48" x2="32" y2="58" stroke="var(--ink)" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="60" y1="48" x2="60" y2="58" stroke="var(--ink)" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="88" y1="48" x2="88" y2="58" stroke="var(--ink)" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Horizontal bar */}
+          <line
+            x1="18"
+            y1="64"
+            x2="102"
+            y2="64"
+            stroke="var(--ink)"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+          />
+          {/* Labels — one centered text with middots so spacing always reads */}
+          <text
+            x="60"
+            y="80"
+            textAnchor="middle"
+            fontSize="7.5"
+            fontFamily="var(--font-body)"
+            fontWeight="500"
+            fill="var(--ink-tertiary)"
+          >
+            marks · behavior · speed
+          </text>
+        </svg>
+      }
+      title="School measures what's easy to measure."
+      body="Marks. Behavior. Speed. The things teachers can grade by Friday."
     />
   );
 }
 
-function MeasureIllo() {
+// ---------- Slide 1: winding path ----------
+
+function Slide1() {
   return (
-    <>
-      <Blob width={170} height={155} top={-35} left={-35} color="var(--accent)" blur={38} opacity={0.65} animation="fokusBlob1 6s ease-in-out infinite" />
-      <Blob width={150} height={140} top={-20} right={-25} color="var(--amber)" blur={34} opacity={0.6} animation="fokusBlob2 5s ease-in-out infinite" />
-      <Blob width={145} height={130} bottom={-25} right={10} color="var(--coral)" blur={32} opacity={0.55} animation="fokusBlob3 7s ease-in-out infinite" />
-      <Blob width={130} height={120} bottom={-15} left={15} color="var(--lav)" blur={30} opacity={0.6} animation="fokusBlob4 5.5s ease-in-out infinite" />
-      <svg
-        aria-hidden
-        className="absolute left-1/2 top-1/2"
-        style={{ transform: "translate(-50%, -52%)" }}
-        width="158"
-        height="158"
-        viewBox="0 0 158 158"
-        fill="none"
-      >
-        <rect x="14" y="14" width="130" height="130" rx="8" stroke="rgba(255,255,255,0.28)" strokeWidth="1.5" strokeDasharray="7 5" fill="rgba(0,0,0,0.22)" />
-        <line x1="14" y1="5" x2="14" y2="14" stroke="rgba(255,255,255,0.45)" strokeWidth="1.2" />
-        <line x1="53" y1="8" x2="53" y2="14" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
-        <line x1="92" y1="8" x2="92" y2="14" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
-        <line x1="144" y1="5" x2="144" y2="14" stroke="rgba(255,255,255,0.45)" strokeWidth="1.2" />
-        <line x1="14" y1="9" x2="144" y2="9" stroke="rgba(255,255,255,0.18)" strokeWidth="0.8" />
-        <text x="19" y="8" fill="rgba(255,255,255,0.3)" fontSize="7" fontFamily="monospace">0</text>
-        <text x="86" y="8" fill="rgba(255,255,255,0.3)" fontSize="7" fontFamily="monospace">50</text>
-        <text x="136" y="8" fill="rgba(255,255,255,0.3)" fontSize="7" fontFamily="monospace">cm</text>
-        <circle cx="63" cy="79" r="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.32)" strokeWidth="1.5" />
-        <polygon points="105,58 128,98 82,98" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.28)" strokeWidth="1.5" />
-        <line x1="14" y1="79" x2="40" y2="79" stroke="rgba(255,255,255,0.18)" strokeWidth="0.8" strokeDasharray="3 2" />
-        <text x="16" y="76" fill="rgba(255,255,255,0.32)" fontSize="7" fontFamily="monospace">3.2</text>
-      </svg>
-      <div
-        aria-hidden
-        className="absolute bottom-3.5 left-0 right-0 text-center text-[10px] font-semibold uppercase"
-        style={{ color: "rgba(255,255,255,0.28)", letterSpacing: "0.09em" }}
-      >
-        what gets measured
-      </div>
-      <div
-        aria-hidden
-        className="absolute left-4 top-[18px] text-[10px] font-semibold uppercase"
-        style={{ color: "rgba(255,255,255,0.32)", letterSpacing: "0.07em" }}
-      >
-        invisible
-      </div>
-    </>
+    <SlideShell
+      illustration={
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden>
+          <path
+            d="M 14 88 Q 30 60 50 72 T 82 50 Q 92 44 102 40"
+            stroke="var(--ink)"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <circle cx="102" cy="40" r="4" fill="var(--ink)" />
+        </svg>
+      }
+      title="But other things matter more."
+      body="How to think. How to wonder. How to recover. These don't show up on report cards."
+    />
   );
 }
 
-function TraitsIllo() {
-  const traits = [
-    { emoji: "💪", label: "Confidence", delay: "0s", dur: "3s" },
-    { emoji: "🔍", label: "Curiosity", delay: "0.4s", dur: "3.4s" },
-    { emoji: "🧠", label: "Resilience", delay: "0.8s", dur: "3.2s" },
-    { emoji: "💚", label: "Empathy", delay: "1.2s", dur: "2.8s" },
-  ];
+// ---------- Slide 2: window with glow ----------
+
+function Slide2() {
   return (
-    <>
-      <Blob width={168} height={160} top={-30} left={-30} color="var(--accent)" blur={32} opacity={0.7} animation="fokusBlob1 5.5s ease-in-out infinite" />
-      <Blob width={162} height={155} top={-30} right={-30} color="var(--amber)" blur={32} opacity={0.65} animation="fokusBlob2 6.5s ease-in-out infinite" />
-      <Blob width={155} height={148} bottom={-30} left={-30} color="var(--lav)" blur={32} opacity={0.65} animation="fokusBlob3 5s ease-in-out infinite" />
-      <Blob width={160} height={152} bottom={-30} right={-30} color="var(--coral)" blur={32} opacity={0.62} animation="fokusBlob4 7s ease-in-out infinite" />
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-        {traits.map((t) => (
-          <div key={t.label} className="flex flex-col items-center justify-center gap-1.5 p-2.5">
-            <span
-              aria-hidden
-              className="flex h-[42px] w-[42px] items-center justify-center rounded-full border-[1.5px] text-[20px]"
-              style={{
-                borderColor: "rgba(255,255,255,0.35)",
-                animation: `fokusTraitPulse ${t.dur} ${t.delay} ease-in-out infinite`,
-              }}
-            >
-              {t.emoji}
-            </span>
-            <span
-              className="text-[12px] font-bold"
-              style={{ color: "rgba(255,255,255,0.8)", letterSpacing: "0.01em" }}
-            >
-              {t.label}
-            </span>
-          </div>
-        ))}
-      </div>
-      <span
-        aria-hidden
-        className="absolute left-1/2 top-1/2"
-        style={{
-          transform: "translate(-50%, -50%)",
-          width: 1,
-          height: 60,
-          background: "rgba(255,255,255,0.12)",
-        }}
-      />
-      <span
-        aria-hidden
-        className="absolute left-1/2 top-1/2"
-        style={{
-          transform: "translate(-50%, -50%)",
-          height: 1,
-          width: 60,
-          background: "rgba(255,255,255,0.12)",
-        }}
-      />
-    </>
-  );
-}
-
-function ParentChildIllo() {
-  return (
-    <div className="flex h-full items-center justify-center">
-      <Blob width={220} height={180} top={40} left={undefined} color="var(--amber)" blur={50} opacity={0.5} animation="fokusBlob1 6s ease-in-out infinite" />
-      {/* Parent figure */}
-      <div
-        aria-hidden
-        className="absolute"
-        style={{
-          left: "50%",
-          top: "50%",
-          transform: "translate(-90px, -52%)",
-          width: 100,
-          height: 120,
-          background: "rgba(244,200,74,0.82)",
-          borderRadius: "50% 50% 44% 44%",
-          animation: "fokusBreathe 4s ease-in-out infinite",
-          boxShadow: "0 8px 32px rgba(244,200,74,0.3)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute"
-        style={{
-          left: "50%",
-          top: "50%",
-          transform: "translate(-90px, -52%) translateY(-62px)",
-          width: 54,
-          height: 54,
-          marginLeft: 23,
-          background: "rgba(244,200,74,0.9)",
-          borderRadius: "50%",
-          animation: "fokusBreathe 4s ease-in-out infinite",
-        }}
-      />
-      {/* Child figure */}
-      <div
-        aria-hidden
-        className="absolute"
-        style={{
-          left: "50%",
-          top: "50%",
-          transform: "translate(18px, -40%)",
-          width: 68,
-          height: 82,
-          background: "rgba(197,191,239,0.85)",
-          borderRadius: "50% 50% 44% 44%",
-          animation: "fokusBreathe 4s 0.6s ease-in-out infinite",
-          boxShadow: "0 6px 22px rgba(197,191,239,0.3)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute"
-        style={{
-          left: "50%",
-          top: "50%",
-          transform: "translate(18px, -40%) translateY(-44px)",
-          width: 38,
-          height: 38,
-          marginLeft: 15,
-          background: "rgba(197,191,239,0.92)",
-          borderRadius: "50%",
-          animation: "fokusBreathe 4s 0.6s ease-in-out infinite",
-        }}
-      />
-      {/* Connection line */}
-      <svg
-        aria-hidden
-        className="absolute"
-        style={{ left: "50%", top: "50%", transform: "translate(-40px, -50%)" }}
-        width="60"
-        height="24"
-        viewBox="0 0 60 24"
-        fill="none"
-      >
-        <path
-          d="M4 12 Q30 4 56 12"
-          stroke="rgba(255,255,255,0.2)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeDasharray="4 3"
-        />
-      </svg>
-      <div className="absolute bottom-[18px] left-0 right-0 flex justify-center gap-8">
-        <span
-          className="text-[10px] font-bold uppercase"
-          style={{ color: "rgba(244,200,74,0.6)", letterSpacing: "0.06em" }}
-        >
-          Parent
-        </span>
-        <span
-          className="text-[10px] font-bold uppercase"
-          style={{ color: "rgba(197,191,239,0.6)", letterSpacing: "0.06em" }}
-        >
-          Child
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function RingsIllo() {
-  return (
-    <div className="flex h-full items-center justify-center">
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          aria-hidden
-          className="absolute rounded-full border-[1.5px]"
-          style={{
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 240,
-            height: 240,
-            borderColor: "rgba(156,165,255,0.18)",
-            animation: `fokusRingOut 3s ${i}s ease-out infinite`,
-          }}
-        />
-      ))}
-      <span
-        aria-hidden
-        className="absolute rounded-full border-[1.5px]"
-        style={{
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 148,
-          height: 148,
-          borderColor: "rgba(156,165,255,0.28)",
-        }}
-      />
-      <Blob width={180} height={180} top={undefined} left={undefined} color="var(--accent)" blur={45} opacity={0.55} animation="" />
-      <div
-        className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full"
-        style={{
-          background: "var(--accent)",
-          animation: "fokusCenterGlow 3s ease-in-out infinite",
-        }}
-      >
-        <span
-          aria-hidden
-          className="flex h-9 w-9 items-center justify-center rounded-full text-[18px]"
-          style={{ background: "rgba(255,255,255,0.25)" }}
-        >
-          ✦
-        </span>
-      </div>
-      <div
-        aria-hidden
-        className="absolute left-0 right-0 text-center text-[11px] font-bold uppercase"
-        style={{
-          top: 20,
-          color: "rgba(255,255,255,0.3)",
-          letterSpacing: "0.08em",
-        }}
-      >
-        one moment a day
-      </div>
-    </div>
-  );
-}
-
-// ---------- Setup slide (light bg, form) ----------
-
-function SetupSlide({
-  childName,
-  setChildName,
-  parentName,
-  setParentName,
-  bandIdx,
-  setBandIdx,
-  onBegin,
-  busy,
-}: {
-  childName: string;
-  setChildName: (v: string) => void;
-  parentName: string;
-  setParentName: (v: string) => void;
-  bandIdx: number;
-  setBandIdx: (i: number) => void;
-  onBegin: () => void;
-  busy: boolean;
-}) {
-  return (
-    <section
-      className="flex h-full flex-col bg-bg"
-      style={{ animation: "fokusObFade 0.5s cubic-bezier(.22,1,.36,1)" }}
-    >
-      <div className="flex flex-1 flex-col px-8 pt-2 pb-4">
-        <p
-          className="text-[11px] font-bold uppercase"
-          style={{ color: "var(--accent)", letterSpacing: "0.08em" }}
-        >
-          Welcome to Fokus
-        </p>
-        <h1
-          className="mt-3 text-[38px] font-extrabold text-ink"
-          style={{ lineHeight: 1.1, letterSpacing: "-0.03em" }}
-        >
-          Let&apos;s begin.
-        </h1>
-        <p className="mt-2 text-[14px] text-ink-secondary" style={{ lineHeight: 1.6 }}>
-          A quiet space to notice
-          <br />
-          what matters most.
-        </p>
-        <div className="mt-6">
-          <Dots active={4} total={5} />
-        </div>
-
-        <div className="mt-6 flex flex-1 flex-col gap-3.5">
-          <Field label="Your child's name">
-            <input
-              className="h-[52px] w-full rounded-md border-[1.5px] bg-white px-4 text-[16px] text-ink"
-              style={{ borderColor: "var(--line)" }}
-              value={childName}
-              onChange={(e) => setChildName(e.target.value)}
-              placeholder="Their name"
-              autoComplete="off"
-              spellCheck={false}
+    <SlideShell
+      illustration={
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden>
+          {/* Glow lines coming out of the top-right of the window */}
+          {[0, 1, 2].map((i) => (
+            <line
+              key={i}
+              x1={70 + i * 4}
+              y1={32 - i * 3}
+              x2={86 + i * 6}
+              y2={16 - i * 4}
+              stroke="var(--accent)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              opacity={1 - i * 0.25}
             />
-          </Field>
-          <Field label="Your name">
-            <input
-              className="h-[52px] w-full rounded-md border-[1.5px] bg-white px-4 text-[16px] text-ink"
-              style={{ borderColor: "var(--line)" }}
-              value={parentName}
-              onChange={(e) => setParentName(e.target.value)}
-              placeholder="Your name"
-              autoComplete="given-name"
-              spellCheck={false}
-            />
-          </Field>
-          <Field label="Child's age">
-            <div className="flex flex-wrap gap-2">
-              {AGE_BANDS.map((band, i) => {
-                const on = bandIdx === i;
-                return (
-                  <button
-                    type="button"
-                    key={band.label}
-                    onClick={() => setBandIdx(i)}
-                    className="rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors"
-                    style={{
-                      background: on ? "var(--ink)" : "var(--bg-alt)",
-                      color: on ? "#fff" : "var(--ink)",
-                    }}
-                  >
-                    {band.label}
-                  </button>
-                );
-              })}
-            </div>
-          </Field>
-        </div>
-      </div>
-
-      <div className="px-8 pb-[calc(env(safe-area-inset-bottom)+44px)]">
-        <button
-          type="button"
-          onClick={onBegin}
-          disabled={busy}
-          className="h-[54px] w-full rounded-full bg-ink text-[16px] font-bold text-white transition-opacity disabled:opacity-60"
-        >
-          {busy ? "Setting up…" : "Begin your journey →"}
-        </button>
-        <p className="mt-2.5 text-center text-[12px] text-ink-quaternary">
-          Your data stays private, always.
-        </p>
-      </div>
-    </section>
-  );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label
-        className="mb-1.5 block text-[11px] font-bold uppercase"
-        style={{ color: "var(--ink-secondary)", letterSpacing: "0.05em" }}
-      >
-        {label}
-      </label>
-      {children}
-    </div>
+          ))}
+          {/* Window frame */}
+          <rect
+            x="36"
+            y="36"
+            width="44"
+            height="60"
+            rx="3"
+            stroke="var(--ink)"
+            strokeWidth="1.75"
+            fill="none"
+          />
+          {/* Inner crossbar */}
+          <line
+            x1="36"
+            y1="66"
+            x2="80"
+            y2="66"
+            stroke="var(--ink)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <line
+            x1="58"
+            y1="36"
+            x2="58"
+            y2="96"
+            stroke="var(--ink)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+        </svg>
+      }
+      title="Fokus is one moment a day."
+      body="For the parts no one teaches anywhere else."
+    />
   );
 }

@@ -70,23 +70,26 @@ export function dedupedEngagement(child: Child): {
 /**
  * Compact /today reflection — capped at two lines regardless of how many
  * profile fields the parent filled in. Line 1 is name + age + ONE prioritised
- * engagement note ("Building English confidence." > "Goes deep on X." >
- * "Working on X."). The fleesFrom field stays in the DB but is deliberately
+ * engagement note. The fleesFrom field stays in the DB but is deliberately
  * NOT echoed back on the home screen — it's used by the engine, not surfaced.
+ *
+ * Thin-profile path (only name + age + englishConfidence filled in):
+ *   "{name} is {age}. {English hint}." — no fake observations layered on.
+ *
+ * Priority for the engagement note when richer fields exist:
+ *   1) English hint (always shows when set)
+ *   2) Goes deep on {first item}
+ *   3) Working on {first struggle}
  */
 export function buildFullReflection(child: Child): ReflectionSentence[] {
   const out: ReflectionSentence[] = [];
   const grade = child.grade?.trim();
-
   const dedup = dedupedEngagement(child);
 
+  const englishHint = englishHintFor(child.englishConfidence);
+
   const note = (() => {
-    if (
-      child.englishConfidence === "hesitant" ||
-      child.englishConfidence === "developing"
-    ) {
-      return "Building English confidence.";
-    }
+    if (englishHint) return englishHint;
     if (dedup.goesDeepOn.length > 0) {
       return `Goes deep on ${sentenceCase(dedup.goesDeepOn[0]!)}.`;
     }
@@ -106,6 +109,35 @@ export function buildFullReflection(child: Child): ReflectionSentence[] {
   });
 
   return out;
+}
+
+/**
+ * Map englishConfidence to the round-6 phrasing requested by the
+ * thin-profile state. Returns null only if the field is missing entirely
+ * (legacy records pre-onboarding rewrite).
+ */
+function englishHintFor(c: Child["englishConfidence"] | null | undefined): string | null {
+  switch (c) {
+    case "hesitant":
+      return "Just starting with English.";
+    case "developing":
+      return "Building English steadily.";
+    case "comfortable":
+      return "Comfortable in English.";
+    default:
+      return null;
+  }
+}
+
+/** Whether the round-6 thin-profile case applies — used by Profile + Today. */
+export function isThinProfile(child: Child): boolean {
+  return (
+    child.engagement.goesDeepOn.length === 0 &&
+    child.engagement.fleesFrom.length === 0 &&
+    child.interests.length === 0 &&
+    child.struggles.length === 0 &&
+    child.strengths.length === 0
+  );
 }
 
 export function fullReflectionClosing(_child: Child): string {
@@ -155,6 +187,28 @@ export function profileFocusAreas(child: Child): FocusArea[] {
   const out: FocusArea[] = [];
   const dedup = dedupedEngagement(child);
   const name = child.name;
+
+  // Thin-profile shortcut: when the deeper fields are still empty, surface
+  // a single bullet about English. Anything else would be fabrication.
+  if (isThinProfile(child)) {
+    if (child.englishConfidence === "hesitant") {
+      out.push({
+        title: `Building ${name}'s English foundation`,
+        reason: `Because you said ${name} is just starting with English.`,
+      });
+    } else if (child.englishConfidence === "developing") {
+      out.push({
+        title: `Building ${name}'s English skills`,
+        reason: `Because you said ${name} is still picking up English.`,
+      });
+    } else {
+      out.push({
+        title: `Building ${name}'s confidence`,
+        reason: "Add more details and Fokus will tailor what it pays attention to.",
+      });
+    }
+    return out;
+  }
 
   if (child.englishConfidence === "hesitant") {
     out.push({

@@ -28,6 +28,9 @@ export interface ParentPreferences {
   reminderTime?: string; // "20:00"
   darkMode?: ThemePreference;
   onboarded: boolean;
+  /** Once the parent dismisses the WelcomeModal post-onboarding, this
+   *  sticks across reloads so it never reappears. */
+  hasSeenWelcomeModal?: boolean;
 }
 
 export interface Parent {
@@ -94,6 +97,9 @@ export interface Child {
    * parent enters DOB via settings, `dateOfBirth` becomes authoritative.
    */
   ageBand?: string | null;
+
+  /** Optional gender, captured later in the profile-completion flow. */
+  gender?: "boy" | "girl" | "unspecified" | null;
 
   createdAt: string;
   updatedAt: string;

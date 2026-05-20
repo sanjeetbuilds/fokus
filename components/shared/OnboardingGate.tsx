@@ -16,6 +16,7 @@ const FIRST_RUN_ALLOWED = (path: string): boolean =>
   path.startsWith("/dev");
 
 const CHILD_ONBOARDING_ALLOWED = (path: string): boolean =>
+  path === "/onboarding" ||
   path === "/onboarding/child" ||
   path === "/intro" ||
   path.startsWith("/dev");
@@ -70,13 +71,12 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
         if (cancelled) return;
 
         if (kids.length === 0) {
-          // Round-4: the parent record exists but no children yet — the
-          // setup form on /intro creates both at once, so send users there
-          // rather than into the standalone child onboarding (which is
-          // reserved for "add another child" from /profile).
+          // Round-6: parent exists but no children — the 20-second
+          // single-screen form at /onboarding creates the first child.
+          // The narrative /intro is separate (no form inside it).
           if (!CHILD_ONBOARDING_ALLOWED(pathname)) {
             navigatingRef.current = true;
-            router.replace("/intro");
+            router.replace("/onboarding");
           }
           setChecked(true);
           return;

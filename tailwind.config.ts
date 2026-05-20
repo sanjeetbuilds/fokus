@@ -86,15 +86,16 @@ const config: Config = {
           "Roboto",
           "sans-serif",
         ],
-        // `font-display` retained as an alias to `font-sans` so existing
-        // call sites don't break; the new identity uses one family only.
+        // Display — Fraunces (variable serif). Restored for splash wordmark,
+        // intro titles, onboarding title, welcome modal title. Body text
+        // keeps Plus Jakarta Sans via font-sans.
         display: [
-          "var(--font-body)",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "sans-serif",
+          "var(--font-display)",
+          "'Iowan Old Style'",
+          "Palatino",
+          "Georgia",
+          "Cambria",
+          "serif",
         ],
       },
       fontSize: {
