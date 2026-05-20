@@ -196,7 +196,7 @@ export default function OnboardingPage() {
             className="mt-3 text-center text-ink-tertiary"
             style={{ fontSize: 13, lineHeight: 1.45 }}
           >
-            More details later — we&apos;ll guide you when you&apos;re curious.
+            More details later. We&apos;ll guide you when you&apos;re curious.
           </p>
         </div>
       </div>

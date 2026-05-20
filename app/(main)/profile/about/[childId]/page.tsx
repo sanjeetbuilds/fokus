@@ -314,7 +314,7 @@ function stepHelp(step: Step, name: string): string {
     case "engagement":
       return `Two short lists. Things ${name} loses time in, and things they try to escape.`;
     case "interests":
-      return "Themes they're drawn to — used to make activities feel like theirs.";
+      return "Themes they're drawn to. Used to make activities feel like theirs.";
     case "struggles":
       return "Real challenges right now. We'll work on these gradually.";
   }
