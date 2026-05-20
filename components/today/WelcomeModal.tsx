@@ -101,58 +101,70 @@ export default function WelcomeModal({
               boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
             }}
           >
+            {/* Eyebrow (smallest) */}
             <p
               className="text-center"
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                letterSpacing: "0.1em",
+                letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                color: "#3A2A1A",
+                color: "#3A2418",
               }}
             >
               Welcome to Fokus
             </p>
 
+            {/* Title (medium) */}
             <h2
               id="welcome-title"
-              className="mt-4 text-center font-display"
+              className="mt-3 text-center font-display"
               style={{
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: 500,
                 lineHeight: 1.2,
-                letterSpacing: "-0.01em",
-                color: "#2A1F14",
+                letterSpacing: "-0.005em",
+                color: "#3A2418",
               }}
             >
               Here&apos;s how this works.
             </h2>
 
+            {/* Hero line (LARGEST — the thesis of the app) */}
+            <p
+              className="mt-7 text-center font-display"
+              style={{
+                fontSize: 26,
+                fontWeight: 400,
+                lineHeight: 1.3,
+                letterSpacing: "-0.015em",
+                color: "#2A1F14",
+              }}
+            >
+              One small moment a day with {childName}.
+            </p>
+
+            {/* Supporting paragraph block (smaller, denser) */}
             <div
-              className="mt-6 flex flex-col gap-3 text-center"
+              className="mt-6 flex flex-col gap-2 text-center"
               style={{ color: "#2A1F14" }}
             >
-              <p style={{ fontSize: 14, lineHeight: 1.5 }}>
-                Each day, one small moment with {childName}. Five to twenty
-                minutes.
+              <p style={{ fontSize: 14, lineHeight: 1.6 }}>
+                You do it. You log it. Fokus adjusts tomorrow.
               </p>
-              <p style={{ fontSize: 14, lineHeight: 1.5 }}>
-                You do it. You log how it went. Fokus learns and adjusts
-                tomorrow.
-              </p>
-              <p style={{ fontSize: 14, lineHeight: 1.5 }}>
-                No streaks. No scores. No pressure. That&apos;s the whole
-                app.
+              <p style={{ fontSize: 14, lineHeight: 1.6 }}>
+                No streaks. No scores. No pressure.
               </p>
             </div>
 
+            {/* Primary CTA — clear action */}
             <button
               type="button"
               onClick={() => void dismiss()}
-              className="mt-7 inline-flex h-[50px] w-full items-center justify-center rounded-[8px] text-white"
+              className="mt-8 inline-flex h-[50px] w-full items-center justify-center rounded-[8px] text-white"
               style={{
                 background: "#2A1F14",
-                fontSize: 15,
+                fontSize: 16,
                 fontWeight: 600,
                 letterSpacing: "-0.005em",
               }}

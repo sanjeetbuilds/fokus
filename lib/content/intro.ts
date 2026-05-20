@@ -11,17 +11,20 @@ export interface IntroScreen {
 export const INTRO_SCREENS: IntroScreen[] = [
   {
     id: 1,
-    title: "School measures what's easy to measure.",
-    body: "Marks. Behavior. Speed. The things teachers can grade by Friday.",
+    title: "School teaches reading. Math. Science.",
+    body: "Those things matter. But they're not the whole picture.",
   },
   {
     id: 2,
-    title: "How to think. How to recover. How to wonder.",
-    body: "These don't show up on report cards. They show up in who your child becomes.",
+    title:
+      "What school doesn't teach: how to think, how to feel, how to recover.",
+    body:
+      "Critical thinking. Emotional steadiness. Creativity. The skills that decide how a child turns out get built at home.",
   },
   {
     id: 3,
-    title: "One small moment a day. That's the whole app.",
-    body: "Fokus picks today's moment for you, based on who your child actually is. You do it together, log how it went, and that's it.",
+    title: "Fokus is one small moment a day.",
+    body:
+      "For the parts no one teaches anywhere else. You and your child. Five to twenty minutes. That's the whole app.",
   },
 ];

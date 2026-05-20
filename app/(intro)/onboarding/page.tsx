@@ -7,27 +7,20 @@ import Wordmark from "@/components/shared/Wordmark";
 import { useToast } from "@/components/ui/Toast";
 import { createChild, createParent, getCurrentParent } from "@/lib/db";
 import { useAppStore } from "@/lib/store/useAppStore";
+import { ageFromDob } from "@/lib/utils/dates";
 import type { EnglishConfidence } from "@/types";
 
 /**
- * Round-6 onboarding — a single screen that captures the minimum we need
- * to render the first /today: name, age, English level. Everything else
- * is filled in later via the "+ Tell us more about [name]" flow at
+ * Round-6 onboarding — single screen that captures the minimum we need to
+ * render the first /today: name, date of birth, English level. Everything
+ * else (interests, struggles, engagement, photo) is filled in later via
  * /profile/about/[childId].
  *
- * On submit:
- *   - create the Parent record (empty name; settings can edit it later)
- *   - create the Child record with all engagement / interests / struggles
- *     arrays empty, englishConfidence mapped from the chip choice
- *   - set sessionStorage flag `show_welcome_modal=true` so /today fires
- *     the WelcomeModal once
- *   - replace to /today
- *
- * SPEC §2 keeps this calm: no goal counters, no "rate your child"
- * questions, no judgment language.
+ * DOB replaces the round-5 age chips so the engine can track age with
+ * month-level resolution and "year + remainder months" can be shown back
+ * to the parent. The integer `age` field is still persisted for engine
+ * compatibility (it's derived from DOB at save time).
  */
-
-const AGES = [5, 6, 7, 8, 9, 10] as const;
 
 interface EnglishOption {
   label: string;
@@ -40,6 +33,9 @@ const ENGLISH: EnglishOption[] = [
   { label: "Comfortable", value: "comfortable" },
 ];
 
+const MIN_AGE = 4;
+const MAX_AGE = 12;
+
 export default function OnboardingPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -47,17 +43,45 @@ export default function OnboardingPage() {
   const setActiveChild = useAppStore((s) => s.setActiveChild);
 
   const [name, setName] = useState("");
-  const [age, setAge] = useState<number | null>(null);
+  const [dob, setDob] = useState("");
   const [english, setEnglish] = useState<EnglishConfidence | null>(null);
   const [busy, setBusy] = useState(false);
 
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const minDob = useMemo(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 20);
+    return d.toISOString().slice(0, 10);
+  }, []);
+
+  const ageInfo = useMemo(() => ageFromDob(dob), [dob]);
+  const ageError = useMemo(() => {
+    if (!dob) return null;
+    if (!ageInfo) return "Pick a date in the past.";
+    if (ageInfo.years < MIN_AGE || ageInfo.years > MAX_AGE) {
+      return "Fokus works best for kids 5 to 10.";
+    }
+    return null;
+  }, [ageInfo, dob]);
+
   const trimmed = name.trim();
-  const valid = trimmed.length > 0 && age !== null && english !== null;
+  const valid =
+    trimmed.length > 0 &&
+    dob.length > 0 &&
+    ageInfo !== null &&
+    ageError === null &&
+    english !== null;
 
   const buttonLabel = useMemo(() => {
     if (trimmed.length === 0) return "Start →";
     return `Start with ${trimmed} →`;
   }, [trimmed]);
+
+  const helperText = useMemo(() => {
+    if (!dob) return "Used to pick age-appropriate activities.";
+    if (!ageInfo) return "Pick a date in the past.";
+    return formatAgeHelper(ageInfo);
+  }, [ageInfo, dob]);
 
   const submit = useCallback(async () => {
     if (!valid || busy) return;
@@ -65,9 +89,7 @@ export default function OnboardingPage() {
     try {
       let parent = await getCurrentParent();
       if (!parent) {
-        // The form intentionally doesn't ask for the parent's name in this
-        // round. createParent requires a string, so we pass an empty value
-        // and let the settings page surface a "your name" field later.
+        // We don't ask for the parent's name in this flow.
         parent = await createParent("");
       }
       setParent(parent.id);
@@ -75,7 +97,8 @@ export default function OnboardingPage() {
       const child = await createChild({
         parentId: parent.id,
         name: trimmed,
-        age: age!,
+        age: ageInfo!.years,
+        dateOfBirth: dob,
         grade: "",
         engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
         englishConfidence: english!,
@@ -100,7 +123,18 @@ export default function OnboardingPage() {
       toast("Couldn't save. Try again.", { tone: "danger" });
       setBusy(false);
     }
-  }, [age, busy, english, router, setActiveChild, setParent, toast, trimmed, valid]);
+  }, [
+    ageInfo,
+    busy,
+    dob,
+    english,
+    router,
+    setActiveChild,
+    setParent,
+    toast,
+    trimmed,
+    valid,
+  ]);
 
   return (
     <main className="relative flex min-h-[100svh] flex-col bg-bg">
@@ -142,29 +176,25 @@ export default function OnboardingPage() {
             />
           </Field>
 
-          <Field label="Their age">
-            <div className="flex flex-wrap gap-2">
-              {AGES.map((a) => {
-                const on = age === a;
-                return (
-                  <button
-                    type="button"
-                    key={a}
-                    onClick={() => setAge(a)}
-                    className="rounded-full text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                    style={{
-                      width: 56,
-                      height: 44,
-                      background: on ? "var(--accent)" : "var(--bg-elevated)",
-                      color: on ? "#fff" : "var(--ink)",
-                      border: `1px solid ${on ? "var(--accent)" : "var(--line)"}`,
-                    }}
-                  >
-                    {a}
-                  </button>
-                );
-              })}
-            </div>
+          <Field label="Their birthday">
+            <input
+              type="date"
+              value={dob}
+              min={minDob}
+              max={today}
+              onChange={(e) => setDob(e.target.value)}
+              className="h-[50px] w-full rounded-[6px] border bg-bg-elevated px-4 text-[18px] text-ink"
+              style={{ borderColor: "var(--line)", borderWidth: 1 }}
+            />
+            <p
+              className="mt-2 text-[13px]"
+              style={{
+                color: ageError ? "var(--warning)" : "var(--ink-tertiary)",
+                lineHeight: 1.45,
+              }}
+            >
+              {ageError ?? helperText}
+            </p>
           </Field>
 
           <Field label="Their English">
@@ -217,6 +247,20 @@ export default function OnboardingPage() {
       </div>
     </main>
   );
+}
+
+function formatAgeHelper({ years, months }: { years: number; months: number }): string {
+  if (years === 0) {
+    return `That makes them ${months} ${plural(months, "month")} old.`;
+  }
+  if (months === 0) {
+    return `That makes them ${years} ${plural(years, "year")} old.`;
+  }
+  return `That makes them ${years} ${plural(years, "year")} and ${months} ${plural(months, "month")}.`;
+}
+
+function plural(n: number, word: string): string {
+  return n === 1 ? word : `${word}s`;
 }
 
 function Field({

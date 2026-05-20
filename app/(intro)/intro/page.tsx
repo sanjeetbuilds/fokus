@@ -221,8 +221,8 @@ function Slide0() {
           </text>
         </svg>
       }
-      title="School measures what's easy to measure."
-      body="Marks. Behavior. Speed. The things teachers can grade by Friday."
+      title="School teaches reading. Math. Science."
+      body="Those things matter. But they're not the whole picture."
     />
   );
 }
@@ -244,8 +244,8 @@ function Slide1() {
           <circle cx="102" cy="40" r="4" fill="var(--ink)" />
         </svg>
       }
-      title="But other things matter more."
-      body="How to think. How to wonder. How to recover. These don't show up on report cards."
+      title="What school doesn't teach: how to think, how to feel, how to recover."
+      body="Critical thinking. Emotional steadiness. Creativity. The skills that decide how a child turns out get built at home."
     />
   );
 }
@@ -303,8 +303,8 @@ function Slide2() {
           />
         </svg>
       }
-      title="Fokus is one moment a day."
-      body="For the parts no one teaches anywhere else."
+      title="Fokus is one small moment a day."
+      body="For the parts no one teaches anywhere else. You and your child. Five to twenty minutes. That's the whole app."
     />
   );
 }

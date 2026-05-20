@@ -1,18 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import Link from "next/link";
-
 import TodayActivityCard from "@/components/activity/TodayActivityCard";
 import AppHeader from "@/components/layout/AppHeader";
-import ReflectionBlock from "@/components/today/ReflectionBlock";
 import ReflectSheet from "@/components/today/ReflectSheet";
 import WelcomeModal from "@/components/today/WelcomeModal";
 import { useToast } from "@/components/ui/Toast";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
-import { isThinProfile } from "@/lib/content/reflection";
 import {
   createSession,
   db,
@@ -22,7 +19,7 @@ import {
 } from "@/lib/db";
 import { pickActivity, RestDayError } from "@/lib/engine";
 import { useAppStore } from "@/lib/store/useAppStore";
-import { today as todayIso } from "@/lib/utils/dates";
+import { ageFromDob, today as todayIso } from "@/lib/utils/dates";
 import type {
   Child,
   ChildMood,
@@ -43,13 +40,17 @@ const MOOD_OPTIONS: { value: ChildMood; label: string }[] = [
 ];
 
 /**
- * Today — back to the SPEC shape after the round-4 detour:
- *   header → page title → reflection block → time chips → mood chips →
- *   single activity card.
+ * Today — restructured so the activity card is the second thing the
+ * parent sees (after the eyebrow + title), not buried at the bottom.
  *
- * No 2x2 stat grid, no Child's Diary, no "tell us more" nudge — those
- * either belonged on Track (the recent-moments memory) or had to go
- * entirely (the nudge duplicated what the reflection block already says).
+ *   greet bar
+ *   eyebrow "TONIGHT WITH {NAME}" + 28px "Today's focus."
+ *   ACTIVITY CARD  (primary)
+ *   "TUNE TODAY" small chips + "pick another"   (secondary, demoted)
+ *   bottom caption  "{name} is {age}. {English status}." + "+ tell us more"
+ *
+ * The round-5 reflection card and the duplicate "tell us more" link at
+ * the top are gone — that whole role is collapsed into the bottom caption.
  */
 export default function TodayPage() {
   const router = useRouter();
@@ -72,6 +73,9 @@ export default function TodayPage() {
     null,
   );
   const [skipBusy, setSkipBusy] = useState(false);
+  // Salt that lets "Pick a different activity" re-run the engine with the
+  // same time/mood — incrementing it bumps the effect below.
+  const [pickSalt, setPickSalt] = useState(0);
 
   const todayDate = useMemo(() => todayIso(), []);
 
@@ -91,9 +95,7 @@ export default function TodayPage() {
       setSessions(all);
       setTodaysSessions(todays);
       setParentId(parent?.id ?? null);
-      setWelcomeAlreadySeen(
-        parent?.preferences?.hasSeenWelcomeModal === true,
-      );
+      setWelcomeAlreadySeen(parent?.preferences?.hasSeenWelcomeModal === true);
     } catch (err) {
       console.error("[/today] load:", err);
     } finally {
@@ -105,8 +107,6 @@ export default function TodayPage() {
     void reload();
   }, [reload]);
 
-  // Re-pick whenever the active child or time/mood changes, if the parent
-  // hasn't yet logged anything today.
   useEffect(() => {
     if (!child || todaysSessions.length > 0) {
       setRestDay(false);
@@ -137,7 +137,16 @@ export default function TodayPage() {
       }
       console.error("[/today] pickActivity:", err);
     }
-  }, [child, sessions, todaysSessions.length, time, mood, todayDate, setLastPickContext]);
+  }, [
+    child,
+    mood,
+    pickSalt,
+    sessions,
+    setLastPickContext,
+    time,
+    todayDate,
+    todaysSessions.length,
+  ]);
 
   const pickedActivity = useMemo(
     () => (pickedActivityId ? getActivityById(pickedActivityId) ?? null : null),
@@ -206,59 +215,42 @@ export default function TodayPage() {
     <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col bg-bg pb-[calc(env(safe-area-inset-bottom)+96px)] pt-[calc(env(safe-area-inset-top)+8px)]">
       <AppHeader />
 
-      <div className="px-6 pt-1">
-        <h1
-          className="text-[50px] font-extrabold text-ink"
+      <div className="px-6 pt-2">
+        {/* Tier 1: small eyebrow + reduced page title */}
+        <p
+          className="text-ink-tertiary"
           style={{
-            lineHeight: 1.05,
-            letterSpacing: "-0.035em",
-            paddingTop: 6,
-            marginBottom: 22,
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
           }}
         >
-          Today&apos;s
-          <br />
-          focus.
+          Tonight with {childName}
+        </p>
+        <h1
+          className="font-display text-ink"
+          style={{
+            marginTop: 6,
+            fontSize: 28,
+            fontWeight: 500,
+            lineHeight: 1.1,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          Today&apos;s focus.
         </h1>
 
-        <ReflectionBlock child={child} sessionCount={sessions.length} />
-
-        {isThinProfile(child) ? (
-          <Link
-            href={`/profile/about/${child.id}`}
-            className="-mt-2 mb-4 inline-flex items-center gap-1 text-[14px] font-semibold transition-colors"
-            style={{ color: "var(--accent-deep)" }}
-          >
-            + Tell us more about {child.name} →
-          </Link>
-        ) : null}
-
-        {!alreadyLogged ? (
-          <>
-            <ChipRow
-              eyebrow="How much time do you have?"
-              options={TIME_OPTIONS}
-              value={time}
-              onChange={setTime}
+        {/* Tier 2: the activity card — the primary content */}
+        <div className="mt-6">
+          {restDay ? (
+            <RestDay childName={childName} />
+          ) : alreadyLogged ? (
+            <DoneForToday
+              childName={childName}
+              lastSession={todaysSessions[todaysSessions.length - 1]!}
             />
-            <ChipRow
-              eyebrow={`How is ${childName} right now?`}
-              options={MOOD_OPTIONS}
-              value={mood}
-              onChange={setMood}
-            />
-          </>
-        ) : null}
-
-        {restDay ? (
-          <RestDay childName={childName} />
-        ) : alreadyLogged ? (
-          <DoneForToday
-            childName={childName}
-            lastSession={todaysSessions[todaysSessions.length - 1]!}
-          />
-        ) : pickedActivity ? (
-          <div className="mt-2">
+          ) : pickedActivity ? (
             <TodayActivityCard
               activity={pickedActivity}
               onMore={onMoreDetail}
@@ -267,12 +259,76 @@ export default function TodayPage() {
               skipBusy={skipBusy}
               truncatedHowTo={truncatedHowTo}
             />
-          </div>
-        ) : (
-          <p className="mt-10 text-center text-footnote text-ink-tertiary">
-            No activity matches that filter right now.
+          ) : (
+            <p className="mt-6 text-center text-footnote text-ink-tertiary">
+              No activity matches that filter right now.
+            </p>
+          )}
+        </div>
+
+        {/* Tier 3: Tune today — demoted */}
+        {!alreadyLogged && !restDay ? (
+          <section className="mt-8">
+            <p
+              className="text-ink-tertiary"
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              Tune today
+            </p>
+            <p
+              className="mt-1 text-ink-tertiary"
+              style={{ fontSize: 12, lineHeight: 1.5 }}
+            >
+              Adjust if the activity doesn&apos;t fit right now.
+            </p>
+            <div className="mt-3 flex flex-col gap-2.5">
+              <CompactChipRow
+                options={TIME_OPTIONS}
+                value={time}
+                onChange={setTime}
+              />
+              <CompactChipRow
+                options={MOOD_OPTIONS}
+                value={mood}
+                onChange={setMood}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setPickSalt((s) => s + 1)}
+              className="mt-3 text-[13px] font-semibold transition-colors hover:underline"
+              style={{ color: "var(--accent-deep)" }}
+            >
+              Pick a different activity
+            </button>
+          </section>
+        ) : null}
+
+        {/* Tier 4: bottom caption replacing the old reflection card */}
+        <section className="mt-10">
+          <p
+            className="text-ink-tertiary"
+            style={{ fontSize: 13, lineHeight: 1.55 }}
+          >
+            {bottomCaption(child)}
           </p>
-        )}
+          <Link
+            href={`/profile/about/${child.id}`}
+            className="mt-1.5 inline-flex items-center gap-1 transition-colors"
+            style={{
+              color: "var(--accent-deep)",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            + Tell us more about {childName} →
+          </Link>
+        </section>
       </div>
 
       <ReflectSheet
@@ -293,57 +349,47 @@ export default function TodayPage() {
   );
 }
 
-
-function ChipRow<T extends string>({
-  eyebrow,
+function CompactChipRow<T extends string>({
   options,
   value,
   onChange,
 }: {
-  eyebrow: string;
   options: { value: T; label: string }[];
   value: T;
   onChange: (v: T) => void;
 }) {
   return (
-    <section className="mb-4">
-      <p
-        className="mb-2 text-[12px] font-semibold uppercase"
-        style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
-      >
-        {eyebrow}
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {options.map((opt) => {
-          const on = value === opt.value;
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => onChange(opt.value)}
-              className="rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors"
-              style={{
-                background: on ? "var(--ink)" : "var(--bg-elevated)",
-                border: `1.5px solid ${on ? "var(--ink)" : "var(--line)"}`,
-                color: on ? "#fff" : "var(--ink)",
-              }}
-            >
-              {opt.label}
-            </button>
-          );
-        })}
-      </div>
-    </section>
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => {
+        const on = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className="rounded-full px-3 text-[12px] font-semibold transition-colors"
+            style={{
+              height: 36,
+              background: on ? "var(--ink)" : "var(--bg-elevated)",
+              border: `1px solid ${on ? "var(--ink)" : "var(--line)"}`,
+              color: on ? "#fff" : "var(--ink)",
+            }}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
 function RestDay({ childName }: { childName: string }) {
   return (
     <section
-      className="mt-2 rounded-[22px] bg-bg-elevated p-5"
+      className="rounded-[18px] bg-bg-elevated p-5"
       style={{ border: "1.5px solid var(--line)" }}
     >
-      <p className="text-[17px] text-ink" style={{ lineHeight: 1.55 }}>
+      <p className="text-[16px] text-ink" style={{ lineHeight: 1.55 }}>
         Take today off. Just be with{" "}
         <span className="font-bold">{childName}</span>. The work is the
         relationship.
@@ -363,7 +409,7 @@ function DoneForToday({
   const wasSkipped = lastSession.response === "skipped";
   return (
     <section
-      className="mt-2 flex flex-col items-center rounded-[22px] bg-bg-elevated p-6 text-center"
+      className="flex flex-col items-center rounded-[18px] bg-bg-elevated p-6 text-center"
       style={{ border: "1.5px solid var(--line)" }}
     >
       <span aria-hidden className="h-2 w-2 rounded-full bg-ink" />
@@ -383,6 +429,45 @@ function DoneForToday({
       <p className="mt-4 text-[13px] text-ink-tertiary">See you tomorrow.</p>
     </section>
   );
+}
+
+// ---------- bottom caption helpers ----------
+
+function bottomCaption(child: Child): string {
+  return `${child.name} is ${ageDescriptionFor(child)}. ${englishStatusFor(child)}.`;
+}
+
+function ageDescriptionFor(child: Child): string {
+  if (child.dateOfBirth) {
+    const info = ageFromDob(child.dateOfBirth);
+    if (info) {
+      if (info.years === 0) {
+        return `${info.months} ${plural(info.months, "month")}`;
+      }
+      if (info.months === 0) {
+        return `${info.years} ${plural(info.years, "year")}`;
+      }
+      return `${info.years} ${plural(info.years, "year")} ${info.months} ${plural(info.months, "month")}`;
+    }
+  }
+  return `${child.age}`;
+}
+
+function englishStatusFor(child: Child): string {
+  switch (child.englishConfidence) {
+    case "hesitant":
+      return "Just starting English";
+    case "developing":
+      return "Building English";
+    case "comfortable":
+      return "Comfortable in English";
+    default:
+      return "Building English";
+  }
+}
+
+function plural(n: number, word: string): string {
+  return n === 1 ? word : `${word}s`;
 }
 
 function truncateWords(text: string, maxWords: number): string {
