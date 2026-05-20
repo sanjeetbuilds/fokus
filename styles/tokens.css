@@ -1,70 +1,69 @@
 /* ============================================================
-   Fokus design tokens — Round-4 identity (purple + beige).
-   Source of truth for color / type / spacing / motion.
+   Fokus design tokens.
 
-   Round-4 changes, from design/Fokus.html:
-     - Background: warm beige #E9E6DC on body, pure white #FFFFFF on cards
-     - Ink: near-black #252630 (used as primary button bg + text)
-     - Primary accent: lavender-purple #9CA5FF (replaces forest green)
-     - Supporting hues: amber, lavender, coral, green, lt-purple
-     - Typography: Inter, weights 400 and 800 only
-     - Headings: 800 weight + very tight negative tracking (-0.025em / -0.035em)
-     - Skill tag tints: #EEF0FF / #FEF8E7 / #E8F9EE / #FCEEE9
+   - 8 skill colors live in lib/content/skills.ts and on the tailwind
+     `skill.*` palette — never re-declare them here.
+   - Background is pure white #FFFFFF.
+   - Brand ink #1A1A1A drives headlines, body, active tab pill.
+   - Two greys for muted (#6B6B6B) and hint (#8A8A8A) text.
+   - Hair border #EEEEEE for hairlines.
+   - Fill subtle #F7F7F5 for input fills + rare surface tints.
+
+   The legacy accent / amber / coral / green / lav / mulberry vars
+   below point at the new skill colors so the existing call sites keep
+   building while they are migrated to the skill.* palette.
    ============================================================ */
 
 :root {
   /* ---- Surfaces ---- */
-  --bg: #FFFFFF;             /* pure white body — round-5 reset */
-  --bg-elevated: #FAFAFA;    /* barely-warmer card lift surface */
-  --bg-input: #F4F2EC;       /* slightly inset (textareas, inputs at rest) */
-  --bg-alt: #EEECE5;         /* pill bg, separators — readable on white */
-  --bg-overlay: rgba(37, 38, 48, 0.55);
+  --bg: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+  --bg-input: #F7F7F5;
+  --bg-alt: #F7F7F5;
+  --bg-overlay: rgba(26, 26, 26, 0.55);
 
   /* ---- Ink ---- */
-  --ink: #252630;            /* near-black */
-  --ink-secondary: #4F4E5A;  /* AA on white (~8:1) */
-  --ink-tertiary: #6E6E73;   /* AA on white (~5.7:1) — caption/footnote */
-  --ink-quaternary: #B8B7C3; /* non-text only (placeholders, faint dots) */
+  --ink: #1A1A1A;
+  --ink-secondary: #6B6B6B;
+  --ink-tertiary: #8A8A8A;
+  --ink-quaternary: #C8C8C8;
 
-  --line: #E8E6DD;           /* card border, visible on white */
-  --line-subtle: #F2F0EA;
+  --line: #EEEEEE;
+  --line-subtle: #F2F2F2;
 
-  /* ---- Accent: lavender-purple ---- */
-  --accent: #9CA5FF;         /* primary purple — links, active states */
-  --accent-pressed: #7C86F0; /* darker on press */
-  --accent-bg: #EEF0FF;      /* very-light purple tint — chips, tags */
-  --accent-deep: #6F77E0;    /* deeper purple for text on tint */
-  --accent-mid: #9CA5FF;     /* mid (same as primary in this palette) */
-  --accent-soft: #B5BAFF;    /* lt-purple, midweight emphasis */
-  --accent-pale: #EEF0FF;    /* same as accent-bg in this palette */
+  /* ---- Skill-driven accent (Language confidence: periwinkle) ---- */
+  --accent: #A8A4E8;
+  --accent-pressed: #8E89D6;
+  --accent-bg: #F1F0FC;
+  --accent-deep: #6B5B95;
+  --accent-mid: #A8A4E8;
+  --accent-soft: #C9C6F0;
+  --accent-pale: #F1F0FC;
 
-  /* ---- Trait tones ---- */
-  --amber: #F4C84A;
-  --amber-bg: #FEF8E7;
-  --amber-text: #C09020;
+  /* ---- Legacy compat aliases — mapped to skill hexes ---- */
+  --amber: #F2C94C;
+  --amber-bg: #FDF4D6;
+  --amber-text: #8A6B12;
 
-  --lav: #C5BFEF;
-  --lav-bg: #EEF0FF;
+  --lav: #A8A4E8;
+  --lav-bg: #F1F0FC;
 
-  --coral: #E8836A;
-  --coral-bg: #FCEEE9;
-  --coral-text: #B85838;
+  --coral: #E8806B;
+  --coral-bg: #FBE5DF;
+  --coral-text: #B85738;
+  --coral-mid: #E8806B;
 
-  --green: #5DC87A;
-  --green-bg: #E8F9EE;
-  --green-text: #2A8A4A;
+  --green: #7DB87A;
+  --green-bg: #E4F3E3;
+  --green-text: #3F7A3D;
 
-  --lt-purple: #B5BAFF;
+  --lt-purple: #C9C6F0;
 
-  /* ---- Compat aliases for existing components (warm/coral/mulberry) ---- */
   --warm-text: var(--amber-text);
   --warm-mid: var(--amber);
   --warm-bg: var(--amber-bg);
 
-  --coral-mid: var(--coral);
-  /* coral-text/coral-bg already defined above */
-
-  --mulberry: var(--coral);
+  --mulberry: #6B5B95;
 
   /* ---- Semantic ---- */
   --success: var(--green);
@@ -101,11 +100,11 @@
   --space-20: 80px;
 
   /* ---- Radii ---- */
-  --radius-sm: 12px;            /* small pills */
-  --radius-md: 14px;            /* inputs */
-  --radius-lg: 20px;            /* cards */
-  --radius-xl: 22px;            /* large cards */
-  --radius-2xl: 27px;           /* primary CTAs */
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 22px;
+  --radius-2xl: 27px;
   --radius-full: 9999px;
 
   /* ---- Shadows ---- */
@@ -123,10 +122,7 @@
   --duration-slow: 400ms;
 }
 
-/* Dark mode is intentionally not re-keyed — the new identity is light-only.
-   We keep .dark a no-op so next-themes doesn't crash if the user toggles it
-   from a stale preference. */
 .dark {
-  /* identical to :root above; the splash + onboarding render their own
-     dark surfaces via inline backgrounds, not via .dark. */
+  /* light-only identity; .dark is a no-op so next-themes never breaks
+     when a stale dark preference loads. */
 }

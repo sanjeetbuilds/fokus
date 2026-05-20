@@ -107,29 +107,25 @@ function FilterPill({
   onClick,
 }: {
   label: string;
-  /** Skill color; null for the "All" pill. */
+  /** Skill color; null for the "All" pill (uses ink bg when active). */
   color: string | null;
   active: boolean;
   onClick: () => void;
 }) {
+  // Active pill: skill-color background (or ink for "All") + white text.
+  // Inactive pill: white background, hair border, ink text. No leading dot.
+  const activeBg = color ?? "#1A1A1A";
   return (
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-extrabold transition-colors"
+      className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-extrabold transition-colors"
       style={{
-        background: active ? "var(--ink)" : "var(--bg-elevated)",
-        border: `1.5px solid ${active ? "var(--ink)" : "var(--line)"}`,
-        color: active ? "#fff" : "var(--ink)",
+        background: active ? activeBg : "#FFFFFF",
+        border: `1px solid ${active ? activeBg : "#EEEEEE"}`,
+        color: active ? "#FFFFFF" : "#1A1A1A",
       }}
     >
-      {color ? (
-        <span
-          aria-hidden
-          className="inline-block h-1.5 w-1.5 rounded-full"
-          style={{ background: color }}
-        />
-      ) : null}
       {label}
     </button>
   );

@@ -1,14 +1,11 @@
 import type { SkillKey } from "@/types";
 
 /**
- * SkillDefinition: user-facing metadata for each of the 8 SkillKeys.
- *
- * `iconName` is the Lucide-React component name as a string; consumers
- * resolve it to a component at render time (keeps this file pure-data
- * so the engine can import it without pulling in icons).
- *
- * `color` palette is the Apple-restrained, desaturated set: warm earth +
- * dusty teal/violet that read well against bg + bg-elevated in both modes.
+ * Single source of truth for the 8 spec skills: id, label, color, icon.
+ * Skill colors are the canonical 8 hexes; nothing else in the app should
+ * hardcode a skill color. The Lucide icon name is resolved at render time
+ * by SkillIcon / ActivityIcon so this module stays a pure data island
+ * the engine can import without pulling in lucide-react.
  */
 export interface SkillDefinition {
   label: string;
@@ -23,56 +20,56 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     description:
       "The reflex to look behind appearances and keep asking why instead of accepting the first answer.",
     iconName: "Sparkles",
-    color: "#C9923E",
+    color: "#F2C94C",
   },
   language: {
     label: "Language confidence",
     description:
       "Speaking up in English without freezing. Fluency before accuracy, voice before vocabulary.",
     iconName: "BookOpen",
-    color: "#4A7C8E",
+    color: "#A8A4E8",
   },
   emotional: {
     label: "Emotional awareness",
     description:
       "Naming what's happening inside, sitting with it for a moment, and reading the same thing in other people.",
     iconName: "Heart",
-    color: "#B5736E",
+    color: "#E8A4B8",
   },
   thinking: {
     label: "Thinking clarity",
     description:
       "Separating knowing from hearing-and-repeating, generating alternatives, and reasoning out loud.",
     iconName: "Brain",
-    color: "#5E6B7A",
+    color: "#6B5B95",
   },
   resilience: {
     label: "Resilience",
     description:
       "Staying with hard things long enough to learn from them, and recovering when something doesn't go their way.",
     iconName: "Anchor",
-    color: "#6B8068",
+    color: "#7DB87A",
   },
   creativity: {
     label: "Creativity",
     description:
       "Generating possibilities before evaluating them, and feeling free enough to be silly, weird, and wrong on the way to good.",
     iconName: "Wind",
-    color: "#8A6E95",
+    color: "#E8806B",
   },
   observation: {
     label: "Observation",
     description:
       "Seeing what's there (sounds, textures, faces, small changes) instead of moving past it on autopilot.",
     iconName: "Eye",
-    color: "#7A6E5C",
+    color: "#5FB8B0",
   },
   decisiveness: {
     label: "Decisiveness",
     description:
       "Making real choices, sitting with the consequences, and matching the speed of the decision to the size of its stakes.",
     iconName: "Compass",
-    color: "#A8825E",
+    color: "#3D5A80",
   },
 };
 

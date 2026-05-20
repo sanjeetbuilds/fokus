@@ -18,6 +18,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Skill palette — single source of truth, mirrors lib/content/skills.ts.
+        skill: {
+          curiosity: "#F2C94C",
+          language: "#A8A4E8",
+          emotional: "#E8A4B8",
+          thinking: "#6B5B95",
+          resilience: "#7DB87A",
+          creativity: "#E8806B",
+          observation: "#5FB8B0",
+          decisiveness: "#3D5A80",
+        },
+        // New neutral aliases (preferred for new code).
+        muted: "#6B6B6B",
+        hint: "#8A8A8A",
+        hair: "#EEEEEE",
+        fill: "#F7F7F5",
+
         bg: {
           DEFAULT: "var(--bg)",
           elevated: "var(--bg-elevated)",

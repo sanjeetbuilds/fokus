@@ -34,20 +34,20 @@ import type { CSSProperties, ReactNode } from "react";
 // ---------- palette ----------
 
 const PALETTE = {
-  bg: "#FAF6EE",
-  bgElevated: "#F4EEDF",
-  ink: "#1A1814",
-  inkSecondary: "#6B6357",
-  inkTertiary: "#9C9388",
-  line: "#E5DCC8",
-  lineSubtle: "#F0E7D2",
-  accent: "#3A4FCC",
-  accentPressed: "#2D3FA8",
-  accentBg: "#E6E9FA",
-  accentDeep: "#2D3FA8",
-  warning: "#C97C3F",
-  success: "#5C8A6B",
-  danger: "#C44C3F",
+  bg: "#FFFFFF",
+  bgElevated: "#FFFFFF",
+  ink: "#1A1A1A",
+  inkSecondary: "#6B6B6B",
+  inkTertiary: "#8A8A8A",
+  line: "#EEEEEE",
+  lineSubtle: "#F2F2F2",
+  accent: "#A8A4E8",
+  accentPressed: "#8E89D6",
+  accentBg: "#F1F0FC",
+  accentDeep: "#6B5B95",
+  warning: "#8A6B12",
+  success: "#3F7A3D",
+  danger: "#B85738",
 } as const;
 
 // Display sans stack: Inter if loaded, otherwise the platform display family.
