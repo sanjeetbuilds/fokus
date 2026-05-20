@@ -11,7 +11,6 @@ import WelcomeModal from "@/components/today/WelcomeModal";
 import { useToast } from "@/components/ui/Toast";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
 import {
-  createSession,
   db,
   getChild,
   getCurrentParent,
@@ -72,7 +71,6 @@ export default function TodayPage() {
   const [reflectActivityId, setReflectActivityId] = useState<string | null>(
     null,
   );
-  const [skipBusy, setSkipBusy] = useState(false);
   // Salt that lets "Pick a different activity" re-run the engine with the
   // same time/mood — incrementing it bumps the effect below.
   const [pickSalt, setPickSalt] = useState(0);
@@ -153,36 +151,11 @@ export default function TodayPage() {
     [pickedActivityId],
   );
 
-  const truncatedHowTo = useMemo(
-    () => (pickedActivity ? truncateWords(pickedActivity.howTo, 38) : ""),
-    [pickedActivity],
-  );
-
   const onMoreDetail = useCallback(() => {
     if (!pickedActivity) return;
     const qs = new URLSearchParams({ time, mood, from: "today" });
     router.push(`/activity/${pickedActivity.id}?${qs.toString()}`);
   }, [mood, pickedActivity, router, time]);
-
-  const onSkipToday = useCallback(async () => {
-    if (!pickedActivity || !activeChildId || skipBusy) return;
-    setSkipBusy(true);
-    try {
-      await createSession({
-        childId: activeChildId,
-        activityId: pickedActivity.id,
-        date: todayDate,
-        response: "skipped",
-        context: { timeAvailable: time, childMood: mood },
-      });
-      await reload();
-    } catch (err) {
-      console.error("[/today] skip:", err);
-      toast("Couldn't save. Try again.", { tone: "danger" });
-    } finally {
-      setSkipBusy(false);
-    }
-  }, [activeChildId, mood, pickedActivity, reload, skipBusy, time, todayDate, toast]);
 
   const onReflected = useCallback(async () => {
     setReflectActivityId(null);
@@ -235,7 +208,7 @@ export default function TodayPage() {
             fontSize: 28,
             fontWeight: 800,
             lineHeight: 1.1,
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.02em",
           }}
         >
           Today&apos;s focus.
@@ -253,11 +226,7 @@ export default function TodayPage() {
           ) : pickedActivity ? (
             <TodayActivityCard
               activity={pickedActivity}
-              onMore={onMoreDetail}
-              onDidIt={() => setReflectActivityId(pickedActivity.id)}
-              onSkip={() => void onSkipToday()}
-              skipBusy={skipBusy}
-              truncatedHowTo={truncatedHowTo}
+              onStart={onMoreDetail}
             />
           ) : (
             <p className="mt-6 text-center text-footnote text-ink-tertiary">
@@ -457,8 +426,3 @@ function plural(n: number, word: string): string {
   return n === 1 ? word : `${word}s`;
 }
 
-function truncateWords(text: string, maxWords: number): string {
-  const words = text.split(/\s+/);
-  if (words.length <= maxWords) return text;
-  return words.slice(0, maxWords).join(" ").replace(/[,.;:]$/, "") + "…";
-}

@@ -2,136 +2,117 @@
 
 import { ArrowRight } from "lucide-react";
 
-import ActivityIcon from "@/components/activity/ActivityIcon";
+import SkillIcon from "@/components/SkillIcon";
 import { SKILLS } from "@/lib/content/skills";
-import type { Activity, ActivityDifficulty } from "@/types";
-
-const DIFFICULTY_LABEL: Record<ActivityDifficulty, string> = {
-  1: "Easy",
-  2: "Medium",
-  3: "Stretch",
-};
+import type { Activity } from "@/types";
 
 export interface TodayActivityCardProps {
   activity: Activity;
-  onMore: () => void;
-  onDidIt: () => void;
-  onSkip: () => void;
-  skipBusy?: boolean;
-  truncatedHowTo: string;
+  onStart: () => void;
 }
 
 /**
- * The big card on /today, matching the design's primary activity card:
- * tag at top-left, title in skill colour, italic description, a big
- * skill-tinted icon hero in place of the design's photo placeholder,
- * one-line-to-say with a colored dot prefix, then a footer with the
- * green "Did it →" CTA. Skip and "More" sit underneath as text links.
+ * Today's activity card — the biggest, most prominent element on /today.
+ * It announces the day's activity as a prompt, not an article preview.
+ *
+ *   1. Skill row:  md SkillIcon · skill name · duration (right-aligned)
+ *   2. Activity title (36px / 800 / tracking -0.02em)
+ *   3. Tagline (1 sentence, ≤12 words)
+ *   4. Start CTA pill
+ *
+ * Card background uses the neutral fill #F7F7F5 against the white page
+ * so all 8 skill colors carry the same visual weight in the card chrome.
+ *
+ * Skill-name + CTA weights come in at 800 instead of the T5-spec 500 to
+ * respect the global "Inter 400 / 800 only" rule established in T1.
  */
 export default function TodayActivityCard({
   activity,
-  onMore,
-  onDidIt,
-  onSkip,
-  skipBusy,
-  truncatedHowTo,
+  onStart,
 }: TodayActivityCardProps) {
   const skill = SKILLS[activity.skill];
 
   return (
-    <article className="rounded-[18px] bg-bg-elevated p-5 shadow-md">
-      {/* Top row: skill tag + difficulty mini-pill */}
-      <div className="flex items-start justify-between gap-3">
+    <article
+      className="w-full"
+      style={{
+        background: "#F7F7F5",
+        borderRadius: 24,
+        padding: 24,
+      }}
+    >
+      {/* 1. Skill row */}
+      <div className="flex items-center gap-3">
+        <SkillIcon
+          skillId={activity.skill}
+          size="md"
+          iconName={activity.iconName}
+        />
         <span
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-extrabold"
           style={{
-            backgroundColor: `${skill.color}1F`,
-            color: skill.color,
+            fontSize: 14,
+            fontWeight: 800,
+            color: "#6B6B6B",
+            letterSpacing: "-0.005em",
           }}
         >
-          <span
-            aria-hidden
-            className="inline-block h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: skill.color }}
-          />
           {skill.label}
         </span>
-        <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-ink-tertiary">
-          {activity.duration} min · {DIFFICULTY_LABEL[activity.difficulty]}
+        <span aria-hidden style={{ flex: 1 }} />
+        <span
+          style={{
+            fontSize: 14,
+            color: "#8A8A8A",
+          }}
+        >
+          {activity.duration} min
         </span>
       </div>
 
-      {/* Title */}
+      {/* 2. Title */}
       <h2
-        className="mt-3 text-[24px] font-extrabold leading-[1.2] tracking-[-0.01em]"
-        style={{ color: skill.color }}
+        style={{
+          marginTop: 20,
+          fontSize: 36,
+          fontWeight: 800,
+          color: "#1A1A1A",
+          letterSpacing: "-0.02em",
+          lineHeight: 1.05,
+        }}
       >
         {activity.title}
       </h2>
 
-      {/* Description */}
-      <p className="mt-2 text-[14px] italic leading-[1.55] text-ink-secondary">
+      {/* 3. Tagline */}
+      <p
+        style={{
+          marginTop: 12,
+          fontSize: 16,
+          fontWeight: 400,
+          color: "#6B6B6B",
+          lineHeight: 1.4,
+        }}
+      >
         {activity.description}
       </p>
 
-      {/* Hero block: a large skill-tinted panel showing the activity's
-          specific icon. */}
-      <div
-        className="mt-4 flex h-[140px] items-center justify-center rounded-[14px]"
-        style={{ backgroundColor: `${skill.color}14` }}
+      {/* 4. Start CTA */}
+      <button
+        type="button"
+        onClick={onStart}
+        className="mt-6 inline-flex items-center gap-2 transition-opacity duration-fast ease-out active:opacity-80"
+        style={{
+          background: "#1A1A1A",
+          color: "#FFFFFF",
+          padding: "14px 22px",
+          borderRadius: 999,
+          fontSize: 15,
+          fontWeight: 800,
+        }}
       >
-        <ActivityIcon
-          iconName={activity.iconName}
-          skill={activity.skill}
-          size={56}
-          strokeWidth={1.5}
-          style={{ color: skill.color }}
-        />
-      </div>
-
-      {/* Short howTo */}
-      <p className="mt-4 text-[14px] leading-[1.6] text-ink">
-        {truncatedHowTo}
-      </p>
-
-      {/* The one thing to say */}
-      <p className="mt-3 flex gap-2 text-[13px] leading-[1.55] text-ink-secondary">
-        <span
-          aria-hidden
-          className="mt-[7px] inline-block h-1.5 w-1.5 shrink-0 rounded-full"
-          style={{ backgroundColor: skill.color }}
-        />
-        <span className="italic">{activity.oneLineToSay}</span>
-      </p>
-
-      {/* Footer: skip + more on the left, primary CTA on the right */}
-      <div className="mt-5 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={onSkip}
-            disabled={skipBusy}
-            className="text-[13px] text-ink-tertiary transition-colors duration-fast ease-out hover:text-ink disabled:opacity-50"
-          >
-            Skip today
-          </button>
-          <button
-            type="button"
-            onClick={onMore}
-            className="text-[13px] font-extrabold text-accent-mid transition-colors duration-fast ease-out hover:text-accent"
-          >
-            More →
-          </button>
-        </div>
-        <button
-          type="button"
-          onClick={onDidIt}
-          className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-[13px] font-extrabold text-white shadow-[0_4px_12px_-2px_rgba(42,92,65,0.25)] transition-colors duration-fast ease-out hover:bg-accent-pressed"
-        >
-          Did it
-          <ArrowRight size={13} strokeWidth={2.5} aria-hidden />
-        </button>
-      </div>
+        Start
+        <ArrowRight size={16} strokeWidth={2.25} aria-hidden />
+      </button>
     </article>
   );
 }
