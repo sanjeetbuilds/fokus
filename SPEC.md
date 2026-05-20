@@ -105,9 +105,11 @@ If a parent logs that an activity flopped, the engine respects that. No fake enc
 
 Apple-style restraint. No exclamation marks. No emoji unless the child drew it. No animated celebrations. The tone is: a wise older relative, not a peppy coach.
 
-### Principle 8 — Local first
+### Principle 8 — Account-backed, privacy-respecting
 
-The child's developmental record is the most private data a family has. Data lives on the device. Cloud sync is opt-in only, and never for analytics, training, or sharing with third parties.
+Fokus is account-backed via Supabase. Parent data (email, child's name, DOB, pronouns, photo URL, activity history with optional notes) is stored on Supabase with row-level security so a parent can only ever read or write their own rows. Dexie is used as a local cache for offline reads and a write queue for activity logs.
+
+Privacy commitments: data is never shared with third parties, never sold, and the parent can delete their account and all associated data at any time. Account deletion and a full JSON data export are first-class features, not pre-launch TODOs.
 
 ---
 
@@ -329,12 +331,12 @@ Use [Lucide](https://lucide.dev) or SF Symbols look-alikes. Stroke width 1.75. S
 
 ## 5. Data Model
 
-Designed for local-first storage that can sync to cloud later without schema changes.
+Supabase is the source of truth. Dexie mirrors hot rows for offline reads and queues activity-log inserts when the network is gone.
 
 ### Storage strategy
 
-- **Phase 1 (now):** IndexedDB via Dexie.js, scoped to device. No accounts.
-- **Phase 2 (later):** Add Supabase/Firebase sync. The local schema is identical to the cloud schema. Each record has `id`, `createdAt`, `updatedAt`, `_syncStatus`. No rewrite needed.
+- **Supabase (source of truth):** Postgres tables `profiles`, `child`, `activity_log` (one child per parent for now). RLS gates every row by `auth.uid()`. Photos in the `child-photos` Storage bucket, also gated by RLS.
+- **Dexie (cache + queue):** On app boot, the hot rows are fetched from Supabase and mirrored into Dexie. UI reads go through Dexie via `useChild` / `useActivityLog`. Writes that can be deferred (activity completions) land in Dexie first with a `synced=false` flag, then push to Supabase opportunistically. Writes that must be authoritative (sign-in, child edits, photo upload) write Supabase first and only update Dexie on success.
 
 ### Schemas
 
@@ -1862,21 +1864,13 @@ fokus/
 └── SPEC.md                  # This file
 ```
 
-### Sync-readiness (Phase 2)
+### Supabase + Dexie split
 
-The local-first design intentionally maps 1:1 to a future cloud schema:
+Supabase is the source of truth. Dexie is the local cache and the offline write queue. Schemas mirror each other 1:1 so a Dexie row can be serialised into a Supabase insert and back.
 
-- Every record has `id` (uuid, not auto-increment) — works locally OR in cloud
-- Every record has `_syncStatus: 'local' | 'synced' | 'pending'` — unused now, ready later
-- Queries go through `lib/db/*.ts` — adding cloud sync means changing only those files
-- No business logic depends on storage location
-
-When adding cloud sync (Supabase recommended):
-1. Add Supabase client
-2. Add auth flow (one new screen)
-3. In each `lib/db/*.ts`, add a `syncToCloud` step on writes
-4. Add background `syncFromCloud` on app boot
-5. Done — UI unchanged
+- Every record has `id` (uuid) generated client-side so writes can land in Dexie before they reach Supabase.
+- `activity_log` rows carry a `synced: boolean` flag; `lib/sync.ts` walks pending rows on boot and pushes them up.
+- `lib/db/*.ts` is the Dexie surface. Components never read Supabase directly; they go through `useChild` / `useActivityLog` which read Dexie. `lib/sync.ts` is the only module that writes Supabase from the client.
 
 ### PWA setup
 

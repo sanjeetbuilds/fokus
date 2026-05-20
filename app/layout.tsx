@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AuthGate } from "@/components/shared/AuthGate";
 import { OnboardingGate } from "@/components/shared/OnboardingGate";
 import SplashGate from "@/components/shared/SplashGate";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
@@ -62,7 +63,9 @@ export default function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <SplashGate>
-              <OnboardingGate>{children}</OnboardingGate>
+              <AuthGate>
+                <OnboardingGate>{children}</OnboardingGate>
+              </AuthGate>
             </SplashGate>
           </ToastProvider>
         </ThemeProvider>
