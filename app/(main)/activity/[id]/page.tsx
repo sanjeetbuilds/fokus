@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, ChevronLeft } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronUp } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
@@ -8,7 +8,6 @@ import {
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
 } from "react";
 
 import SkillIcon from "@/components/SkillIcon";
@@ -21,30 +20,22 @@ import { useAppStore } from "@/lib/store/useAppStore";
 import type {
   Activity,
   ActivityExample,
-  ActivityDifficulty,
   ChildMood,
   TimeAvailable,
 } from "@/types";
 
-const DIFFICULTY_LABEL: Record<ActivityDifficulty, string> = {
-  1: "Easy",
-  2: "Medium",
-  3: "Stretch",
-};
-
 /**
- * Activity detail — restructured into three explicit visual tiers:
+ * Activity detail — three-part structure, no redundancy.
  *
- *   header   icon + skill caption + title + tagline
- *   PRIMARY  "What to do tonight" — full-flow howTo, no card wrapper
- *   SECONDARY "Example" — left-border inset, subtle
- *   sticky   action bar (Pick another / We did it →)
- *   TERTIARY "Learn more ↓" — 5 collapsed cards (builds, watch for,
- *            one thing to say, trap, adapt). Below the sticky bar so the
- *            primary action is always reachable without scrolling past it.
+ *   HEADER       lg SkillIcon, title (32/800), meta row
+ *   DIVIDER
+ *   WHAT TO DO   heading, instruction body, "See an example" toggle
+ *                (the only collapsed thing on the page)
+ *   DIVIDER
+ *   WHY IT WORKS heading, reason body
  *
- * The "WHAT THIS BUILDS" italic line that used to sit at the top is gone
- * from the header — it's now the first card inside Learn More.
+ * Section heading weight uses 800 instead of T6's spec-cited 700 to
+ * respect the global "Inter 400 / 800 only" constraint from T1.
  */
 export default function ActivityDetailPage() {
   return (
@@ -103,19 +94,9 @@ function ActivityDetailBody() {
     (lastPickContext?.activityId === id ? lastPickContext.mood : null) ??
     "normal";
 
-  const fromLibrary = searchParams?.get("from") === "library";
-
   const onBack = useCallback(() => {
     router.back();
   }, [router]);
-
-  const onLeftCta = useCallback(() => {
-    if (fromLibrary) {
-      router.replace("/library");
-    } else {
-      router.replace("/today");
-    }
-  }, [fromLibrary, router]);
 
   const onLogIt = useCallback(() => {
     if (!activity) return;
@@ -149,7 +130,7 @@ function ActivityDetailBody() {
           type="button"
           onClick={onBack}
           aria-label="Back"
-          className="inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] font-extrabold text-ink-secondary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="inline-flex h-9 items-center gap-1 rounded-md px-2 text-[15px] text-ink-secondary transition-colors duration-fast ease-out hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
           <span>Back</span>
@@ -159,68 +140,37 @@ function ActivityDetailBody() {
 
       <ActivityHeader activity={activity} />
 
-      {/* PRIMARY: What to do tonight — no card wrapper, full-flow */}
-      <section className="mt-8">
-        <p
-          className="text-[13px] font-extrabold uppercase"
-          style={{ color: "var(--accent-deep)", letterSpacing: "0.1em" }}
-        >
-          What to do tonight
-        </p>
-        <p
-          className="mt-3 whitespace-pre-line text-ink"
-          style={{ fontSize: 17, lineHeight: 1.65, fontWeight: 400 }}
-        >
-          {activity.howTo}
-        </p>
-      </section>
+      <Divider />
 
-      {/* SECONDARY: Example — subtle left-border inset, no card bg */}
-      <section className="mt-7">
-        <p
-          className="text-[12px] font-extrabold uppercase"
-          style={{ color: "var(--ink-secondary)", letterSpacing: "0.1em" }}
-        >
-          Example
-        </p>
-        <ExampleBlock
-          example={activity.example}
-          childName={childName ?? "your child"}
-        />
-      </section>
+      <SectionWhatToDo
+        activity={activity}
+        childName={childName ?? "your child"}
+      />
 
-      {/* TERTIARY: Learn more — sits below the sticky bar, scrolled to */}
-      <LearnMoreSection activity={activity} />
+      <Divider />
+
+      <SectionWhyItWorks activity={activity} />
 
       {/* Sticky bottom action bar */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-10 border-t px-5 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3"
+        className="fixed bottom-0 left-0 right-0 z-10 px-5 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3"
         style={{
-          borderColor: "var(--line-subtle)",
-          background: "rgba(255,255,255,0.92)",
+          borderTop: "1px solid #EEEEEE",
+          background: "rgba(255,255,255,0.94)",
           backdropFilter: "saturate(180%) blur(12px)",
           WebkitBackdropFilter: "saturate(180%) blur(12px)",
         }}
       >
-        <div className="mx-auto flex max-w-[680px] gap-3">
-          <button
-            type="button"
-            onClick={onLeftCta}
-            className="h-11 flex-[0_0_38%] rounded-full bg-bg-elevated text-[14px] font-extrabold text-ink"
-            style={{ border: "1.5px solid var(--line)" }}
-          >
-            {fromLibrary ? "Back to library" : "Pick another"}
-          </button>
+        <div className="mx-auto flex max-w-[680px]">
           <button
             type="button"
             onClick={onLogIt}
-            className="inline-flex h-11 flex-1 items-center justify-center rounded-full text-[14px] font-extrabold text-white"
+            className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-extrabold text-white transition-opacity duration-fast ease-out active:opacity-80"
             style={{
-              background: "var(--accent)",
-              boxShadow: "0 4px 14px -4px rgba(156,165,255,0.45)",
+              background: "#1A1A1A",
             }}
           >
-            We did it →
+            We did it
           </button>
         </div>
       </div>
@@ -228,11 +178,11 @@ function ActivityDetailBody() {
   );
 }
 
-// ---------- header block ----------
+// ---------- header ----------
 
 function ActivityHeader({ activity }: { activity: Activity }) {
   const skill = SKILLS[activity.skill];
-
+  const [minAge, maxAge] = activity.ageRange;
   return (
     <header>
       <SkillIcon
@@ -241,39 +191,128 @@ function ActivityHeader({ activity }: { activity: Activity }) {
         iconName={activity.iconName}
       />
 
-      <p className="mt-4 text-[12px] font-extrabold uppercase tracking-[0.12em] text-ink-secondary">
-        <span style={{ color: skill.color }}>{skill.label}</span>
-        <span className="text-ink-quaternary"> · </span>
-        <span>{activity.duration} min</span>
-        <span className="text-ink-quaternary"> · </span>
-        <span>{DIFFICULTY_LABEL[activity.difficulty]}</span>
-      </p>
-
       <h1
-        className="mt-3 text-ink"
         style={{
-          fontSize: 30,
+          marginTop: 16,
+          fontSize: 32,
           fontWeight: 800,
-          lineHeight: 1.15,
-          letterSpacing: "-0.015em",
+          color: "#1A1A1A",
+          letterSpacing: "-0.02em",
+          lineHeight: 1.1,
         }}
       >
         {activity.title}
       </h1>
 
       <p
-        className="mt-3 text-[16px] italic text-ink-secondary"
-        style={{ lineHeight: 1.55 }}
+        style={{
+          marginTop: 10,
+          fontSize: 13,
+          color: "#6B6B6B",
+          lineHeight: 1.5,
+        }}
       >
-        {activity.description}
+        {skill.label}
+        <span style={{ color: "#C8C8C8", padding: "0 6px" }}>·</span>
+        {activity.duration} min
+        <span style={{ color: "#C8C8C8", padding: "0 6px" }}>·</span>
+        ages {minAge}-{maxAge}
       </p>
     </header>
   );
 }
 
-// ---------- example block ----------
+function Divider() {
+  return (
+    <hr
+      style={{
+        marginTop: 28,
+        marginBottom: 28,
+        border: 0,
+        borderTop: "1px solid #EEEEEE",
+      }}
+    />
+  );
+}
 
-function ExampleBlock({
+// ---------- What to do ----------
+
+function SectionWhatToDo({
+  activity,
+  childName,
+}: {
+  activity: Activity;
+  childName: string;
+}) {
+  const hasExample = activity.example.exchange.length > 0;
+  return (
+    <section>
+      <h2
+        style={{
+          fontSize: 16,
+          fontWeight: 800,
+          color: "#1A1A1A",
+          letterSpacing: "-0.005em",
+        }}
+      >
+        What to do
+      </h2>
+      <p
+        className="whitespace-pre-line"
+        style={{
+          marginTop: 12,
+          fontSize: 15,
+          fontWeight: 400,
+          color: "#1A1A1A",
+          lineHeight: 1.55,
+        }}
+      >
+        {activity.howTo}
+      </p>
+      {hasExample ? (
+        <ExampleToggle example={activity.example} childName={childName} />
+      ) : null}
+    </section>
+  );
+}
+
+function ExampleToggle({
+  example,
+  childName,
+}: {
+  example: ActivityExample;
+  childName: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const Chevron = open ? ChevronUp : ChevronDown;
+  return (
+    <div style={{ marginTop: 16 }}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        style={{
+          padding: "8px 14px",
+          borderRadius: 999,
+          border: "1px solid #EEEEEE",
+          background: "#FFFFFF",
+          color: "#6B6B6B",
+          fontSize: 13,
+          fontWeight: 400,
+        }}
+      >
+        <span>See an example</span>
+        <Chevron size={14} strokeWidth={2} aria-hidden />
+      </button>
+      {open ? (
+        <ExampleBody example={example} childName={childName} />
+      ) : null}
+    </div>
+  );
+}
+
+function ExampleBody({
   example,
   childName,
 }: {
@@ -284,43 +323,52 @@ function ExampleBlock({
     (s: string) => s.replace(/\{childName\}/g, childName),
     [childName],
   );
-
   return (
     <div
-      className="mt-2 pl-4"
-      style={{ borderLeft: "2px solid var(--ink-quaternary)" }}
+      style={{
+        marginTop: 12,
+        paddingLeft: 16,
+        borderLeft: "2px solid #EEEEEE",
+      }}
     >
-      <p
-        className="text-[14px] italic text-ink-secondary"
-        style={{ lineHeight: 1.55 }}
-      >
-        {fill(example.setup)}
-      </p>
-
-      <dl className="mt-3 flex flex-col gap-2">
+      {example.setup ? (
+        <p
+          style={{
+            fontSize: 14,
+            color: "#6B6B6B",
+            lineHeight: 1.6,
+            fontStyle: "italic",
+          }}
+        >
+          {fill(example.setup)}
+        </p>
+      ) : null}
+      <dl style={{ marginTop: example.setup ? 10 : 0 }}>
         {example.exchange.map((turn, i) => (
-          <div key={i} className="flex gap-2">
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              gap: 8,
+              marginTop: i === 0 ? 0 : 6,
+            }}
+          >
             <dt
-              className="shrink-0 text-[14px]"
               style={{
-                fontWeight: turn.speaker === "you" ? 600 : 400,
-                color:
-                  turn.speaker === "you"
-                    ? "var(--ink)"
-                    : "var(--ink-secondary)",
+                flexShrink: 0,
+                fontSize: 14,
+                fontWeight: 800,
+                color: "#1A1A1A",
+                lineHeight: 1.6,
               }}
             >
-              {turn.speaker === "you" ? "You" : childName}:
+              {turn.speaker === "you" ? "You:" : `${childName}:`}
             </dt>
             <dd
-              className="text-[14px]"
               style={{
-                lineHeight: 1.55,
-                fontWeight: turn.speaker === "you" ? 600 : 400,
-                color:
-                  turn.speaker === "you"
-                    ? "var(--ink)"
-                    : "var(--ink-secondary)",
+                fontSize: 14,
+                color: "#6B6B6B",
+                lineHeight: 1.6,
               }}
             >
               {fill(turn.line)}
@@ -328,11 +376,15 @@ function ExampleBlock({
           </div>
         ))}
       </dl>
-
       {example.closing ? (
         <p
-          className="mt-3 text-[14px] italic text-ink-secondary"
-          style={{ lineHeight: 1.55 }}
+          style={{
+            marginTop: 10,
+            fontSize: 14,
+            color: "#6B6B6B",
+            lineHeight: 1.6,
+            fontStyle: "italic",
+          }}
         >
           {fill(example.closing)}
         </p>
@@ -341,126 +393,32 @@ function ExampleBlock({
   );
 }
 
-// ---------- learn more (tertiary tier) ----------
+// ---------- Why it works ----------
 
-function LearnMoreSection({ activity }: { activity: Activity }) {
-  const skill = SKILLS[activity.skill];
+function SectionWhyItWorks({ activity }: { activity: Activity }) {
   return (
-    <section className="mt-10">
-      <p
-        className="text-[11px] font-extrabold uppercase"
-        style={{ color: "var(--ink-tertiary)", letterSpacing: "0.1em" }}
+    <section>
+      <h2
+        style={{
+          fontSize: 16,
+          fontWeight: 800,
+          color: "#1A1A1A",
+          letterSpacing: "-0.005em",
+        }}
       >
-        Learn more ↓
-      </p>
+        Why it works
+      </h2>
       <p
-        className="mt-1 text-[13px] text-ink-tertiary"
-        style={{ lineHeight: 1.5 }}
+        style={{
+          marginTop: 12,
+          fontSize: 15,
+          fontWeight: 400,
+          color: "#1A1A1A",
+          lineHeight: 1.55,
+        }}
       >
-        Optional. For when you want to go deeper.
+        {activity.hiddenCurriculum}
       </p>
-      <div className="mt-3 flex flex-col gap-2">
-        <CollapsibleRow label="What this builds">
-          <p className="text-[15px] text-ink" style={{ lineHeight: 1.6 }}>
-            {skill.description}
-          </p>
-        </CollapsibleRow>
-        <CollapsibleRow label="What you're really building">
-          <p className="text-[15px] text-ink" style={{ lineHeight: 1.6 }}>
-            {activity.hiddenCurriculum}
-          </p>
-        </CollapsibleRow>
-        <CollapsibleRow label="What to watch for">
-          <p className="text-[15px] text-ink" style={{ lineHeight: 1.6 }}>
-            {activity.watchFor}
-          </p>
-        </CollapsibleRow>
-        <CollapsibleRow label="The one thing to say" accentStripe>
-          <blockquote className="border-l-2 border-accent pl-3">
-            <p
-              className="text-[16px] italic text-ink"
-              style={{ lineHeight: 1.55 }}
-            >
-              {activity.oneLineToSay}
-            </p>
-          </blockquote>
-          <p className="mt-2 text-[12px] text-ink-tertiary">
-            Drop it once, casually. Don&apos;t repeat.
-          </p>
-        </CollapsibleRow>
-        <CollapsibleRow label="The trap to avoid" tone="warning">
-          <p className="text-[15px] text-ink" style={{ lineHeight: 1.6 }}>
-            {activity.trap}
-          </p>
-        </CollapsibleRow>
-        <CollapsibleRow label="If it's too easy or too hard">
-          <p className="text-[15px] text-ink" style={{ lineHeight: 1.6 }}>
-            <span className="font-extrabold">Easier:</span> {activity.adapt.easier}
-          </p>
-          <p
-            className="mt-2 text-[15px] text-ink"
-            style={{ lineHeight: 1.6 }}
-          >
-            <span className="font-extrabold">Harder:</span> {activity.adapt.harder}
-          </p>
-        </CollapsibleRow>
-      </div>
     </section>
-  );
-}
-
-function CollapsibleRow({
-  label,
-  children,
-  accentStripe = false,
-  tone,
-}: {
-  label: string;
-  children: ReactNode;
-  accentStripe?: boolean;
-  tone?: "warning";
-}) {
-  const [open, setOpen] = useState(false);
-  const labelColor = accentStripe
-    ? "var(--accent-deep)"
-    : tone === "warning"
-      ? "var(--warning)"
-      : "var(--ink-secondary)";
-
-  return (
-    <div
-      className="relative rounded-[8px] bg-bg-elevated"
-      style={{ border: "1px solid var(--line)" }}
-    >
-      {accentStripe ? (
-        <span
-          aria-hidden
-          className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full"
-          style={{ backgroundColor: "var(--accent)" }}
-        />
-      ) : null}
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        className="flex w-full items-center justify-between rounded-[8px] py-3.5 pl-4 pr-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-      >
-        <span
-          className="text-[12px] font-extrabold uppercase"
-          style={{ color: labelColor, letterSpacing: "0.08em" }}
-        >
-          {label}
-        </span>
-        <ChevronDown
-          size={16}
-          strokeWidth={1.75}
-          aria-hidden
-          className={`shrink-0 text-ink-tertiary transition-transform duration-200 ${
-            open ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-      {open ? <div className="px-4 pb-4 pt-1">{children}</div> : null}
-    </div>
   );
 }
