@@ -51,7 +51,6 @@ async function seed(page: import("puppeteer-core").Page) {
       dateOfBirth: dobIso,
       grade: "",
       engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
-      englishConfidence: "hesitant",
       primaryLanguage: "",
       interests: [],
       strengths: [],

@@ -8,7 +8,7 @@ import {
 } from "./types";
 
 /**
- * Skill → struggle phrases. Used by Rule 10. Mirrors SPEC §7 exactly:
+ * Skill → struggle phrases. Used by Rule 9. Mirrors SPEC §7 exactly:
  *   "// etc." in the spec is left as a tail comment; we keep just the
  *   pairs the spec actually lists so we don't invent linkages.
  */
@@ -38,9 +38,9 @@ const DURATION_FIT: Record<
  * context. Pure: no DB, no clock, no randomness. Returns the score and
  * an audit trail (reasons[]) for the /dev/engine debug page and tests.
  *
- * Implements SPEC §7 verbatim: all 10 rules, in spec order. If you find
- * yourself wanting to "tidy" a rule, re-read the spec first; the
- * asymmetries are intentional.
+ * Implements SPEC §7. The original spec listed 10 rules; the
+ * englishConfidence-based rule was dropped when that field was removed
+ * from the schema, so we now run 9 rules in spec order.
  */
 export function scoreActivity(
   activity: Activity,
@@ -94,23 +94,7 @@ export function scoreActivity(
       adjust(-10, "Mood high: difficulty 1 too easy");
   }
 
-  // ============ Rule 3: Language load × English confidence ============
-  if (child.englishConfidence === "hesitant") {
-    if (activity.languageLoad === "high" && activity.skill !== "language") {
-      adjust(-20, "Hesitant English + high language load");
-    }
-    if (activity.skill === "language") {
-      adjust(+25, "Hesitant English needs language activities");
-    }
-  }
-  if (
-    child.englishConfidence === "comfortable" &&
-    activity.skill === "language"
-  ) {
-    adjust(-10, "Comfortable English: language less critical");
-  }
-
-  // ============ Rule 4: Engagement routing ============
+  // ============ Rule 3: Engagement routing ============
   const activityText = (
     activity.title +
     " " +
@@ -137,7 +121,7 @@ export function scoreActivity(
     }
   }
 
-  // ============ Rule 5: Interest alignment ============
+  // ============ Rule 4: Interest alignment ============
   for (const interest of child.interests) {
     const needle = interest.toLowerCase();
     if (activityText.includes(needle)) {
@@ -148,7 +132,7 @@ export function scoreActivity(
     }
   }
 
-  // ============ Rule 6: Recency ============
+  // ============ Rule 5: Recency ============
   const lastDoneSession = [...sessions]
     .reverse()
     .find((s) => s.activityId === activity.id);
@@ -166,7 +150,7 @@ export function scoreActivity(
     }
   }
 
-  // ============ Rule 7: Skill coverage ============
+  // ============ Rule 6: Skill coverage ============
   const skillCountWeek = last7Days.filter(
     (s) => activityIdToSkill(s.activityId) === activity.skill,
   ).length;
@@ -174,7 +158,7 @@ export function scoreActivity(
   if (skillCountWeek === 1) adjust(+5, "Skill seen once this week");
   if (skillCountWeek >= 3) adjust(-30, "Skill overdone this week");
 
-  // ============ Rule 8: Confidence trend in this skill ============
+  // ============ Rule 7: Confidence trend in this skill ============
   const skillSessions = recent14.filter(
     (s) => activityIdToSkill(s.activityId) === activity.skill,
   );
@@ -195,14 +179,14 @@ export function scoreActivity(
       adjust(-15, "Skill trend positive: difficulty 1 too easy");
   }
 
-  // ============ Rule 9: Age fit ============
+  // ============ Rule 8: Age fit ============
   const [minAge, maxAge] = activity.ageRange;
   if (child.age < minAge) adjust(-50, "Child too young for this activity");
   if (child.age > maxAge) adjust(-20, "Child past upper age range");
   if (child.age === minAge && activity.difficulty === 3)
     adjust(-15, "At min age + difficulty 3");
 
-  // ============ Rule 10: Struggle prioritization ============
+  // ============ Rule 9: Struggle prioritization ============
   const relevant = SKILL_TO_STRUGGLE[activity.skill] ?? [];
   const matchingStruggles = child.struggles.filter((s) =>
     relevant.includes(s),

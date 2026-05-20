@@ -8,30 +8,12 @@ import { useToast } from "@/components/ui/Toast";
 import { createChild, createParent, getCurrentParent } from "@/lib/db";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { ageFromDob } from "@/lib/utils/dates";
-import type { EnglishConfidence } from "@/types";
 
 /**
- * Round-6 onboarding — single screen that captures the minimum we need to
- * render the first /today: name, date of birth, English level. Everything
- * else (interests, struggles, engagement, photo) is filled in later via
+ * Onboarding — name and date of birth, nothing else. Everything else
+ * (interests, struggles, photo) is filled in later via
  * /profile/about/[childId].
- *
- * DOB replaces the round-5 age chips so the engine can track age with
- * month-level resolution and "year + remainder months" can be shown back
- * to the parent. The integer `age` field is still persisted for engine
- * compatibility (it's derived from DOB at save time).
  */
-
-interface EnglishOption {
-  label: string;
-  value: EnglishConfidence;
-}
-
-const ENGLISH: EnglishOption[] = [
-  { label: "Just starting", value: "hesitant" },
-  { label: "In progress", value: "developing" },
-  { label: "Comfortable", value: "comfortable" },
-];
 
 const MIN_AGE = 4;
 const MAX_AGE = 12;
@@ -44,7 +26,6 @@ export default function OnboardingPage() {
 
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
-  const [english, setEnglish] = useState<EnglishConfidence | null>(null);
   const [busy, setBusy] = useState(false);
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -69,8 +50,7 @@ export default function OnboardingPage() {
     trimmed.length > 0 &&
     dob.length > 0 &&
     ageInfo !== null &&
-    ageError === null &&
-    english !== null;
+    ageError === null;
 
   const buttonLabel = useMemo(() => {
     if (trimmed.length === 0) return "Start →";
@@ -101,7 +81,6 @@ export default function OnboardingPage() {
         dateOfBirth: dob,
         grade: "",
         engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
-        englishConfidence: english!,
         primaryLanguage: "",
         interests: [],
         strengths: [],
@@ -127,7 +106,6 @@ export default function OnboardingPage() {
     ageInfo,
     busy,
     dob,
-    english,
     router,
     setActiveChild,
     setParent,
@@ -197,29 +175,6 @@ export default function OnboardingPage() {
             </p>
           </Field>
 
-          <Field label="Their English">
-            <div className="flex gap-2">
-              {ENGLISH.map((opt) => {
-                const on = english === opt.value;
-                return (
-                  <button
-                    type="button"
-                    key={opt.value}
-                    onClick={() => setEnglish(opt.value)}
-                    className="flex-1 rounded-full text-[14px] font-extrabold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                    style={{
-                      height: 50,
-                      background: on ? "var(--accent)" : "var(--bg-elevated)",
-                      color: on ? "#fff" : "var(--ink)",
-                      border: `1px solid ${on ? "var(--accent)" : "var(--line)"}`,
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
-            </div>
-          </Field>
         </div>
 
         <span aria-hidden className="flex-1" />

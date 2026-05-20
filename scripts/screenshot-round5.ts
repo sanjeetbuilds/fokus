@@ -51,7 +51,6 @@ async function seed(page: import("puppeteer-core").Page) {
         fleesFrom: ["Studying / homework"],
         inBetween: [],
       },
-      englishConfidence: "hesitant",
       primaryLanguage: "Hindi",
       interests: ["Animals", "Space"],
       strengths: ["Curious"],

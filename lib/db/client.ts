@@ -27,6 +27,21 @@ export class FokusDB extends Dexie {
       sessions: "id, childId, date, activityId, [childId+date]",
       observations: "id, childId, date",
     });
+    this.version(2)
+      .stores({
+        parents: "id, updatedAt",
+        children: "id, parentId, updatedAt",
+        sessions: "id, childId, date, activityId, [childId+date]",
+        observations: "id, childId, date",
+      })
+      .upgrade((tx) =>
+        tx
+          .table("children")
+          .toCollection()
+          .modify((row: Record<string, unknown>) => {
+            delete row.englishConfidence;
+          }),
+      );
   }
 }
 

@@ -68,28 +68,20 @@ export function dedupedEngagement(child: Child): {
 }
 
 /**
- * Compact /today reflection — capped at two lines regardless of how many
- * profile fields the parent filled in. Line 1 is name + age + ONE prioritised
- * engagement note. The fleesFrom field stays in the DB but is deliberately
- * NOT echoed back on the home screen — it's used by the engine, not surfaced.
+ * Compact /today reflection — capped at two lines. Line 1 is name + age
+ * plus, when available, ONE engagement note. fleesFrom stays in the DB
+ * but isn't surfaced on the home screen — engine input, not output.
  *
- * Thin-profile path (only name + age + englishConfidence filled in):
- *   "{name} is {age}. {English hint}." — no fake observations layered on.
- *
- * Priority for the engagement note when richer fields exist:
- *   1) English hint (always shows when set)
- *   2) Goes deep on {first item}
- *   3) Working on {first struggle}
+ * Priority for the engagement note:
+ *   1) Goes deep on {first item}
+ *   2) Working on {first struggle}
  */
 export function buildFullReflection(child: Child): ReflectionSentence[] {
   const out: ReflectionSentence[] = [];
   const grade = child.grade?.trim();
   const dedup = dedupedEngagement(child);
 
-  const englishHint = englishHintFor(child.englishConfidence);
-
   const note = (() => {
-    if (englishHint) return englishHint;
     if (dedup.goesDeepOn.length > 0) {
       return `Goes deep on ${sentenceCase(dedup.goesDeepOn[0]!)}.`;
     }
@@ -111,24 +103,6 @@ export function buildFullReflection(child: Child): ReflectionSentence[] {
   return out;
 }
 
-/**
- * Map englishConfidence to the round-6 phrasing requested by the
- * thin-profile state. Returns null only if the field is missing entirely
- * (legacy records pre-onboarding rewrite).
- */
-function englishHintFor(c: Child["englishConfidence"] | null | undefined): string | null {
-  switch (c) {
-    case "hesitant":
-      return "Just starting with English.";
-    case "developing":
-      return "Building English steadily.";
-    case "comfortable":
-      return "Comfortable in English.";
-    default:
-      return null;
-  }
-}
-
 /** Whether the round-6 thin-profile case applies — used by Profile + Today. */
 export function isThinProfile(child: Child): boolean {
   return (
@@ -147,19 +121,12 @@ export function fullReflectionClosing(_child: Child): string {
 /**
  * Bullets shared by the MEDIUM block (1-2 sessions) and the COLLAPSED
  * line (3+ sessions). At most 3, in priority order:
- *   1. Building English confidence    (hesitant or developing)
- *   2. Honoring their deep focus on X (first goesDeepOn item, deduped)
- *   3. Practicing X                   (first struggle, lowercased)
+ *   1. Honoring their deep focus on X (first goesDeepOn item, deduped)
+ *   2. Practicing X                   (first struggle, lowercased)
  */
 export function todayFocusBullets(child: Child): string[] {
   const dedup = dedupedEngagement(child);
   const out: string[] = [];
-  if (
-    child.englishConfidence === "hesitant" ||
-    child.englishConfidence === "developing"
-  ) {
-    out.push("Building English confidence");
-  }
   if (dedup.goesDeepOn.length > 0) {
     out.push(
       `Honoring their deep focus on ${sentenceCase(dedup.goesDeepOn[0]!)}`,
@@ -179,47 +146,25 @@ function joinSpecific(items: readonly string[]): string {
 
 /**
  * Attributed focus rows for the Profile "what Fokus is paying attention
- * to" card. Up to 4 rows, priority: English > Goes-deep > specific
- * struggles > Curiosity fallback. Reasons name the parent's exact picks
- * — never collapse multiple selections into a vague "these moments."
+ * to" card. Up to 4 rows, priority: Goes-deep > specific struggles >
+ * Curiosity fallback. Reasons name the parent's exact picks; never
+ * collapse selections into a vague "these moments."
  */
 export function profileFocusAreas(child: Child): FocusArea[] {
   const out: FocusArea[] = [];
   const dedup = dedupedEngagement(child);
   const name = child.name;
 
-  // Thin-profile shortcut: when the deeper fields are still empty, surface
-  // a single bullet about English. Anything else would be fabrication.
+  // Thin-profile shortcut: when the deeper fields are still empty,
+  // surface a gentle nudge to fill them in. Anything else would be
+  // fabrication.
   if (isThinProfile(child)) {
-    if (child.englishConfidence === "hesitant") {
-      out.push({
-        title: `Building ${name}'s English foundation`,
-        reason: `Because you said ${name} is just starting with English.`,
-      });
-    } else if (child.englishConfidence === "developing") {
-      out.push({
-        title: `Building ${name}'s English skills`,
-        reason: `Because you said ${name} is still picking up English.`,
-      });
-    } else {
-      out.push({
-        title: `Building ${name}'s confidence`,
-        reason: "Add more details and Fokus will tailor what it pays attention to.",
-      });
-    }
+    out.push({
+      title: `Getting to know ${name}`,
+      reason:
+        "Add more details and Fokus will tailor what it pays attention to.",
+    });
     return out;
-  }
-
-  if (child.englishConfidence === "hesitant") {
-    out.push({
-      title: "Building English confidence",
-      reason: `Because you said ${name} is hesitant in English.`,
-    });
-  } else if (child.englishConfidence === "developing") {
-    out.push({
-      title: "Building English confidence",
-      reason: `Because you said ${name} is still picking up English.`,
-    });
   }
 
   if (dedup.goesDeepOn.length > 0) {
@@ -289,10 +234,13 @@ export function whereHeadingSkills(
   ];
 
   let primary: SkillKey;
-  if (child.englishConfidence === "hesitant") {
-    primary = "language";
-  } else if (child.struggles.includes("Finishing what they start")) {
+  if (child.struggles.includes("Finishing what they start")) {
     primary = "resilience";
+  } else if (
+    child.struggles.includes("Big feelings") ||
+    child.struggles.includes("Losing games")
+  ) {
+    primary = "emotional";
   } else {
     primary = "curiosity";
   }

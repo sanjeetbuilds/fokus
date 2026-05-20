@@ -31,7 +31,6 @@ function makeChild(patch: Partial<Child> = {}): Child {
     age: 7,
     grade: "1st",
     engagement: { fleesFrom: [], goesDeepOn: [], inBetween: [] },
-    englishConfidence: "developing",
     primaryLanguage: "Hindi",
     interests: [],
     strengths: [],
@@ -66,23 +65,7 @@ const lang = (id: string): SkillKey => getActivityById(id)!.skill;
 // ---------- tests ----------
 
 describe("scoreActivity / pickActivity", () => {
-  it("a) hesitant English child gets language activities boosted", () => {
-    const child = makeChild({ englishConfidence: "hesitant" });
-    const { scored } = pickActivity(
-      child,
-      [],
-      NORMAL_CTX,
-      TODAY,
-      ACTIVITIES,
-      () => 0, // deterministic: always picks first in top 3
-    );
-    const top5 = scored.slice(0, 5);
-    const top5Languages = top5.filter((s) => s.activity.skill === "language");
-    // At least 3 of the top 5 should be language activities under hesitant English.
-    expect(top5Languages.length).toBeGreaterThanOrEqual(3);
-  });
-
-  it("b) low mood drops every difficulty-3 activity below its normal-mood score", () => {
+  it("a) low mood drops every difficulty-3 activity below its normal-mood score", () => {
     const child = makeChild();
     const low = ACTIVITIES.map((a) =>
       scoreActivity(a, child, [], { ...NORMAL_CTX, childMood: "low" }, TODAY),
@@ -97,7 +80,7 @@ describe("scoreActivity / pickActivity", () => {
     }
   });
 
-  it("c) neglected skill gets +30 after 7 days untouched; overdone skill gets -30", () => {
+  it("b) neglected skill gets +30 after 7 days untouched; overdone skill gets -30", () => {
     const child = makeChild();
     // 7 curiosity sessions, one per day, all engaged
     const sessions: Session[] = Array.from({ length: 7 }, (_, i) =>
@@ -127,7 +110,7 @@ describe("scoreActivity / pickActivity", () => {
     expect([...otherTopSkills].some((k) => k !== "curiosity")).toBe(true);
   });
 
-  it("d) frustrated trend in resilience eases off every difficulty-3 resilience pick", () => {
+  it("c) frustrated trend in resilience eases off every difficulty-3 resilience pick", () => {
     const child = makeChild();
     // 3 frustrated sessions in resilience inside last 14 days
     const sessions: Session[] = [
@@ -150,7 +133,7 @@ describe("scoreActivity / pickActivity", () => {
     }
   });
 
-  it("e) interest match boosts cu8 (Animal Mystery)", () => {
+  it("d) interest match boosts cu8 (Animal Mystery)", () => {
     const cu8 = getActivityById("cu8")!;
     const withInterest = scoreActivity(
       cu8,
@@ -169,7 +152,7 @@ describe("scoreActivity / pickActivity", () => {
     expect(withInterest.score).toBeGreaterThan(withoutInterest.score);
   });
 
-  it("f) fleesFrom penalizes activities whose text matches the flee phrase", () => {
+  it("e) fleesFrom penalizes activities whose text matches the flee phrase", () => {
     // Engine matches via literal substring on lowercased activityText
     // (title + description + howTo + requires). ob1 contains "they study
     // for 30 seconds", so "study" reliably triggers the penalty.
@@ -191,7 +174,7 @@ describe("scoreActivity / pickActivity", () => {
     ).toBe(true);
   });
 
-  it("g) same activity is not picked every time when state is similar (weighted-random)", () => {
+  it("f) same activity is not picked every time when state is similar (weighted-random)", () => {
     const child = makeChild();
     // 5 engaged sessions of cu1 in the past week
     const sessions = Array.from({ length: 5 }, (_, i) =>
@@ -214,7 +197,7 @@ describe("scoreActivity / pickActivity", () => {
     expect(new Set(picks.map((p) => p.id)).size).toBeGreaterThan(1);
   });
 
-  it("h) recent LOVED activity recurs sooner than recent FRUSTRATED one", () => {
+  it("g) recent LOVED activity recurs sooner than recent FRUSTRATED one", () => {
     const cu1 = getActivityById("cu1")!;
     const lovedSessions = [
       makeSession({ activityId: "cu1", date: daysAgo(8), response: "loved" }),

@@ -79,7 +79,6 @@ function AddChildBody() {
         ageBand: band.label,
         grade: "",
         engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
-        englishConfidence: "developing",
         primaryLanguage: "Other",
         interests: [],
         strengths: [],

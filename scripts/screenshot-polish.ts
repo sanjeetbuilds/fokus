@@ -74,7 +74,6 @@ async function seed(
         fleesFrom: ["Studying / homework", "Sitting still"],
         inBetween: [],
       },
-      englishConfidence: "hesitant",
       primaryLanguage: "Hindi",
       interests: ["Animals", "Space", "Dinosaurs"],
       strengths: ["Curious", "Talkative"],

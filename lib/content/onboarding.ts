@@ -4,8 +4,6 @@
  * double-weighted by the same string surfacing on two facets.
  */
 
-import type { EnglishConfidence } from "@/types";
-
 export const GRADE_OPTIONS = [
   "Nursery",
   "KG",
@@ -44,33 +42,6 @@ export const FLEES_FROM_OPTIONS = [
   "Listening to long instructions",
   "Meeting new people",
 ] as const;
-
-// Step 4: Language
-export interface EnglishConfidenceOption {
-  value: EnglishConfidence;
-  label: string;
-  description: (primaryLanguage: string) => string;
-}
-export const ENGLISH_CONFIDENCE_OPTIONS: EnglishConfidenceOption[] = [
-  {
-    value: "hesitant",
-    label: "Hesitant",
-    description: (lang) =>
-      `Avoids speaking English. Comfortable in ${lang || "their first language"} for daily talk.`,
-  },
-  {
-    value: "developing",
-    label: "Developing",
-    description: () =>
-      "Speaks some English. Gets stuck or shy with longer sentences.",
-  },
-  {
-    value: "comfortable",
-    label: "Comfortable",
-    description: () =>
-      "Speaks English well. Tries new words confidently.",
-  },
-];
 
 export const PRIMARY_LANGUAGE_OPTIONS = [
   "Hindi",

@@ -434,7 +434,7 @@ function DoneForToday({
 // ---------- bottom caption helpers ----------
 
 function bottomCaption(child: Child): string {
-  return `${child.name} is ${ageDescriptionFor(child)}. ${englishStatusFor(child)}.`;
+  return `${child.name} is ${ageDescriptionFor(child)}.`;
 }
 
 function ageDescriptionFor(child: Child): string {
@@ -451,19 +451,6 @@ function ageDescriptionFor(child: Child): string {
     }
   }
   return `${child.age}`;
-}
-
-function englishStatusFor(child: Child): string {
-  switch (child.englishConfidence) {
-    case "hesitant":
-      return "Just starting English";
-    case "developing":
-      return "Building English";
-    case "comfortable":
-      return "Comfortable in English";
-    default:
-      return "Building English";
-  }
 }
 
 function plural(n: number, word: string): string {

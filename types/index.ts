@@ -44,8 +44,6 @@ export interface Parent {
 
 // ---------- Child ----------
 
-export type EnglishConfidence = "hesitant" | "developing" | "comfortable";
-
 export interface ChildEngagement {
   fleesFrom: string[];
   goesDeepOn: string[];
@@ -76,7 +74,6 @@ export interface Child {
 
   engagement: ChildEngagement;
 
-  englishConfidence: EnglishConfidence;
   primaryLanguage: string;
 
   interests: string[];

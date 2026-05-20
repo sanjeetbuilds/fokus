@@ -28,7 +28,6 @@ const child: Child = {
     goesDeepOn: ["Drawing", "Building/Lego"],
     inBetween: ["Games"],
   },
-  englishConfidence: "hesitant",
   primaryLanguage: "Hindi",
   interests: ["animals", "space", "drawing"],
   strengths: ["Curious", "Patient"],

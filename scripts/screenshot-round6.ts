@@ -56,7 +56,6 @@ async function seedAfterOnboarding(page: import("puppeteer-core").Page) {
       age: 7,
       grade: "",
       engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
-      englishConfidence: "developing",
       primaryLanguage: "",
       interests: [],
       strengths: [],

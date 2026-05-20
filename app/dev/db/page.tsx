@@ -135,7 +135,6 @@ export default function DbDevPage() {
           goesDeepOn: ["Drawing", "Building/Lego", "Pretend play"],
           inBetween: ["Games", "Watching shows"],
         },
-        englishConfidence: "hesitant",
         primaryLanguage: "Hindi",
         interests: ["Animals", "Space", "Drawing", "Dinosaurs"],
         strengths: ["Curious", "Patient", "Detail-noticing"],
@@ -298,7 +297,7 @@ export default function DbDevPage() {
           <RecentRow
             key={c.id}
             heading={c.name}
-            meta={`age ${c.age} · ${c.grade} · ${c.englishConfidence}`}
+            meta={`age ${c.age} · ${c.grade}`}
             timestamp={c.updatedAt}
             id={c.id}
           />

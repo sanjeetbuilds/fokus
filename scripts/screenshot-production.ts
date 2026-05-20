@@ -47,7 +47,6 @@ async function seed(page: import("puppeteer-core").Page) {
         fleesFrom: [],
         inBetween: [],
       },
-      englishConfidence: "developing",
       primaryLanguage: "Hindi",
       interests: ["Animals", "Space"],
       strengths: ["Curious", "Patient"],
