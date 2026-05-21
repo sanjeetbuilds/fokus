@@ -1,111 +1,74 @@
 "use client";
 
-import { Settings, Trash2, UserPlus } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import AppHeader from "@/components/layout/AppHeader";
-import SkillFrequencyTiles from "@/components/track/SkillFrequencyTiles";
-import Avatar from "@/components/ui/Avatar";
 import Sheet from "@/components/ui/Sheet";
 import { useToast } from "@/components/ui/Toast";
-import {
-  db,
-  deleteChild,
-  getCurrentParent,
-  listChildren,
-} from "@/lib/db";
-import { useAppStore } from "@/lib/store/useAppStore";
-import type { Child, Session } from "@/types";
+import { signOut } from "@/lib/supabase/auth";
+import { updateChild, type ChildRow } from "@/lib/supabase/queries";
+import { primeChildCache, useChild } from "@/lib/use-child";
+import { ageFromDob } from "@/lib/utils/dates";
+
+type Pronouns = "she" | "he" | "they";
+
+const PRONOUNS_OPTIONS: { value: Pronouns; label: string }[] = [
+  { value: "she", label: "She / her" },
+  { value: "he", label: "He / him" },
+  { value: "they", label: "They / them" },
+];
 
 /**
- * Profile — child journey for the parent. SPEC §2 means no goals, no
- * scores, no "growing fast" editorializing. The page is identity +
- * markers + at-a-glance frequency + the parent's own switching/settings
- * affordances.
+ * Profile: identity + about + your-data + sign out.
+ *
+ *   Profile                                 Inter 28 / 800
+ *
+ *   ┌─ Child card ────────────────────┐
+ *   │ [96x96 avatar]                  │
+ *   │ {name}                          │  Inter 24 / 800
+ *   │ Age {n} · {pronouns}            │  Inter 14 / muted
+ *   │ Edit details                    │  text button, ink
+ *   └─────────────────────────────────┘
+ *
+ *   ────────────────────────────────── (hair)
+ *
+ *   ABOUT
+ *   Made by a parent, for parents.
+ *
+ *   YOUR DATA
+ *   Your child's info stays on your account.
+ *   We don't sell anything. You can delete
+ *   everything anytime.
+ *
+ *   ────────────────────────────────── (hair)
+ *
+ *   Sign out
+ *
+ * Edit sheet (bottom modal): name, dob, pronouns (radio cards). Save
+ * writes via updateChild, primes the useChild cache, closes the sheet.
  */
 export default function ProfilePage() {
-  const router = useRouter();
+  const { child, refetch } = useChild();
   const { toast } = useToast();
-  const activeChildId = useAppStore((s) => s.activeChildId);
-  const setActiveChild = useAppStore((s) => s.setActiveChild);
+  const [editOpen, setEditOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
-  const [children, setChildren] = useState<Child[]>([]);
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [parentName, setParentName] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState<Child | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  const reload = useCallback(async () => {
-    const parent = await getCurrentParent();
-    if (!parent) {
-      setChildren([]);
-      setLoaded(true);
-      return;
-    }
-    setParentName(parent.name);
-    const [kids, allSessions] = await Promise.all([
-      listChildren(parent.id),
-      db.sessions.toArray(),
-    ]);
-    setChildren(kids);
-    setSessions(allSessions);
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    void reload();
-  }, [reload]);
-
-  const featured = useMemo(
-    () =>
-      children.find((c) => c.id === activeChildId) ?? children[0] ?? null,
-    [activeChildId, children],
-  );
-
-  const onConfirmDelete = useCallback(async () => {
-    if (!confirmDelete || busy) return;
-    setBusy(true);
+  const onSignOut = useCallback(async () => {
+    if (signingOut) return;
+    setSigningOut(true);
     try {
-      await deleteChild(confirmDelete.id);
-      toast(`Removed ${confirmDelete.name}.`);
-      setConfirmDelete(null);
-      await reload();
+      const { error } = await signOut();
+      if (error) {
+        toast("Couldn't sign out. Try again.", { tone: "danger" });
+        setSigningOut(false);
+      }
+      // AuthGate's onAuthStateChange handles the SIGNED_OUT redirect.
     } catch (err) {
-      console.error("[/profile] deleteChild:", err);
-      toast("Couldn't remove. See console.", { tone: "danger" });
-    } finally {
-      setBusy(false);
+      console.error("[/profile] signOut:", err);
+      toast("Couldn't sign out. Try again.", { tone: "danger" });
+      setSigningOut(false);
     }
-  }, [busy, confirmDelete, reload, toast]);
-
-  if (!loaded) {
-    return (
-      <main className="flex min-h-[100svh] items-center justify-center px-5">
-        <p className="text-footnote text-ink-tertiary">Loading…</p>
-      </main>
-    );
-  }
-
-  if (!featured) {
-    return (
-      <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col items-center justify-center px-6 text-center">
-        <p className="text-body text-ink-secondary">No children yet.</p>
-        <Link
-          href="/onboarding/child"
-          className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-[13px] font-extrabold text-white"
-        >
-          <UserPlus size={14} strokeWidth={2} />
-          Add a child
-        </Link>
-      </main>
-    );
-  }
-
-  const featuredSessions = sessions.filter((s) => s.childId === featured.id);
-  const subtitle = ageSubtitle(featured);
+  }, [signingOut, toast]);
 
   return (
     <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col bg-bg pb-[calc(env(safe-area-inset-bottom)+96px)] pt-[calc(env(safe-area-inset-top)+8px)]">
@@ -113,288 +76,398 @@ export default function ProfilePage() {
 
       <div className="px-6 pt-1">
         <h1
-          className="text-[50px] font-extrabold text-ink"
+          className="text-ink"
           style={{
-            lineHeight: 1.05,
-            letterSpacing: "-0.035em",
             paddingTop: 6,
-            marginBottom: 22,
+            fontSize: 28,
+            fontWeight: 800,
+            lineHeight: 1.1,
+            letterSpacing: "-0.02em",
+            marginBottom: 28,
           }}
         >
-          {featured.name}&apos;s
-          <br />
-          journey.
+          Profile
         </h1>
 
-        <ChildHero child={featured} subtitle={subtitle} />
+        {child ? (
+          <ChildCard child={child} onEdit={() => setEditOpen(true)} />
+        ) : (
+          <p className="text-footnote text-ink-tertiary">Loading…</p>
+        )}
 
-        <MarkersSection child={featured} />
+        <Divider />
 
-        <p
-          className="mb-3 text-[12px] font-extrabold uppercase"
-          style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
-        >
-          At a glance
-        </p>
-        <SkillFrequencyTiles sessions={featuredSessions} />
+        <Section title="About">
+          <p style={bodyStyle}>Made by a parent, for parents.</p>
+        </Section>
 
-        <ChildrenList
-          children={children}
-          activeId={activeChildId}
-          onSwitch={(id) => {
-            setActiveChild(id);
-            router.push("/today");
-          }}
-          onDelete={(c) => setConfirmDelete(c)}
-        />
-
-        {parentName ? (
-          <p className="mt-6 text-[12px] text-ink-tertiary">
-            Signed in as {parentName}.{" "}
-            <Link
-              href="/profile/settings"
-              className="inline-flex items-center gap-1 font-extrabold text-accent-deep hover:text-accent-pressed"
-            >
-              <Settings size={11} strokeWidth={2} />
-              Settings
-            </Link>
+        <Section title="Your data">
+          <p style={bodyStyle}>
+            Your child&apos;s info stays on your account. We don&apos;t
+            sell anything. You can delete everything anytime.
           </p>
-        ) : null}
+        </Section>
+
+        <Divider />
+
+        <button
+          type="button"
+          onClick={() => void onSignOut()}
+          disabled={signingOut}
+          className="w-full text-left transition-opacity disabled:opacity-50"
+          style={{
+            padding: "16px 20px",
+            fontSize: 16,
+            color: "#1A1A1A",
+            background: "transparent",
+            border: "none",
+          }}
+        >
+          {signingOut ? "Signing out…" : "Sign out"}
+        </button>
       </div>
 
-      <Sheet
-        open={confirmDelete !== null}
-        onClose={() => (busy ? undefined : setConfirmDelete(null))}
-        title={confirmDelete ? `Remove ${confirmDelete.name}?` : undefined}
-      >
-        {confirmDelete ? (
-          <div className="flex flex-col gap-4">
-            <p className="text-body text-ink-secondary">
-              This removes{" "}
-              <span className="text-ink">{confirmDelete.name}</span> and every
-              session logged for them. It can&apos;t be undone.
-            </p>
-            <div className="flex gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setConfirmDelete(null)}
-                disabled={busy}
-                className="h-[48px] flex-1 rounded-full bg-bg-alt text-[14px] font-extrabold text-ink"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => void onConfirmDelete()}
-                disabled={busy}
-                className="h-[48px] flex-1 rounded-full text-[14px] font-extrabold text-white disabled:opacity-50"
-                style={{ background: "var(--coral)" }}
-              >
-                {busy ? "Removing…" : "Remove"}
-              </button>
-            </div>
-          </div>
-        ) : null}
-      </Sheet>
+      <EditDetailsSheet
+        open={editOpen}
+        child={child}
+        onClose={() => setEditOpen(false)}
+        onSaved={async (row) => {
+          primeChildCache(row);
+          setEditOpen(false);
+          await refetch();
+        }}
+      />
     </main>
   );
 }
 
-function ChildHero({ child, subtitle }: { child: Child; subtitle: string }) {
+// ---------- Child card ----------
+
+function ChildCard({
+  child,
+  onEdit,
+}: {
+  child: ChildRow;
+  onEdit: () => void;
+}) {
+  const info = ageFromDob(child.dob);
+  const age = info?.years ?? 0;
+  const initial = child.name.trim().charAt(0).toUpperCase() || "•";
+  const pronouns = pronounsLabel(child.pronouns);
+
   return (
-    <div className="mb-6 flex flex-col items-center">
-      <Avatar
-        name={child.name}
-        size="lg"
-        photoUrl={child.photoUrl}
-        className="h-24 w-24 text-[40px]"
-      />
+    <div>
+      <button
+        type="button"
+        onClick={onEdit}
+        aria-label="Edit child photo"
+        className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        style={{
+          width: 96,
+          height: 96,
+          background: child.photo_url ? "transparent" : "#1A1A1A",
+          backgroundImage: child.photo_url
+            ? `url(${child.photo_url})`
+            : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          color: "#FFFFFF",
+          fontSize: 36,
+          fontWeight: 800,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          border: "none",
+        }}
+      >
+        {child.photo_url ? null : initial}
+      </button>
+
       <p
-        className="mt-4 text-center text-[28px] font-extrabold text-ink"
-        style={{ letterSpacing: "-0.025em", marginBottom: 3 }}
+        className="text-ink"
+        style={{
+          marginTop: 16,
+          fontSize: 24,
+          fontWeight: 800,
+          letterSpacing: "-0.02em",
+          lineHeight: 1.15,
+        }}
       >
         {child.name}
       </p>
-      <p className="text-center text-[14px] text-ink-tertiary">{subtitle}</p>
+      <p
+        style={{
+          marginTop: 4,
+          fontSize: 14,
+          color: "#6B6B6B",
+          lineHeight: 1.4,
+        }}
+      >
+        Age {age} · {pronouns}
+      </p>
+      <button
+        type="button"
+        onClick={onEdit}
+        className="transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
+        style={{
+          marginTop: 12,
+          fontSize: 14,
+          fontWeight: 800,
+          color: "#1A1A1A",
+          background: "transparent",
+          border: "none",
+          padding: 0,
+        }}
+      >
+        Edit details
+      </button>
     </div>
   );
 }
 
-function MarkersSection({ child }: { child: Child }) {
-  const markers = collectMarkers(child);
-  if (markers.length === 0) {
-    return (
-      <section className="mb-5">
-        <p
-          className="mb-2.5 text-[12px] font-extrabold uppercase"
-          style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
-        >
-          What {child.name} loves
-        </p>
-        <Link
-          href="/profile/settings"
-          className="inline-flex rounded-full px-3 py-1.5 text-[12px] font-extrabold"
-          style={{ background: "var(--bg-alt)", color: "var(--ink)" }}
-        >
-          + Add interests
-        </Link>
-      </section>
-    );
-  }
+// ---------- Sections + helpers ----------
+
+const bodyStyle: React.CSSProperties = {
+  fontSize: 14,
+  color: "#1A1A1A",
+  lineHeight: 1.5,
+};
+
+function Divider() {
   return (
-    <section className="mb-5">
-      <p
-        className="mb-2.5 text-[12px] font-extrabold uppercase"
-        style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
-      >
-        What {child.name} loves
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {markers.map((m) => (
-          <span
-            key={`${m.kind}:${m.label}`}
-            className="rounded-full px-3 py-1.5 text-[12px] font-extrabold"
-            style={{
-              background:
-                m.kind === "interest" ? "var(--accent-bg)" : "var(--coral-bg)",
-              color:
-                m.kind === "interest" ? "var(--accent-deep)" : "var(--coral-text)",
-            }}
-          >
-            {m.label}
-          </span>
-        ))}
-      </div>
-    </section>
+    <hr
+      style={{
+        marginTop: 28,
+        marginBottom: 28,
+        border: 0,
+        borderTop: "1px solid #EEEEEE",
+      }}
+    />
   );
 }
 
-function ChildrenList({
+function Section({
+  title,
   children,
-  activeId,
-  onSwitch,
-  onDelete,
 }: {
-  children: Child[];
-  activeId: string | null;
-  onSwitch: (id: string) => void;
-  onDelete: (c: Child) => void;
+  title: string;
+  children: React.ReactNode;
 }) {
   return (
-    <section className="mt-2">
+    <section style={{ marginBottom: 24 }}>
       <p
-        className="mb-2.5 text-[12px] font-extrabold uppercase"
-        style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
+        style={{
+          fontSize: 13,
+          fontWeight: 800,
+          color: "#8A8A8A",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginBottom: 8,
+        }}
       >
-        Children
+        {title}
       </p>
-      <ul className="flex flex-col gap-2.5">
-        {children.map((c) => {
-          const isActive = c.id === activeId;
-          return (
-            <li
-              key={c.id}
-              className="flex items-center gap-3.5 rounded-[18px] bg-bg-elevated p-3.5"
-              style={{ border: "1.5px solid var(--line)" }}
-            >
-              <Avatar
-                name={c.name}
-                size="md"
-                photoUrl={c.photoUrl}
-                className="h-12 w-12 text-[20px]"
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="truncate text-[15px] font-extrabold text-ink">
-                    {c.name}
-                  </p>
-                  {isActive && children.length > 1 ? (
-                    <span
-                      className="rounded-full px-2 py-0.5 text-[11px] font-extrabold"
-                      style={{
-                        background: "var(--accent-bg)",
-                        color: "var(--accent-deep)",
-                      }}
-                    >
-                      Active
-                    </span>
-                  ) : null}
-                </div>
-                <p className="text-[12px] text-ink-tertiary">
-                  {ageSubtitle(c)}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                {!isActive ? (
-                  <button
-                    type="button"
-                    onClick={() => onSwitch(c.id)}
-                    className="rounded-full bg-bg-alt px-3 py-1.5 text-[12px] font-extrabold text-ink"
-                  >
-                    Switch
-                  </button>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={() => onDelete(c)}
-                  disabled={isActive}
-                  aria-label={`Remove ${c.name}`}
-                  className="flex h-9 w-9 items-center justify-center rounded-md text-ink-tertiary hover:bg-bg-alt hover:text-coral disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <Trash2 size={16} strokeWidth={1.75} />
-                </button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-      <Link
-        href="/onboarding/child?return=profile"
-        className="mt-2.5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-[18px] border border-dashed text-[14px] text-ink-secondary transition-colors hover:text-ink"
-        style={{ borderColor: "var(--ink-quaternary)" }}
-      >
-        <UserPlus size={16} strokeWidth={1.75} />
-        Add another child
-      </Link>
+      {children}
     </section>
   );
 }
 
-// ---------- helpers ----------
+function pronounsLabel(p: "he" | "she" | "they"): string {
+  switch (p) {
+    case "he":
+      return "he/him";
+    case "she":
+      return "she/her";
+    case "they":
+      return "they/them";
+  }
+}
 
-interface Marker {
+// ---------- Edit sheet ----------
+
+function EditDetailsSheet({
+  open,
+  child,
+  onClose,
+  onSaved,
+}: {
+  open: boolean;
+  child: ChildRow | null;
+  onClose: () => void;
+  onSaved: (row: ChildRow) => void | Promise<void>;
+}) {
+  return (
+    <Sheet open={open} onClose={onClose} title="Edit details">
+      {child ? (
+        <EditDetailsForm
+          child={child}
+          onCancel={onClose}
+          onSaved={onSaved}
+        />
+      ) : null}
+    </Sheet>
+  );
+}
+
+function EditDetailsForm({
+  child,
+  onCancel,
+  onSaved,
+}: {
+  child: ChildRow;
+  onCancel: () => void;
+  onSaved: (row: ChildRow) => void | Promise<void>;
+}) {
+  const { toast } = useToast();
+  const [name, setName] = useState(child.name);
+  const [dob, setDob] = useState(child.dob);
+  const [pronouns, setPronouns] = useState<Pronouns>(child.pronouns);
+  const [saving, setSaving] = useState(false);
+
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const minDob = useMemo(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 20);
+    return d.toISOString().slice(0, 10);
+  }, []);
+
+  const trimmed = name.trim();
+  const dirty =
+    trimmed !== child.name || dob !== child.dob || pronouns !== child.pronouns;
+  const canSave = trimmed.length > 0 && dob.length > 0 && dirty && !saving;
+
+  const onSave = async () => {
+    if (!canSave) return;
+    setSaving(true);
+    try {
+      const row = await updateChild({
+        name: trimmed,
+        dob,
+        pronouns,
+      });
+      await onSaved(row);
+    } catch (err) {
+      console.error("[/profile] updateChild:", err);
+      toast("Couldn't save. Try again.", { tone: "danger" });
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-5">
+      <Field label="Name">
+        <input
+          className="h-[50px] w-full rounded-[6px] px-4 text-[16px] text-ink"
+          style={{
+            background: "#FFFFFF",
+            border: "1px solid #EEEEEE",
+          }}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </Field>
+
+      <Field label="Birthday">
+        <input
+          type="date"
+          value={dob}
+          min={minDob}
+          max={today}
+          onChange={(e) => setDob(e.target.value)}
+          className="h-[50px] w-full rounded-[6px] px-4 text-[16px] text-ink"
+          style={{
+            background: "#FFFFFF",
+            border: "1px solid #EEEEEE",
+          }}
+        />
+      </Field>
+
+      <Field label="Pronouns">
+        <div className="flex flex-col gap-2">
+          {PRONOUNS_OPTIONS.map((opt) => {
+            const on = pronouns === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => setPronouns(opt.value)}
+                className="rounded-[10px] px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                style={{
+                  background: on ? "#1A1A1A" : "#FFFFFF",
+                  border: `1px solid ${on ? "#1A1A1A" : "#EEEEEE"}`,
+                  color: on ? "#FFFFFF" : "#1A1A1A",
+                  fontSize: 15,
+                  fontWeight: 800,
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </Field>
+
+      <div className="mt-2 flex flex-col gap-3">
+        <button
+          type="button"
+          onClick={() => void onSave()}
+          disabled={!canSave}
+          className="h-[52px] w-full rounded-[8px] text-white transition-opacity disabled:opacity-50"
+          style={{
+            background: "#1A1A1A",
+            fontSize: 15,
+            fontWeight: 800,
+          }}
+        >
+          {saving ? "Saving…" : "Save"}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={saving}
+          className="w-full text-center transition-opacity disabled:opacity-50"
+          style={{
+            fontSize: 14,
+            color: "#6B6B6B",
+            background: "transparent",
+            border: "none",
+            padding: "8px 0",
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  children,
+}: {
   label: string;
-  kind: "interest" | "strength";
-}
-
-function collectMarkers(child: Child): Marker[] {
-  const seen = new Set<string>();
-  const out: Marker[] = [];
-  for (const label of child.interests) {
-    const key = label.trim();
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    out.push({ label: key, kind: "interest" });
-    if (out.length >= 6) return out;
-  }
-  for (const label of child.strengths) {
-    const key = label.trim();
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    out.push({ label: key, kind: "strength" });
-    if (out.length >= 6) return out;
-  }
-  return out;
-}
-
-/**
- * "Age 6" or "Age 6 · 1st standard" — no editorialised growth verb. The
- * round-4 "Growing fast" / "Growing well" subtitle implies judgment;
- * SPEC §2 keeps observations factual.
- */
-function ageSubtitle(child: Child): string {
-  const grade = (child.grade ?? "").trim();
-  const ageBit = child.ageBand?.trim() || `Age ${child.age}`;
-  if (grade) return `${ageBit} · ${grade} standard`;
-  return ageBit;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <p
+        style={{
+          fontSize: 11,
+          fontWeight: 800,
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          color: "#8A8A8A",
+          marginBottom: 6,
+        }}
+      >
+        {label}
+      </p>
+      {children}
+    </div>
+  );
 }
