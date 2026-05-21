@@ -193,7 +193,7 @@ export default function ProfilePage() {
           className="w-full text-left transition-opacity disabled:opacity-50"
           style={{
             padding: "16px 20px",
-            fontSize: 14,
+            fontSize: 16,
             color: "#1A1A1A",
             background: "transparent",
             border: "none",
@@ -228,21 +228,14 @@ export default function ProfilePage() {
           {signingOut ? "Signing out…" : "Sign out"}
         </button>
 
-        <hr
-          style={{
-            border: 0,
-            borderTop: "1px solid #EEEEEE",
-            margin: 0,
-          }}
-        />
-
         <button
           type="button"
           onClick={() => setConfirmDeleteOpen(true)}
           className="w-full text-left transition-opacity"
           style={{
-            padding: "16px 20px",
-            fontSize: 16,
+            marginTop: 24,
+            padding: "12px 20px",
+            fontSize: 14,
             color: "#C44",
             background: "transparent",
             border: "none",
