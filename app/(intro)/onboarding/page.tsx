@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from "react";
 import Wordmark from "@/components/shared/Wordmark";
 import { useToast } from "@/components/ui/Toast";
 import { insertChild } from "@/lib/supabase/queries";
+import { primeChildCache } from "@/lib/use-child";
 import { ageFromDob } from "@/lib/utils/dates";
 
 /**
@@ -80,7 +81,8 @@ export default function OnboardingPage() {
     if (busy || !detailsValid) return;
     setBusy(true);
     try {
-      await insertChild({ name: trimmed, dob, pronouns });
+      const row = await insertChild({ name: trimmed, dob, pronouns });
+      primeChildCache(row);
       try {
         window.sessionStorage.setItem("show_welcome_modal", "true");
       } catch {
