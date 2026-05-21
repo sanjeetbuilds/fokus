@@ -18,11 +18,10 @@ export interface TabBarProps {
 }
 
 /**
- * Bottom nav: icon stacked over label. Active item renders in the
- * brand periwinkle (--accent #9CA5FF, the reference's --purple),
- * inactive items in the warm muted gray-lt #C2C0CB. Inactive icons
- * sit at 0.38 opacity per the reference's .nb-ico treatment.
- * Selection is communicated via color + weight + opacity.
+ * Bottom nav: icon stacked over label. Active item renders in brand
+ * ink #252630; inactive items in the warm muted gray-lt #C2C0CB.
+ * Selection is communicated via color + weight; periwinkle is reserved
+ * for in-content brand accents elsewhere.
  */
 export default function TabBar({
   tabs,
@@ -61,8 +60,8 @@ export default function TabBar({
                   aria-hidden
                   className="transition-all duration-fast ease-out"
                   style={{
-                    color: isActive ? "#9CA5FF" : "#C2C0CB",
-                    opacity: isActive ? 1 : 0.6,
+                    color: isActive ? "#252630" : "#C2C0CB",
+                    opacity: 1,
                   }}
                 >
                   <Icon
@@ -75,7 +74,7 @@ export default function TabBar({
                 <span
                   className="text-[11px] leading-none transition-colors duration-fast ease-out"
                   style={{
-                    color: isActive ? "#9CA5FF" : "#C2C0CB",
+                    color: isActive ? "#252630" : "#C2C0CB",
                     fontWeight: isActive ? 700 : 500,
                   }}
                 >
