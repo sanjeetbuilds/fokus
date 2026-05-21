@@ -2,9 +2,8 @@
 
 /**
  * App header: "Fokus" wordmark on the left, clean right edge. Sits
- * flush at the top of every main tab. The Menu button (which routed
- * to the deleted /profile/settings) is gone — there are only the
- * four tabs in the bottom nav.
+ * flush at the top of every main tab. The bottom tab bar (Today,
+ * Library, Track, Profile) is the only navigation surface.
  */
 export default function AppHeader() {
   return (
