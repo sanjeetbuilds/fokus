@@ -25,7 +25,7 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Menu,
+
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -301,15 +301,8 @@ function Section3Today() {
 
         <PhoneFrame>
           {/* Top bar */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center">
             <WordmarkSmall />
-            <button
-              type="button"
-              aria-label="Menu"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-secondary hover:text-ink"
-            >
-              <Menu size={20} strokeWidth={1.75} aria-hidden />
-            </button>
           </div>
 
           {/* Body */}
