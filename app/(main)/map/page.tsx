@@ -1,75 +1,61 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import SkillIcon from "@/components/SkillIcon";
 import AppHeader from "@/components/layout/AppHeader";
-import SessionCard from "@/components/map/SessionCard";
-import SkillFrequencyTiles from "@/components/track/SkillFrequencyTiles";
-import { db, getChild } from "@/lib/db";
-import { useAppStore } from "@/lib/store/useAppStore";
-import type { Child, Session } from "@/types";
+import { getActivityById } from "@/lib/content/activities";
+import {
+  listActivityLog,
+  type ActivityLogRow,
+} from "@/lib/supabase/queries";
+import { useChild } from "@/lib/use-child";
 
 /**
- * Round-5 Track surface — replaces the previous Compass mockup and
- * honors SPEC §2: no scores, no goals, no progress bars on the child.
+ * Track — parent-facing record of what they've done with their child.
  *
- * Layout:
- *   header → "Track." title → subtitle naming the active child →
- *   SkillFrequencyTiles (top-4 this week, expand to all 8) →
- *   "Recent moments" eyebrow → up to 5 SessionCards
+ *   "What we've done together."                  Inter 28 / 800 ink
+ *   "With {name}."                               Inter 14 / 400 muted
  *
- * The "Nurture today", "Growth this month / Goal 12", weekly-hour goal,
- * and milestones-journal sections from the prior pass are intentionally
- * gone. Today is for the daily moment; Track is for the parent's memory.
+ *   [for each completed activity, most recent first]
+ *     [sm SkillIcon]  Activity title             15 / 800 ink
+ *                     date (right-aligned)       13 / 400 muted
+ *     ┊ optional italic note quote underneath    14 / muted, indented
+ *
+ *   Empty state:
+ *     "Nothing yet. Start with today's activity."   + link to /today
+ *
+ * Per SPEC §2: no percentages, no streak counters, no skill mastery
+ * levels. Just the list.
+ *
+ * Pulls from Supabase public.activity_log via listActivityLog().
+ * Activity title and skill are resolved from the static library by
+ * activity_id (the IDs are stable; the DB row only stores the ID).
  */
 export default function TrackPage() {
-  const activeChildId = useAppStore((s) => s.activeChildId);
-  const [child, setChild] = useState<Child | null>(null);
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { child, loading: childLoading } = useChild();
+  const [rows, setRows] = useState<ActivityLogRow[]>([]);
+  const [rowsLoading, setRowsLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    if (!activeChildId) {
-      setLoaded(true);
-      return;
-    }
     void (async () => {
       try {
-        const [c, all] = await Promise.all([
-          getChild(activeChildId),
-          db.sessions.where("childId").equals(activeChildId).toArray(),
-        ]);
-        if (cancelled) return;
-        setChild(c ?? null);
-        setSessions(all);
+        const r = await listActivityLog();
+        if (!cancelled) setRows(r);
       } catch (err) {
-        console.error("[/track] load:", err);
+        console.error("[/map] listActivityLog:", err);
       } finally {
-        if (!cancelled) setLoaded(true);
+        if (!cancelled) setRowsLoading(false);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [activeChildId]);
+  }, []);
 
-  const recent = useMemo(
-    () =>
-      [...sessions]
-        .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
-        .slice(0, 5),
-    [sessions],
-  );
-
-  if (!loaded) {
-    return (
-      <main className="flex min-h-[100svh] items-center justify-center px-5">
-        <p className="text-footnote text-ink-tertiary">Loading…</p>
-      </main>
-    );
-  }
-
+  const loaded = !childLoading && !rowsLoading;
   const childName = child?.name ?? "your child";
 
   return (
@@ -78,50 +64,38 @@ export default function TrackPage() {
 
       <div className="px-6 pt-1">
         <h1
-          className="text-[50px] font-extrabold text-ink"
+          className="text-ink"
           style={{
-            lineHeight: 1.05,
-            letterSpacing: "-0.035em",
             paddingTop: 6,
-            marginBottom: 8,
+            fontSize: 28,
+            fontWeight: 800,
+            lineHeight: 1.1,
+            letterSpacing: "-0.02em",
+            marginBottom: 4,
           }}
         >
-          Track.
+          What we&apos;ve done together.
         </h1>
         <p
-          className="text-[14px] text-ink-tertiary"
-          style={{ marginBottom: 24 }}
+          style={{
+            fontSize: 14,
+            color: "#6B6B6B",
+            lineHeight: 1.5,
+            marginBottom: 28,
+          }}
         >
-          What you&apos;ve done with {childName} so far.
+          With {childName}.
         </p>
 
-        <SkillFrequencyTiles sessions={sessions} />
-
-        <p
-          className="mb-3 mt-2 text-[12px] font-extrabold uppercase"
-          style={{ color: "var(--ink-tertiary)", letterSpacing: "0.06em" }}
-        >
-          Recent moments
-        </p>
-
-        {recent.length === 0 ? (
-          <div
-            className="rounded-[20px] border-[1.5px] border-dashed p-5 text-center"
-            style={{ borderColor: "var(--ink-quaternary)" }}
-          >
-            <p
-              className="text-[14px] text-ink-secondary"
-              style={{ lineHeight: 1.55 }}
-            >
-              Your first moments are still ahead. Log one from Today and it
-              will land here.
-            </p>
-          </div>
+        {!loaded ? (
+          <p className="text-footnote text-ink-tertiary">Loading…</p>
+        ) : rows.length === 0 ? (
+          <EmptyState />
         ) : (
-          <ul className="flex flex-col gap-3">
-            {recent.map((s) => (
-              <li key={s.id}>
-                <SessionCard session={s} />
+          <ul className="flex flex-col gap-5">
+            {rows.map((row) => (
+              <li key={row.id}>
+                <ActivityLogItem row={row} />
               </li>
             ))}
           </ul>
@@ -129,4 +103,130 @@ export default function TrackPage() {
       </div>
     </main>
   );
+}
+
+function ActivityLogItem({ row }: { row: ActivityLogRow }) {
+  const activity = useMemo(
+    () => getActivityById(row.activity_id) ?? null,
+    [row.activity_id],
+  );
+
+  if (!activity) {
+    // Unknown activity_id (library row removed, etc). Render a quiet
+    // fallback so the row doesn't disappear from the parent's history.
+    return (
+      <div className="flex items-start gap-3">
+        <span
+          aria-hidden
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 14,
+            background: "#EEEEEE",
+            flexShrink: 0,
+          }}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline justify-between gap-2">
+            <p
+              style={{
+                fontSize: 15,
+                fontWeight: 800,
+                color: "#1A1A1A",
+                letterSpacing: "-0.005em",
+              }}
+            >
+              Unknown activity
+            </p>
+            <p style={{ fontSize: 13, color: "#6B6B6B" }}>
+              {formatDate(row.completed_at)}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-start gap-3">
+      <SkillIcon
+        skillId={activity.skill}
+        size="sm"
+        iconName={activity.iconName}
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-3">
+          <p
+            style={{
+              fontSize: 15,
+              fontWeight: 800,
+              color: "#1A1A1A",
+              letterSpacing: "-0.005em",
+              lineHeight: 1.35,
+            }}
+          >
+            {activity.title}
+          </p>
+          <p
+            style={{
+              fontSize: 13,
+              color: "#6B6B6B",
+              flexShrink: 0,
+              lineHeight: 1.4,
+            }}
+          >
+            {formatDate(row.completed_at)}
+          </p>
+        </div>
+        {row.parent_note ? (
+          <p
+            style={{
+              marginTop: 8,
+              paddingLeft: 12,
+              borderLeft: "2px solid #EEEEEE",
+              fontSize: 14,
+              fontStyle: "italic",
+              color: "#6B6B6B",
+              lineHeight: 1.55,
+            }}
+          >
+            {row.parent_note}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center text-center" style={{ marginTop: 60 }}>
+      <p style={{ fontSize: 15, color: "#6B6B6B", lineHeight: 1.5 }}>
+        Nothing yet. Start with today&apos;s activity.
+      </p>
+      <Link
+        href="/today"
+        className="mt-3 inline-block"
+        style={{
+          fontSize: 14,
+          fontWeight: 800,
+          color: "#1A1A1A",
+          letterSpacing: "-0.005em",
+        }}
+      >
+        Go to Today →
+      </Link>
+    </div>
+  );
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const now = new Date();
+  const sameYear = d.getFullYear() === now.getFullYear();
+  return d.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: sameYear ? undefined : "numeric",
+  });
 }
