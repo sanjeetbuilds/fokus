@@ -311,7 +311,7 @@ function RecentRow({ row }: { row: ActivityLogRow }) {
             width: 40,
             height: 40,
             borderRadius: 14,
-            background: "#EEEEEE",
+            background: "#E5E3DA",
             flexShrink: 0,
           }}
         />
@@ -342,7 +342,7 @@ function RecentRow({ row }: { row: ActivityLogRow }) {
             style={{
               marginTop: 8,
               paddingLeft: 12,
-              borderLeft: "1px solid #EEEEEE",
+              borderLeft: "1px solid #E5E3DA",
               fontSize: 14,
               fontStyle: "italic",
               color: "#6B6B6B",

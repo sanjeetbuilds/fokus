@@ -80,7 +80,7 @@ export default function SignInPage() {
             className="mb-6 rounded-[10px] px-4 py-3"
             style={{
               background: "#F7F7F5",
-              border: "1px solid #EEEEEE",
+              border: "1px solid #E5E3DA",
               fontSize: 14,
               color: "#1A1A1A",
               lineHeight: 1.45,
@@ -161,7 +161,7 @@ export default function SignInPage() {
                 autoComplete="email"
                 autoFocus
                 className="h-[50px] w-full rounded-[6px] border bg-bg-elevated px-4 text-[18px] text-ink"
-                style={{ borderColor: "#EEEEEE", borderWidth: 1 }}
+                style={{ borderColor: "#E5E3DA", borderWidth: 1 }}
               />
               {errorMessage ? (
                 <p

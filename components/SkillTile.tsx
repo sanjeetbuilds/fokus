@@ -61,7 +61,7 @@ export default function SkillTile({
         gap: 12,
         padding: 16,
         background: "#FFFFFF",
-        border: "0.5px solid #EEEEEE",
+        border: "0.5px solid #E5E3DA",
         borderRadius: 16,
         textAlign: "left",
         cursor: "pointer",

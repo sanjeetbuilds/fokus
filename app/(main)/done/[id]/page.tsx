@@ -199,7 +199,7 @@ export default function CompletionPage() {
           style={{
             minHeight: 100,
             background: "#FFFFFF",
-            border: "1px solid #EEEEEE",
+            border: "1px solid #E5E3DA",
             lineHeight: 1.6,
           }}
         />

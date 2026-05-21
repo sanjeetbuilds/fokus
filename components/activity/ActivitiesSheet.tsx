@@ -190,7 +190,7 @@ function ActivitiesSheetBody({
               borderBottom:
                 i === tried.length - 1 && !hasDivider
                   ? undefined
-                  : "1px solid #EEEEEE",
+                  : "1px solid #E5E3DA",
             }}
           >
             <ActivityRow
@@ -207,7 +207,7 @@ function ActivitiesSheetBody({
             key={a.id}
             style={{
               borderBottom:
-                i === untried.length - 1 ? undefined : "1px solid #EEEEEE",
+                i === untried.length - 1 ? undefined : "1px solid #E5E3DA",
             }}
           >
             <ActivityRow
@@ -298,7 +298,7 @@ function NotYetTriedDivider() {
         padding: "16px 0 12px",
       }}
     >
-      <span style={{ flex: 1, height: 0.5, background: "#EEEEEE" }} />
+      <span style={{ flex: 1, height: 0.5, background: "#E5E3DA" }} />
       <span
         style={{
           padding: "0 12px",
@@ -311,7 +311,7 @@ function NotYetTriedDivider() {
       >
         Not yet tried
       </span>
-      <span style={{ flex: 1, height: 0.5, background: "#EEEEEE" }} />
+      <span style={{ flex: 1, height: 0.5, background: "#E5E3DA" }} />
     </li>
   );
 }

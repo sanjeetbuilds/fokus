@@ -1,63 +1,64 @@
 /* ============================================================
    Fokus design tokens.
 
-   - 8 skill colors live in lib/content/skills.ts and on the tailwind
-     `skill.*` palette — never re-declare them here.
-   - Background is pure white #FFFFFF.
-   - Brand ink #1A1A1A drives headlines, body, active tab pill.
-   - Two greys for muted (#6B6B6B) and hint (#8A8A8A) text.
-   - Hair border #EEEEEE for hairlines.
-   - Fill subtle #F7F7F5 for input fills + rare surface tints.
+   Rebased against design/Fokus.html (the round-4 reference the
+   founder asked us to restore). See styles/design-tokens.md for the
+   full extracted system.
 
-   The legacy accent / amber / coral / green / lav / mulberry vars
-   below point at the new skill colors so the existing call sites keep
-   building while they are migrated to the skill.* palette.
+   - Page bg stays #FFFFFF (founder explicitly approved white).
+   - Reference cream #E9E6DC lives on as the warm border tone
+     #E5E3DA via --line. Cards, inputs, pills now pull from that
+     warm beige instead of the colder #EEEEEE we had been using.
+   - Ink #1A1A1A (founder-set, very close to reference #252630).
+   - Periwinkle #9CA5FF is the brand accent — used on the active
+     bottom-tab label and small text accents. CTAs are ink, not
+     periwinkle (the reference also uses dark CTAs).
+   - 8-skill palette is preserved from the cleanup pass.
    ============================================================ */
 
 :root {
   /* ---- Surfaces ---- */
   --bg: #FFFFFF;
   --bg-elevated: #FFFFFF;
-  --bg-input: #F7F7F5;
-  --bg-alt: #F7F7F5;
+  --bg-input: #FFFFFF;
+  --bg-alt: #E5E3DA;       /* warm pill / fill */
   --bg-overlay: rgba(26, 26, 26, 0.55);
 
   /* ---- Ink ---- */
   --ink: #1A1A1A;
-  --ink-secondary: #6B6B6B;
-  --ink-tertiary: #8A8A8A;
+  --ink-secondary: #8E8D9B; /* reference --gray */
+  --ink-tertiary: #C2C0CB;  /* reference --gray-lt */
   --ink-quaternary: #C8C8C8;
 
-  --line: #EEEEEE;
-  --line-subtle: #F2F2F2;
+  --line: #E5E3DA;          /* reference --gray-bd, warm beige */
+  --line-subtle: #EFEDE4;   /* lighter beige, used in textarea bg */
 
-  /* ---- Skill-driven accent (Language confidence: periwinkle) ---- */
-  --accent: #A8A4E8;
-  --accent-pressed: #8E89D6;
-  --accent-bg: #F1F0FC;
-  --accent-deep: #6B5B95;
-  --accent-mid: #A8A4E8;
-  --accent-soft: #C9C6F0;
-  --accent-pale: #F1F0FC;
+  /* ---- Brand accent — periwinkle ---- */
+  --accent: #9CA5FF;        /* reference --purple */
+  --accent-pressed: #7C86F0;
+  --accent-bg: #EEF0FF;
+  --accent-deep: #6F77E0;
+  --accent-mid: #9CA5FF;
+  --accent-soft: #B5BAFF;
+  --accent-pale: #EEF0FF;
 
-  /* ---- Legacy compat aliases — mapped to skill hexes ---- */
-  --amber: #F2C94C;
-  --amber-bg: #FDF4D6;
+  /* ---- Reference's other brand hues (stat-card colors etc) ---- */
+  --amber: #F4C84A;
+  --amber-bg: #FEF8E7;
   --amber-text: #8A6B12;
 
-  --lav: #A8A4E8;
-  --lav-bg: #F1F0FC;
+  --lav: #C5BFEF;
+  --lav-bg: #EEF0FF;
+  --lt-purple: #B5BAFF;
 
-  --coral: #E8806B;
-  --coral-bg: #FBE5DF;
+  --coral: #E8836A;
+  --coral-bg: #FCEEE9;
   --coral-text: #B85738;
-  --coral-mid: #E8806B;
+  --coral-mid: #E8836A;
 
-  --green: #7DB87A;
-  --green-bg: #E4F3E3;
-  --green-text: #3F7A3D;
-
-  --lt-purple: #C9C6F0;
+  --green: #5DC87A;
+  --green-bg: #E8F9EE;
+  --green-text: #2A8A4A;
 
   --warm-text: var(--amber-text);
   --warm-mid: var(--amber);
@@ -71,20 +72,21 @@
   --danger: var(--coral-text);
 
   /* ---- Typography ---- */
-  --font-sans: var(--font-inter), sans-serif;
+  --font-sans: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
 
-  --text-display: 3.125rem;     /* 50px — pg-title */
-  --text-title-1: 2.375rem;     /* 38px — obs-h, setup-h */
-  --text-title-2: 1.75rem;      /* 28px — child-name, stat2 */
-  --text-title-3: 1.375rem;     /* 22px — sec-h, sc-val */
-  --text-headline: 1.125rem;    /* 18px — di-name, brand */
-  --text-body: 1rem;            /* 16px — f-inp, cta, begin */
-  --text-body-large: 1.0625rem; /* 17px */
-  --text-callout: 0.9375rem;    /* 15px — di-icon labels */
-  --text-subhead: 0.875rem;     /* 14px — generic body */
-  --text-footnote: 0.8125rem;   /* 13px — pt, pill, menu-btn */
-  --text-caption: 0.75rem;      /* 12px — sc-lbl, mj-sub */
-  --text-micro: 0.6875rem;      /* 11px — f-lbl, sc-badge, nb-lbl */
+  /* Reference type scale */
+  --text-display: 3.125rem;    /* 50px — pg-title */
+  --text-title-1: 2.375rem;    /* 38px — obs-h, setup-h */
+  --text-title-2: 1.75rem;     /* 28px — child-name, stat2 */
+  --text-title-3: 1.375rem;    /* 22px — sec-h, sc-val */
+  --text-headline: 1.125rem;   /* 18px — di-name, brand */
+  --text-body: 1rem;           /* 16px — f-inp, cta */
+  --text-body-large: 1.0625rem;/* 17px */
+  --text-callout: 0.9375rem;   /* 15px */
+  --text-subhead: 0.875rem;    /* 14px */
+  --text-footnote: 0.8125rem;  /* 13px — pill, sec-act, di-time */
+  --text-caption: 0.75rem;     /* 12px — sc-lbl */
+  --text-micro: 0.6875rem;     /* 11px — f-lbl, sp-eyebrow */
 
   /* ---- Spacing ---- */
   --space-1: 4px;
@@ -101,10 +103,10 @@
 
   /* ---- Radii ---- */
   --radius-sm: 12px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 22px;
-  --radius-2xl: 27px;
+  --radius-md: 14px;            /* inputs */
+  --radius-lg: 20px;            /* cards */
+  --radius-xl: 22px;            /* stat cards */
+  --radius-2xl: 27px;           /* primary CTAs (54-tall pill) */
   --radius-full: 9999px;
 
   /* ---- Shadows ---- */

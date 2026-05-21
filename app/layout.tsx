@@ -1,15 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthGate } from "@/components/shared/AuthGate";
 import { OnboardingGate } from "@/components/shared/OnboardingGate";
 import SplashGate from "@/components/shared/SplashGate";
 import { ToastProvider } from "@/components/ui/Toast";
 
-const inter = Inter({
+const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "700", "800"],
-  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -56,7 +56,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`h-full ${inter.variable}`}
+      className={`h-full ${sans.variable}`}
     >
       <body className="min-h-full bg-bg text-ink font-sans antialiased">
         <ToastProvider>

@@ -153,7 +153,7 @@ function ActivityDetailBody() {
       <div
         className="fixed bottom-0 left-0 right-0 z-10 px-5 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3"
         style={{
-          borderTop: "1px solid #EEEEEE",
+          borderTop: "1px solid #E5E3DA",
           background: "rgba(255,255,255,0.94)",
           backdropFilter: "saturate(180%) blur(12px)",
           WebkitBackdropFilter: "saturate(180%) blur(12px)",
@@ -228,7 +228,7 @@ function Divider() {
         marginTop: 28,
         marginBottom: 28,
         border: 0,
-        borderTop: "1px solid #EEEEEE",
+        borderTop: "1px solid #E5E3DA",
       }}
     />
   );
@@ -294,7 +294,7 @@ function ExampleToggle({
         style={{
           padding: "8px 14px",
           borderRadius: 999,
-          border: "1px solid #EEEEEE",
+          border: "1px solid #E5E3DA",
           background: "#FFFFFF",
           color: "#6B6B6B",
           fontSize: 13,
@@ -327,7 +327,7 @@ function ExampleBody({
       style={{
         marginTop: 12,
         paddingLeft: 16,
-        borderLeft: "2px solid #EEEEEE",
+        borderLeft: "2px solid #E5E3DA",
       }}
     >
       {example.setup ? (

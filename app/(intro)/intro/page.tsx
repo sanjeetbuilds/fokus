@@ -211,7 +211,7 @@ function Slide0() {
             y="80"
             textAnchor="middle"
             fontSize="7.5"
-            fontFamily="var(--font-inter)"
+            fontFamily="var(--font-jakarta)"
             fontWeight="700"
             fill="var(--ink-tertiary)"
           >

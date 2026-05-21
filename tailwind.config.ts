@@ -31,7 +31,7 @@ const config: Config = {
         // New neutral aliases (preferred for new code).
         muted: "#6B6B6B",
         hint: "#8A8A8A",
-        hair: "#EEEEEE",
+        hair: "#E5E3DA",
         fill: "#F7F7F5",
 
         bg: {
@@ -93,20 +93,20 @@ const config: Config = {
         danger: "var(--danger)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
+        sans: ["var(--font-jakarta)", "'Plus Jakarta Sans'", "sans-serif"],
       },
       fontSize: {
-        display: ["var(--text-display)", { lineHeight: "1.05", letterSpacing: "-0.01em", fontWeight: "700" }],
-        "title-1": ["var(--text-title-1)", { lineHeight: "1.1", letterSpacing: "-0.01em", fontWeight: "700" }],
-        "title-2": ["var(--text-title-2)", { lineHeight: "1.15", letterSpacing: "-0.01em", fontWeight: "700" }],
-        "title-3": ["var(--text-title-3)", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "700" }],
-        headline: ["var(--text-headline)", { lineHeight: "1.3", fontWeight: "700" }],
+        display: ["var(--text-display)", { lineHeight: "1.05", letterSpacing: "-0.035em", fontWeight: "800" }],
+        "title-1": ["var(--text-title-1)", { lineHeight: "1.1", letterSpacing: "-0.03em", fontWeight: "800" }],
+        "title-2": ["var(--text-title-2)", { lineHeight: "1.15", letterSpacing: "-0.025em", fontWeight: "800" }],
+        "title-3": ["var(--text-title-3)", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+        headline: ["var(--text-headline)", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "700" }],
         body: ["var(--text-body)", { lineHeight: "1.5", fontWeight: "400" }],
         "body-large": ["var(--text-body-large)", { lineHeight: "1.55", fontWeight: "400" }],
-        callout: ["var(--text-callout)", { lineHeight: "1.5", fontWeight: "400" }],
+        callout: ["var(--text-callout)", { lineHeight: "1.5", fontWeight: "500" }],
         subhead: ["var(--text-subhead)", { lineHeight: "1.5", fontWeight: "400" }],
-        footnote: ["var(--text-footnote)", { lineHeight: "1.5", fontWeight: "400" }],
-        caption: ["var(--text-caption)", { lineHeight: "1.4", fontWeight: "400" }],
+        footnote: ["var(--text-footnote)", { lineHeight: "1.5", fontWeight: "600" }],
+        caption: ["var(--text-caption)", { lineHeight: "1.4", fontWeight: "600" }],
         micro: ["var(--text-micro)", { lineHeight: "1.4", letterSpacing: "0.05em", fontWeight: "700" }],
       },
       spacing: {

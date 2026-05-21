@@ -15,7 +15,7 @@
   body {
     background-color: #FFFFFF;
     color: #1A1A1A;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
     font-size: var(--text-body);
     font-weight: 400;
     line-height: 1.5;
@@ -24,8 +24,8 @@
   h1,
   h2,
   h3 {
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     line-height: 1.1;
   }
 }

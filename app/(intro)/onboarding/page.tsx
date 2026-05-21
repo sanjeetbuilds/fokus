@@ -290,7 +290,7 @@ function PronounsStep({
               className="rounded-[12px] p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               style={{
                 background: on ? "#1A1A1A" : "#FFFFFF",
-                border: `1px solid ${on ? "#1A1A1A" : "#EEEEEE"}`,
+                border: `1px solid ${on ? "#1A1A1A" : "#E5E3DA"}`,
                 color: on ? "#FFFFFF" : "#1A1A1A",
               }}
             >

@@ -369,7 +369,7 @@ function Divider() {
         marginTop: 28,
         marginBottom: 28,
         border: 0,
-        borderTop: "1px solid #EEEEEE",
+        borderTop: "1px solid #E5E3DA",
       }}
     />
   );
@@ -489,7 +489,7 @@ function EditDetailsForm({
           className="h-[50px] w-full rounded-[6px] px-4 text-[16px] text-ink"
           style={{
             background: "#FFFFFF",
-            border: "1px solid #EEEEEE",
+            border: "1px solid #E5E3DA",
           }}
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -508,7 +508,7 @@ function EditDetailsForm({
           className="h-[50px] w-full rounded-[6px] px-4 text-[16px] text-ink"
           style={{
             background: "#FFFFFF",
-            border: "1px solid #EEEEEE",
+            border: "1px solid #E5E3DA",
           }}
         />
       </Field>
@@ -527,7 +527,7 @@ function EditDetailsForm({
                 className="rounded-[10px] px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 style={{
                   background: on ? "#1A1A1A" : "#FFFFFF",
-                  border: `1px solid ${on ? "#1A1A1A" : "#EEEEEE"}`,
+                  border: `1px solid ${on ? "#1A1A1A" : "#E5E3DA"}`,
                   color: on ? "#FFFFFF" : "#1A1A1A",
                   fontSize: 15,
                   fontWeight: 700,

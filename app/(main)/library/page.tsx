@@ -161,7 +161,7 @@ function Tabs({
         display: "flex",
         alignItems: "flex-end",
         gap: 24,
-        borderBottom: "0.5px solid #EEEEEE",
+        borderBottom: "0.5px solid #E5E3DA",
       }}
     >
       <TabButton
