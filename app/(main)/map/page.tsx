@@ -57,12 +57,12 @@ export default function TrackPage() {
         <h1
           style={{
             paddingTop: 6,
-            fontSize: 50,
+            fontSize: 38,
             fontWeight: 800,
-            color: "#1A1A1A",
-            letterSpacing: "-0.035em",
+            color: "#252630",
+            letterSpacing: "-0.025em",
             lineHeight: 1.05,
-            marginBottom: 6,
+            marginBottom: 8,
           }}
         >
           What we&apos;ve
@@ -72,7 +72,7 @@ export default function TrackPage() {
         <p
           style={{
             fontSize: 14,
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             lineHeight: 1.5,
           }}
         >

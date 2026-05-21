@@ -91,10 +91,10 @@ function LibraryBody() {
         <h1
           style={{
             paddingTop: 6,
-            fontSize: 50,
+            fontSize: 38,
             fontWeight: 800,
-            color: "#1A1A1A",
-            letterSpacing: "-0.035em",
+            color: "#252630",
+            letterSpacing: "-0.025em",
             lineHeight: 1.05,
             marginBottom: 22,
           }}
@@ -213,13 +213,13 @@ function TabButton({
         style={{
           fontSize: 15,
           fontWeight: active ? 700 : 400,
-          color: active ? "#1A1A1A" : "#6B6B6B",
+          color: active ? "#252630" : "#8E8D9B",
           letterSpacing: "-0.005em",
         }}
       >
         {label}
       </span>
-      <span style={{ fontSize: 13, color: "#8A8A8A" }}>{count}</span>
+      <span style={{ fontSize: 13, color: "#C2C0CB" }}>{count}</span>
       {active ? (
         <span
           aria-hidden
@@ -229,7 +229,7 @@ function TabButton({
             right: 0,
             bottom: -1,
             height: 2,
-            background: "#1A1A1A",
+            background: "#252630",
             borderRadius: 1,
           }}
         />
@@ -250,7 +250,7 @@ function EmptyTried() {
       <p
         style={{
           fontSize: 14,
-          color: "#6B6B6B",
+          color: "#8E8D9B",
           textAlign: "center",
           lineHeight: 1.5,
           maxWidth: 280,

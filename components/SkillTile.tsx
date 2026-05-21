@@ -59,10 +59,10 @@ export default function SkillTile({
         flexDirection: "column",
         alignItems: "flex-start",
         gap: 12,
-        padding: 16,
+        padding: 18,
         background: "#FFFFFF",
         border: "1.5px solid #E5E3DA",
-        borderRadius: 20,
+        borderRadius: 22,
         textAlign: "left",
         cursor: "pointer",
       }}
@@ -74,7 +74,7 @@ export default function SkillTile({
           style={{
             fontSize: 15,
             fontWeight: 700,
-            color: "#1A1A1A",
+            color: "#252630",
             letterSpacing: "-0.005em",
             lineHeight: 1.3,
           }}
@@ -85,7 +85,7 @@ export default function SkillTile({
           style={{
             fontSize: 13,
             fontWeight: 400,
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             lineHeight: 1.4,
           }}
         >

@@ -20,11 +20,8 @@ export interface TodayActivityCardProps {
  *   3. Tagline (1 sentence, ≤12 words)
  *   4. Start CTA pill
  *
- * Card background uses the neutral fill #F7F7F5 against the white page
- * so all 8 skill colors carry the same visual weight in the card chrome.
- *
- * Skill-name + CTA weights come in at 800 instead of the T5-spec 500 to
- * respect the global "Inter 400 / 800 only" rule established in T1.
+ * Reference .dcard styling — dashed border, white surface — distinguishes
+ * today's prompt from the solid wcard data tiles used elsewhere.
  */
 export default function TodayActivityCard({
   activity,
@@ -36,8 +33,9 @@ export default function TodayActivityCard({
     <article
       className="w-full"
       style={{
-        background: "#F7F7F5",
-        borderRadius: 24,
+        background: "#FFFFFF",
+        border: "1.5px dashed #C2C0CB",
+        borderRadius: 22,
         padding: 24,
       }}
     >
@@ -52,7 +50,7 @@ export default function TodayActivityCard({
           style={{
             fontSize: 14,
             fontWeight: 700,
-            color: "#6B6B6B",
+            color: "#252630",
             letterSpacing: "-0.005em",
           }}
         >
@@ -62,7 +60,7 @@ export default function TodayActivityCard({
         <span
           style={{
             fontSize: 14,
-            color: "#8A8A8A",
+            color: "#8E8D9B",
           }}
         >
           {activity.duration} min
@@ -75,7 +73,7 @@ export default function TodayActivityCard({
           marginTop: 20,
           fontSize: 30,
           fontWeight: 800,
-          color: "#1A1A1A",
+          color: "#252630",
           letterSpacing: "-0.025em",
           lineHeight: 1.1,
         }}
@@ -89,8 +87,8 @@ export default function TodayActivityCard({
           marginTop: 12,
           fontSize: 16,
           fontWeight: 400,
-          color: "#6B6B6B",
-          lineHeight: 1.4,
+          color: "#8E8D9B",
+          lineHeight: 1.5,
         }}
       >
         {activity.description}
@@ -102,12 +100,13 @@ export default function TodayActivityCard({
         onClick={onStart}
         className="mt-6 inline-flex items-center gap-2 transition-opacity duration-fast ease-out active:opacity-80"
         style={{
-          background: "#1A1A1A",
+          background: "#252630",
           color: "#FFFFFF",
           padding: "14px 22px",
-          borderRadius: 999,
-          fontSize: 15,
+          borderRadius: 27,
+          fontSize: 16,
           fontWeight: 700,
+          letterSpacing: "-0.01em",
         }}
       >
         Start

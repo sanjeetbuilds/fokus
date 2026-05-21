@@ -138,10 +138,10 @@ export default function TodayPage() {
           className="text-ink"
           style={{
             marginTop: 24,
-            fontSize: 50,
+            fontSize: 38,
             fontWeight: 800,
             lineHeight: 1.05,
-            letterSpacing: "-0.035em",
+            letterSpacing: "-0.025em",
           }}
         >
           Today&apos;s
@@ -272,8 +272,9 @@ function RestDay({ childName }: { childName: string }) {
     <article
       className="w-full"
       style={{
-        background: "#F7F7F5",
-        borderRadius: 24,
+        background: "#FFFFFF",
+        border: "1.5px dashed #C2C0CB",
+        borderRadius: 22,
         padding: 24,
       }}
     >
@@ -281,7 +282,7 @@ function RestDay({ childName }: { childName: string }) {
         style={{
           fontSize: 22,
           fontWeight: 700,
-          color: "#1A1A1A",
+          color: "#252630",
           letterSpacing: "-0.01em",
           lineHeight: 1.2,
         }}
@@ -290,7 +291,7 @@ function RestDay({ childName }: { childName: string }) {
       </p>
       <p
         className="mt-3"
-        style={{ fontSize: 15, color: "#6B6B6B", lineHeight: 1.5 }}
+        style={{ fontSize: 15, color: "#8E8D9B", lineHeight: 1.5 }}
       >
         {childName} has had enough recent practice. We&apos;ll have something
         new tomorrow.
@@ -311,8 +312,9 @@ function DoneForToday({
     <article
       className="w-full"
       style={{
-        background: "#F7F7F5",
-        borderRadius: 24,
+        background: "#FFFFFF",
+        border: "1.5px dashed #C2C0CB",
+        borderRadius: 22,
         padding: 24,
       }}
     >
@@ -320,7 +322,7 @@ function DoneForToday({
         style={{
           fontSize: 22,
           fontWeight: 700,
-          color: "#1A1A1A",
+          color: "#252630",
           letterSpacing: "-0.01em",
           lineHeight: 1.2,
         }}
@@ -329,7 +331,7 @@ function DoneForToday({
       </p>
       <p
         className="mt-3"
-        style={{ fontSize: 15, color: "#6B6B6B", lineHeight: 1.5 }}
+        style={{ fontSize: 15, color: "#8E8D9B", lineHeight: 1.5 }}
       >
         {activity
           ? `${activity.title}, with ${childName}.`
