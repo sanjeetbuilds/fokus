@@ -132,7 +132,15 @@ export default function TodayPage() {
       <AppHeader />
 
       <div className="px-6 pt-2">
-        <HomeHeader child={childRow} />
+        <div
+          style={{
+            background: "#FBFAF7",
+            borderRadius: 16,
+            padding: 16,
+          }}
+        >
+          <HomeHeader child={childRow} />
+        </div>
 
         <h1
           className="text-ink"
@@ -168,6 +176,19 @@ export default function TodayPage() {
             </p>
           )}
         </div>
+
+        <p
+          style={{
+            marginTop: 32,
+            textAlign: "center",
+            fontSize: 14,
+            fontWeight: 300,
+            color: "#8E8D9B",
+            lineHeight: 1.5,
+          }}
+        >
+          One thing a day, with {childName}.
+        </p>
       </div>
 
       <WelcomeModal
@@ -195,7 +216,7 @@ function HomeHeader({ child }: { child: ChildRow }) {
           width: 48,
           height: 48,
           borderRadius: 24,
-          background: child.photo_url ? "transparent" : "#1A1A1A",
+          background: child.photo_url ? "transparent" : "#252630",
           backgroundImage: child.photo_url
             ? `url(${child.photo_url})`
             : undefined,
@@ -217,7 +238,7 @@ function HomeHeader({ child }: { child: ChildRow }) {
           style={{
             fontSize: 20,
             fontWeight: 700,
-            color: "#1A1A1A",
+            color: "#252630",
             lineHeight: 1.2,
             letterSpacing: "-0.01em",
           }}
@@ -227,7 +248,7 @@ function HomeHeader({ child }: { child: ChildRow }) {
         <p
           style={{
             fontSize: 13,
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             lineHeight: 1.4,
             marginTop: 2,
           }}

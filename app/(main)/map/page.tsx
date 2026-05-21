@@ -140,14 +140,14 @@ export default function TrackPage() {
                 <p
                   style={{
                     fontSize: 15,
-                    color: "#6B6B6B",
+                    color: "#8E8D9B",
                     lineHeight: 1.5,
                   }}
                 >
                   Nothing yet.{" "}
                   <Link
                     href="/today"
-                    style={{ color: "#1A1A1A", fontWeight: 700 }}
+                    style={{ color: "#252630", fontWeight: 700 }}
                   >
                     Today screen
                   </Link>{" "}
@@ -350,7 +350,7 @@ function RecentRow({ row }: { row: ActivityLogRow }) {
               borderLeft: "1px solid #E5E3DA",
               fontSize: 14,
               fontStyle: "italic",
-              color: "#6B6B6B",
+              color: "#8E8D9B",
               lineHeight: 1.55,
             }}
           >
@@ -372,14 +372,14 @@ const recentTopRowStyle: React.CSSProperties = {
 const recentTitleStyle: React.CSSProperties = {
   fontSize: 15,
   fontWeight: 700,
-  color: "#1A1A1A",
+  color: "#252630",
   letterSpacing: "-0.005em",
   lineHeight: 1.35,
 };
 
 const recentDateStyle: React.CSSProperties = {
   fontSize: 13,
-  color: "#6B6B6B",
+  color: "#8E8D9B",
   flexShrink: 0,
   lineHeight: 1.4,
 };
@@ -394,7 +394,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 13,
         fontWeight: 700,
-        color: "#8A8A8A",
+        color: "#8E8D9B",
         textTransform: "uppercase",
         letterSpacing: "0.05em",
       }}
