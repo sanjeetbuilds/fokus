@@ -1,347 +1,296 @@
 # Fokus design tokens
 
-Extracted verbatim from `design/Fokus.html` (round-4 reference). This
-is the visual system the founder wants the app to match.
+Extracted from `design/Fokus.html` (round-4 reference), then adjusted
+per founder direction:
+- White page bg (not the reference's cream)
+- Smaller page titles (36-40, not the reference's 50)
+- Surface tint `#FBFAF7` carries the reference's warmth on cards / inputs
+- 8-skill palette mapped onto the reference's smaller color set, with
+  the emotional / creativity coral conflict resolved
 
-> The reference is older than the current code. Where the reference
-> contains a feature/page we have intentionally deleted (Tune today,
-> Menu button, settings page, "Invisible Strengths"/personality
-> profile, "Child's Diary" tabs, emoji activity icons), those are
-> NOT restored. Tokens still apply to the surfaces that remain.
+> The reference is older than the current app. Several features in it
+> were deliberately deleted from the live product (Compass tab,
+> personality markers, "Skills Earned" counters, Milestones Journal,
+> child mood ratings, hardcoded child names, Tune Framework sliders,
+> "Growing Fast!" subtitles). NONE of those are restored. This doc is
+> visual vocabulary only — fonts, colors, card styles, spacing, radii,
+> pill styling, button styling.
 
 ## Fonts
 
-| Family | Source | Weights | Where |
+| Family | Source | Weights | Notes |
 | --- | --- | --- | --- |
-| `Plus Jakarta Sans` | Google Fonts | 300, 400, 500, 600, 700, 800 | Everywhere. Single family. |
+| `Plus Jakarta Sans` | Google Fonts (next/font) | 300, 400, 500, 600, 700, 800 | Single family. The **300** weight is what gives the reference its calm feeling — used for quiet subheads, taglines, footer hints. |
 
-```html
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+```ts
+const sans = Plus_Jakarta_Sans({
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-jakarta",
+});
 ```
 
-Fallback stack: `'Plus Jakarta Sans', sans-serif`.
+Default body letter-spacing: -0.01em (set on html/body in
+`app/globals.css`).
 
-No serif. No icon font. No body-vs-display split — same family throughout.
-
-## Surfaces (color)
-
-| Token | Hex | Use |
-| --- | --- | --- |
-| `--bg` | `#E9E6DC` | Page background. **Founder override: keep `#FFFFFF` instead** of cream. The warm tone is restored only via borders / pill backgrounds. |
-| `--w` | `#FFFFFF` | Card / panel surface |
-| `--dark` | `#252630` | Brand ink. Primary text + primary button bg. **Founder uses `#1A1A1A`** (very close; keep #1A1A1A for consistency with prior pass). |
-
-## Text + lines
+## Colors
 
 | Token | Hex | Use |
 | --- | --- | --- |
-| `--gray` | `#8E8D9B` | Secondary / muted text (captions, hints, time stamps) |
-| `--gray-lt` | `#C2C0CB` | Tertiary text + ghost icons |
-| `--gray-bd` | `#E5E3DA` | Borders + pill backgrounds. **Warm beige.** This replaces the colder `#EEEEEE` we've been using. |
+| `--bg` | `#FFFFFF` | Page background. Founder override (reference: `#E9E6DC`). |
+| `--surface-tint` | `#FBFAF7` | Cards / input fills / Today's header zone. Barely-perceptible warm white that replaces the reference's cream as the "warm surface" while keeping the page white. |
+| `--ink` | `#252630` | Brand ink (reference `--dark`). |
+| `--ink-secondary` | `#8E8D9B` | Secondary text. Captions, hints. (reference `--gray`) |
+| `--ink-tertiary` | `#C2C0CB` | Tertiary text, disabled state. (reference `--gray-lt`) |
+| `--line` | `#E5E3DA` | Hairlines / dividers / card borders / pill bg. (reference `--gray-bd`) |
+| `--accent` | `#9CA5FF` | Brand accent. Active tab, small text accents, focus rings. (reference `--purple`) |
+| `--accent-soft` | `#B5BAFF` | Lighter brand for hover / soft fills. (reference `--lt-purple`) |
+| `--lav` | `#C5BFEF` | Lavender (reference `--lav`) |
+| `--amber` | `#F4C84A` | Amber — used as the Curiosity skill color (reference `--amber`) |
+| `--coral` | `#E8836A` | Coral — used as the Creativity skill color (reference `--coral`) |
+| `--green` | `#5DC87A` | Green — used as the Resilience skill color (reference `--green`) |
 
-## Brand + skill accents
+### Skill palette mapping
 
-| Token | Hex | Use in reference |
-| --- | --- | --- |
-| `--purple` | `#9CA5FF` | Primary brand accent. Bottom-tab active label. `.di-dur` timeline accent. Small text-action color. **Not used for CTA backgrounds in the reference** (CTAs are dark). |
-| `--amber` | `#F4C84A` | Stat-card warm hue |
-| `--lav` | `#C5BFEF` | Stat-card violet hue |
-| `--coral` | `#E8836A` | Stat-card coral hue |
-| `--green` | `#5DC87A` | Stat-card green hue / `.sp-dot` |
-| `--lt-purple` | `#B5BAFF` | Soft lavender |
+The 8-skill palette is REMAPPED onto the reference's smaller color
+set. Two skills (emotional + creativity) both want coral; the conflict
+is resolved by giving emotional a warmer salmon shade.
 
-**8-skill palette** is independent of these and stays as we set it in
-the prior cleanup (`F2C94C / A8A4E8 / E8A4B8 / 6B5B95 / 7DB87A / E8806B / 5FB8B0 / 3D5A80`).
-The reference doesn't define eight skill colors — only the six brand
-accents above — so the current 8-skill palette is preserved.
+| Skill | Previous hex | New hex | Source |
+| --- | --- | --- | --- |
+| Curiosity | `#F2C94C` | **`#F4C84A`** | reference `--amber` |
+| Language confidence | `#A8A4E8` | **`#9CA5FF`** | reference `--purple` |
+| Emotional awareness | `#E8A4B8` | **`#E89070`** | warmer salmon — distinct from creativity |
+| Thinking clarity | `#6B5B95` | `#6B5B95` (kept) | no reference equivalent |
+| Resilience | `#7DB87A` | **`#5DC87A`** | reference `--green` |
+| Creativity | `#E8806B` | **`#E8836A`** | reference `--coral` |
+| Observation | `#5FB8B0` | `#5FB8B0` (kept) | no reference equivalent |
+| Decisiveness | `#3D5A80` | `#3D5A80` (kept) | no reference equivalent |
+
+The emotional/creativity adjustment is a judgment call — flagged so
+the founder can refine. Both reading as "warm orange-pink" is the
+trade-off for losing the dedicated `#E8A4B8` pink we previously had.
 
 ## Type scale
 
-All weights are Plus Jakarta Sans. `letter-spacing` is in em.
-
 | Token | Size | Weight | Tracking | Line | Where |
 | --- | --- | --- | --- | --- | --- |
-| `.pg-title` | 50px | 800 | -0.035em | 1.05 | Page title (Today's Focus, Activity Library, etc) |
-| `.obs-h` | 38px | 800 | -0.03em | 1.1 | Onboarding slide headline |
-| `.obs-h.sm` | 30px | 800 | -0.03em | 1.15 | Onboarding headline, dense variant |
-| `.setup-h` | 38px | 800 | -0.03em | — | Setup screen headline |
-| `.sp-logo` | 64px | 800 | -0.05em | 1 | Splash wordmark (one-off, big) |
-| `.brand` | 18px | 800 | -0.02em | — | AppHeader wordmark "Fokus" |
-| `.sec-h` | 22px | 700 | -0.02em | — | Section headline ("Child's Diary", etc) |
-| `.di-name` | 18px | 700 | -0.01em | — | Row title (timeline / list rows) |
-| `.child-name` | 28px | 800 | -0.025em | — | Profile child name |
-| `.sc-val` | 22px | 800 | -0.025em | 1.15 | Stat card big value |
-| `.sc-val.lg` | 26px | 800 | -0.025em | — | Stat card big value (wide variant) |
-| `.stat2-val` | 28px | 800 | -0.025em | 1 | Two-col stat card value |
-| `body` | 16px (default) | 400 | — | 1.5-1.6 | Body |
-| `.obs-b` | 18px | 300 | — | 1.6 | Onboarding body subtitle |
-| `.setup-sub` | 14px | 400 (implied) | — | 1.6 | Setup subtitle (muted) |
-| `.di-dur` | 14px | 600 | — | — | Timeline duration accent (purple) |
-| `.f-lbl` | 11px | 700 | +0.05em uppercase | — | Field label eyebrow |
-| `.sp-eyebrow` | 11px | 700 | +0.12em uppercase | — | Splash eyebrow |
-| `.setup-ey` | 11px | 700 | +0.08em uppercase | — | Setup eyebrow |
-| `.sbar-t` | 15px | 600 | -0.01em | — | Status bar text |
-| `.nb-lbl` | 11px | 500 (700 when active) | — | — | Bottom tab label |
-| `.pill` / `.pt` | 13px | 600 | — | — | Pill / pill-tab text |
-| `.act-card` row title | 16px | 700 | — | — | List-row title (Library) |
-| `.act-tag` | 11px | 700 | — | — | List-row skill tag |
-| `.sc-lbl` | 12px | 600 | — | — | Stat card label (white on color) |
-| `.sc-sub` | 11px | 400 | — | 1.4 | Stat card subtitle |
-
-**This undoes the recent dial-back** from 800→700 and the page-title
-shrink from ~36-40→28-30. Headlines go back to 800 with tight
-negative tracking.
+| Page title | 36-40px | 800 | -0.025em | 1.05 | Today's Focus / Activity Library / What we've done / Profile. **Founder override — reference is 50px which reads too heavy on a white surface.** |
+| Headline (h1) | 38px | 800 | -0.03em | 1.1 | Onboarding, sign-in, activity detail title |
+| Sub-headline | 30px | 800 | -0.025em | 1.1 | Today activity card title |
+| Section header | 22px | 700 | -0.02em | — | "By skill", "Recent" |
+| Eyebrow / small-caps | 11-13px | 700 | +0.06em uppercase | — | "CURRENT MARKERS" / "BY SKILL" / "RECENT" |
+| Card title (in stat card) | 22-26px | 800 | -0.025em | — | On colored stat-card bg, white text |
+| Brand wordmark | 18px | 800 | -0.02em | — | AppHeader "Fokus" |
+| Body | 14-16px | 400 | — | 1.5-1.6 | Body copy |
+| Quiet / footer text | 14px | **300** | — | 1.5 | "One thing a day, with {name}." footer line on Today, intro-slide subtitles |
+| Meta / captions | 12-13px | 400 | — | 1.4 | Dates, durations, micro labels |
 
 ## Spacing
 
-The reference uses ad-hoc px values, no token system. Pragmatically:
-
-- Page padding: 24px horizontal (`.tab { padding: 0 24px 28px }`)
-- Section vertical rhythm: ~20px between blocks
-- Card padding: 18px (`.wcard`, `.dcard`)
-- Stat-card padding: 16px
-- Pill padding: `8px 16px` (or `6px 13px` for `.pill-sm`)
+- Page horizontal padding: 24px
+- Card padding: 18px (reference `.wcard`)
+- Stat card padding: 16-18px
+- Default section vertical rhythm: 24-32px between blocks
 - Input height: 52px
 
-## Radius
+## Radii
 
-| Token / class | Radius | Use |
-| --- | --- | --- |
-| Card | 20px | `.wcard`, `.dcard`, `.mj-card` (18) |
-| Stat card | 22px | `.sc`, `.stat2` |
-| CTA pill | 27px (half-height of 54) | `.cta`, `.begin`, `.ob-btn` |
-| Pill / chip | 20px | `.pill`, `.pt` |
-| Input | 14px | `.f-inp` |
-| Activity icon square | 16px | `.act-ico` (50×50) |
-| Avatar (child, 96) | 48px (round) | `.child-av` |
-| Mood circle | 34px (round 68) | `.mood-circ` |
-| Phone frame chrome | 52px / 48px | `.phone`, `.screen` (one-off) |
+| Use | Radius |
+| --- | --- |
+| Card (default) | **22px** (was 20 last pass; reference is 20 on `.wcard` but bigger reads softer on the white surface) |
+| Stat card | 22px (reference `.sc`) |
+| Input | 14px (reference `.f-inp`) |
+| Pill / chip | 20px (reference `.pill` / `.pt`) |
+| CTA button | 27px (reference `.cta` half of 54-height) |
+| Icon square (SkillIcon) | 16px (reference `.act-ico`) |
+| Avatar 48px | round (24) |
+| Avatar 96px | round (48) |
 
 ## Components
 
 ### Primary CTA
 
 ```
-.cta {
-  width: 100%;
-  height: 54px;
-  border-radius: 27px;
-  background: var(--dark);          /* ink */
-  color: var(--w);                  /* white */
-  font-size: 16px;
-  font-weight: 700;
-}
-```
-
-### Outline CTA (used in onboarding slides on dark)
-
-```
-.ob-btn {
-  width: 100%;
-  height: 54px;
-  border-radius: 27px;
-  background: transparent;
-  border: 1.5px solid rgba(255,255,255,0.22);
-  color: rgba(255,255,255,0.82);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-```
-
-### Card
-
-```
-.wcard {
-  background: var(--w);              /* white */
-  border: 1.5px solid var(--gray-bd); /* warm beige #E5E3DA */
-  border-radius: 20px;
-  padding: 18px;
-}
-.dcard { /* dashed variant — onboarding */
-  border: 1.5px dashed var(--gray-lt);
-}
-```
-
-### Input
-
-```
-.f-inp {
-  width: 100%;
-  height: 52px;
-  border-radius: 14px;
-  border: 1.5px solid var(--gray-bd);
-  background: var(--w);
-  padding: 0 16px;
-  font-size: 16px;
-  color: var(--dark);
-}
-.f-lbl {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--gray);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 7px;
-}
+height: 54px;
+border-radius: 27px;
+background: #252630;
+color: #FFFFFF;
+font: 700 16px Plus Jakarta Sans;
+letter-spacing: -0.01em;
 ```
 
 ### Pill / chip
 
 ```
 .pill {
-  background: var(--gray-bd);
-  color: var(--dark);
-  font-size: 13px;
-  font-weight: 600;
+  background: #E5E3DA;
+  color: #252630;
+  font: 600 13px Plus Jakarta Sans;
   padding: 8px 16px;
   border-radius: 20px;
 }
 .pill.on {
-  background: var(--dark);
-  color: var(--w);
+  background: #252630;
+  color: #FFFFFF;
 }
-.pill-sm { font-size: 12px; padding: 6px 13px; }
 ```
 
-### Pill-tab (filter pills)
+### Pill-tab (filter pills, white surface)
 
 ```
 .pt {
-  background: var(--w);
-  border: 1.5px solid var(--gray-bd);
-  color: var(--dark);
-  font-size: 13px;
-  font-weight: 600;
+  background: #FFFFFF;
+  border: 1.5px solid #E5E3DA;
+  color: #252630;
+  font: 600 13px Plus Jakarta Sans;
   padding: 7px 16px;
   border-radius: 20px;
 }
 .pt.on {
-  background: var(--dark);
-  color: var(--w);
-  border-color: var(--dark);
+  background: #252630;
+  color: #FFFFFF;
+  border-color: #252630;
 }
 ```
 
-### Bottom tab bar
+### Card — solid (wcard)
 
 ```
-.bnav {
-  height: 78px;
-  background: var(--w);
-  border-top: 1px solid var(--gray-bd);
-  display: flex;
-  padding-top: 10px;
+background: #FFFFFF;
+border: 1.5px solid #E5E3DA;
+border-radius: 22px;
+padding: 18px;
+```
+
+### Card — dashed (dcard)
+
+For activity items in the reference. We use the dashed variant on the
+Today activity card to differentiate "today's prompt" from the solid
+data cards on Track.
+
+```
+background: #FFFFFF;
+border: 1.5px dashed #C2C0CB;  /* dashed uses the lighter gray */
+border-radius: 22px;
+padding: 18px;
+```
+
+### Stat card (colored bg, white text)
+
+```
+background: var(--skill-color);  /* one of amber/purple/coral/green/lavender */
+color: #FFFFFF;
+border-radius: 22px;
+padding: 16-18px;
+min-height: ~130px;
+```
+
+Number inside: 36 / 800 / -0.025em / white.
+Label inside: 12 / 600 / rgba(255,255,255,0.92).
+Sub-label inside: 12 / 400 / rgba(255,255,255,0.7).
+
+### Input
+
+```
+height: 52px;
+border-radius: 14px;
+border: 1.5px solid #E5E3DA;
+background: #FBFAF7;          /* surface tint — gives inputs a warm wash */
+padding: 0 16px;
+font: 400 16px Plus Jakarta Sans;
+color: #252630;
+```
+
+Field label above input:
+
+```
+.f-lbl {
+  font: 700 11px Plus Jakarta Sans;
+  color: #8E8D9B;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
 }
-.nb-lbl   { font-size: 11px; font-weight: 500; color: var(--gray-lt); }
-.nb.on .nb-lbl { color: var(--purple); font-weight: 700; } /* periwinkle when active */
-.nb-ico   { opacity: 0.38; }
-.nb.on .nb-ico { opacity: 1; }
 ```
 
-This is the bit that came up in the cleanup pass — active-tab color
-goes from current ink back to `--purple` (#9CA5FF).
+### Activity row (Library `.act-card`)
+
+```
+display: flex;
+align-items: center;
+gap: 14px;
+padding: 14px 0;
+border-bottom: 1px solid #E5E3DA;
+```
+
+- 50×50 icon square on the left, radius 16, skill-color bg
+- Title (16 / 700) + tag-pill row + duration meta, vertical stack
+- 34×34 round chevron button on the right, `#E5E3DA` bg
+
+### Bottom nav
+
+```
+height: 78px;
+background: #FFFFFF;
+border-top: 1px solid #E5E3DA;
+.nb-lbl { font: 500 11px; color: #C2C0CB; }
+.nb.on .nb-lbl { color: #9CA5FF; font-weight: 700; }
+.nb-ico { opacity: 0.38; }
+.nb.on .nb-ico { opacity: 1; color: #9CA5FF; }
+```
 
 ### Section headers
 
 ```
-.sec-h {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--dark);
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
-}
-.sec-row { /* header + action link */
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.sec-act {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--purple);
-}
+font: 700 13px Plus Jakarta Sans;
+text-transform: uppercase;
+letter-spacing: 0.06em;
+color: #8E8D9B;
 ```
 
-### Eyebrow labels (small caps)
+## Today refresh
 
-```
-.f-lbl, .sp-eyebrow, .setup-ey {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--gray) | var(--purple);
-  letter-spacing: 0.05em - 0.12em;
-  text-transform: uppercase;
-}
-```
+Two additions beyond pure visual tokens, both quiet:
 
-### Avatar (child profile)
+1. **Warm header zone** — wrap the avatar + name + age + pronouns row
+   in a soft `#FBFAF7` container with 16-radius and 16-padding. Gives
+   the top of the page a "header zone" instead of floating elements.
 
-```
-.child-av {
-  width: 96px;
-  height: 96px;
-  border-radius: 48px;
-  background: linear-gradient(145deg,#5BC8F5,#29A8E0 60%,#1888C0);
-  font-size: 50px;
-  box-shadow: 0 8px 28px rgba(41,168,224,0.38);
-}
-```
+2. **Quiet footer line** — below the activity card, with 32px top
+   margin, centered:
 
-The blue gradient + drop shadow is **not** restored — current uses an
-ink-circle avatar with first initial. The reference's gradient avatar
-is decorative chrome that doesn't fit the spec-pure direction. Keep
-the current ink avatar but adopt the **size + radius** (96 round).
+   ```
+   One thing a day, with {child name}.
+   font: 300 14px Plus Jakarta Sans;
+   color: #8E8D9B;
+   ```
 
-## Shadows
+   This is the product's tagline as a quiet bottom-edge anchor — no
+   stats, no streaks, no measurement.
 
-The reference is mostly flat. Specific shadows:
+Things explicitly NOT added to Today (the reference has them; we don't):
 
-- `.child-av` — `0 8px 28px rgba(41,168,224,0.38)` (decorative, not restored)
-- `.begin` / `.cta` — none
-- Stat card — none on flat color
-- `.tune-thumb` — `0 2px 8px rgba(0,0,0,0.18)`
-- Phone frame chrome — multiple (one-off, not relevant)
+- Multiple stat tiles (Calm Practice, Movement, Today's Theme, etc).
+- Child's Diary tabs (Today / Yesterday / Week / Month) and the
+  timeline below.
+- Tune-today sliders, time chips, mood chips.
+- Streak counter, "X activities done", "Growing Fast" subtitle.
+- Personality markers, "Skills Earned" tile.
 
-Default: **no shadow on cards**, hair border instead.
+## What's deliberately not restored from the reference
 
-## Transitions
-
-```
-@keyframes fadeIn  { from {opacity:0} to {opacity:1} }
-@keyframes fadeUp  { from {opacity:0; transform:translateY(14px)} to {opacity:1; transform:translateY(0)} }
-@keyframes slideUp { from {transform:translateY(100%)} to {transform:translateY(0)} }
-```
-
-Tab fade-in: `.tab.on { animation: fadeIn 0.25s ease }`.
-Pill / pill-tab hover: `transition: all 0.2s`.
-Drag handle / dots: `transition: all 0.35s`.
-
----
-
-## What we restore vs keep current
-
-| Token | Reference says | We apply |
-| --- | --- | --- |
-| Body font | Plus Jakarta Sans | ✅ restore PJS (drop Inter) |
-| Page bg | `#E9E6DC` cream | ❌ keep `#FFFFFF` per founder direction |
-| Ink | `#252630` | ✅ keep `#1A1A1A` (founder set this in cleanup) |
-| Border | `#E5E3DA` warm beige | ✅ restore warm beige (drop `#EEEEEE`) |
-| Page-title size | 50px | ✅ restore (was dialed back to 28-30 last pass) |
-| Headline weight | 800 | ✅ restore (was dialed back to 700) |
-| Headline tracking | -0.035em / -0.03em / -0.02em | ✅ restore (was flattened to -0.01em) |
-| Card radius | 20 | ✅ restore (was 16) |
-| Card border | 1.5px | ✅ restore (was 1px or 0.5px) |
-| CTA radius | 27 | ✅ restore (was 999 full pill) |
-| CTA color | ink | ✅ unchanged |
-| Active tab color | `--purple` periwinkle | ✅ restore (was ink in cleanup) |
-| 8-skill palette | undefined in reference | ✅ keep current 8-color set |
-| Tune today | sliders | ❌ stays deleted |
-| Menu button | top right | ❌ stays deleted |
-| Personality profile / Invisible Strengths | full tab | ❌ stays deleted |
-| Compass tab | bottom nav | ❌ stays deleted |
-| Child's Diary tabs | Today/Yesterday/Week/Month | ❌ stays deleted |
-| Emoji activity icons | 📖🔮🎨 etc | ❌ Lucide SkillIcon stays |
-| Reflect overlay | full-screen sheet | ❌ replaced by /done/[id] |
-| Tune sliders | energy / mood | ❌ stays deleted |
+| Reference element | Why skipped |
+| --- | --- |
+| Compass tab / "Invisible Strengths" / personality cards | Personality profiling — deleted. |
+| "Skills Earned: 08" counter | Child measurement. |
+| Milestones Journal scroll | Child measurement / personality timeline. |
+| "Growing Fast!" / "Growing Well" subtitles | Child measurement language. |
+| Hardcoded "Leo Harrison" name | Comes from `useChild` now. |
+| Tune Framework sliders (mood / energy) | "Tune today" — deleted. |
+| Page bg `#E9E6DC` cream | Founder kept `#FFFFFF`. |
+| Page title 50px | Founder shrank to 36-40 on white. |
+| Stat cards 4-tile grid on Today | Reintroduces choice surface — one activity per day stays. |
+| Child's Diary tabs | Surfaces engagement metadata about the child. |
+| Reference's emoji activity icons | SkillIcon Lucide glyphs kept. |
+| Blue gradient avatar | Ink-circle-with-initial kept. |
+| Reflect overlay | Replaced by `/done/[id]` route. |
