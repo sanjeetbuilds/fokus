@@ -3,44 +3,51 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { listChildren, getCurrentParent } from "@/lib/db";
-import { useAppStore } from "@/lib/store/useAppStore";
+import { getCurrentChild } from "@/lib/supabase/queries";
 
 /**
- * Routes that don't require an onboarded parent + at least one child.
- * The /dev/* tools stay open so we can inspect state during development.
- */
-const FIRST_RUN_ALLOWED = (path: string): boolean =>
-  path === "/intro" ||
-  path.startsWith("/onboarding") ||
-  path.startsWith("/dev");
-
-const CHILD_ONBOARDING_ALLOWED = (path: string): boolean =>
-  path === "/onboarding" ||
-  path === "/onboarding/child" ||
-  path === "/intro" ||
-  path.startsWith("/dev");
-
-/**
- * Client-side onboarding gate. Reads IndexedDB on mount, then:
- *   - no parent  → push to /intro (unless already inside the intro / onboarding flow)
- *   - parent but no children → push to /onboarding/child (same exception)
- *   - "/" (root) → push to /today if fully onboarded, /intro otherwise
+ * Paths that are reachable WITHOUT a child row. Middleware has already
+ * gated everything below this to require a Supabase session, so the
+ * only branching this gate cares about is whether the parent has
+ * onboarded their child yet.
  *
- * Renders children immediately while it checks; there's an unavoidable flash
- * on first paint because the gate can only run after hydration. That's
- * acceptable for Phase 1; a real fix would need the parent record to be
- * mirrored into a cookie (server-readable) at signup time.
+ *   /onboarding  — the form that creates the row
+ *   /intro       — the optional 3-slide explainer (no auto-redirect to
+ *                  here anymore; left reachable for parents who want
+ *                  to revisit it)
+ *   /sign-in, /auth/*, /api/*, /dev/*  — middleware handles them, but
+ *                  list here so the gate is a no-op if a request slips
+ *                  through with a session
+ */
+function isNoChildAllowed(path: string): boolean {
+  return (
+    path.startsWith("/onboarding") ||
+    path === "/intro" ||
+    path === "/sign-in" ||
+    path.startsWith("/auth") ||
+    path.startsWith("/api") ||
+    path.startsWith("/dev")
+  );
+}
+
+/**
+ * Onboarding gate. Runs only for signed-in users (middleware redirects
+ * everyone else to /sign-in first).
+ *
+ *   no child row    + non-allowed path  →  /onboarding
+ *   has child row   + on /onboarding    →  /today
+ *   has child row   + on /              →  /today
+ *
+ * The Dexie-based version queried two tables (parent + children) with
+ * a "first run" branch that pushed to /intro. With Supabase + auth,
+ * the "parent" identity is the session (auth.uid()) so we only need
+ * the child check.
  */
 export function OnboardingGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const setParent = useAppStore((s) => s.setParent);
-
-  // Track whether we've kicked off a navigation so the next pathname change
-  // doesn't immediately re-trigger the check before the new route mounts.
   const navigatingRef = useRef(false);
-  const [checked, setChecked] = useState(false);
+  const [, setChecked] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,33 +55,11 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     const check = async () => {
       navigatingRef.current = false;
       try {
-        const parent = await getCurrentParent();
+        const child = await getCurrentChild();
         if (cancelled) return;
 
-        if (!parent) {
-          if (!FIRST_RUN_ALLOWED(pathname)) {
-            navigatingRef.current = true;
-            router.replace("/intro");
-          } else if (pathname === "/") {
-            navigatingRef.current = true;
-            router.replace("/intro");
-          }
-          setChecked(true);
-          return;
-        }
-
-        // Mirror the DB parent id into the store so other client code can read
-        // it without an async DB hit.
-        setParent(parent.id);
-
-        const kids = await listChildren(parent.id);
-        if (cancelled) return;
-
-        if (kids.length === 0) {
-          // Round-6: parent exists but no children — the 20-second
-          // single-screen form at /onboarding creates the first child.
-          // The narrative /intro is separate (no form inside it).
-          if (!CHILD_ONBOARDING_ALLOWED(pathname)) {
+        if (!child) {
+          if (!isNoChildAllowed(pathname)) {
             navigatingRef.current = true;
             router.replace("/onboarding");
           }
@@ -82,14 +67,15 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
           return;
         }
 
-        // Fully onboarded. Bounce root → /today; otherwise allow the current path.
-        if (pathname === "/") {
+        // Has child: bounce away from the onboarding form and from
+        // the bare "/" root.
+        if (pathname === "/onboarding" || pathname === "/") {
           navigatingRef.current = true;
           router.replace("/today");
         }
         setChecked(true);
       } catch (err) {
-        console.error("[OnboardingGate] check failed:", err);
+        console.error("[OnboardingGate] child lookup failed:", err);
         if (!cancelled) setChecked(true);
       }
     };
@@ -98,10 +84,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [pathname, router, setParent]);
+  }, [pathname, router]);
 
-  // We render children regardless of `checked`; this avoids a layout-wide
-  // blank screen. Pages that absolutely require an onboarded state should
-  // re-check themselves before doing destructive things.
   return <>{children}</>;
 }
