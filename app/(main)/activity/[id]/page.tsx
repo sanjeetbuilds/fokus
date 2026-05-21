@@ -119,8 +119,8 @@ function ActivityDetailBody() {
   }
 
   return (
-    <main className="mx-auto flex min-h-[100svh] max-w-[680px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+12px)] pb-[calc(env(safe-area-inset-bottom)+128px)]">
-      {/* Top bar: Back left, Wordmark right */}
+    <main className="mx-auto flex min-h-[100svh] max-w-[680px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+12px)] pb-[calc(env(safe-area-inset-bottom)+144px)]">
+      {/* Top bar: Back left, Wordmark (no dot on this page) right */}
       <div className="-mx-2 mb-6 flex h-9 items-center justify-between">
         <button
           type="button"
@@ -131,12 +131,10 @@ function ActivityDetailBody() {
           <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
           <span>Back</span>
         </button>
-        <Wordmark size="sm" />
+        <Wordmark size="sm" noDot />
       </div>
 
       <ActivityHeader activity={activity} />
-
-      <Divider />
 
       <SectionWhatToDo
         activity={activity}
@@ -180,8 +178,17 @@ function ActivityDetailBody() {
 function ActivityHeader({ activity }: { activity: Activity }) {
   const skill = SKILLS[activity.skill];
   const [minAge, maxAge] = activity.ageRange;
+  // 8-digit hex: hex + "14" ≈ 8% alpha wash. Browsers support #RRGGBBAA.
+  const tint = `${skill.color}14`;
   return (
-    <header>
+    <header
+      style={{
+        // Bleed past main's px-5 (20px) so the zone spans full width.
+        margin: "0 -20px 28px -20px",
+        padding: "20px 24px 24px 24px",
+        background: tint,
+      }}
+    >
       <SkillIcon
         skillId={activity.skill}
         size="lg"
@@ -191,11 +198,11 @@ function ActivityHeader({ activity }: { activity: Activity }) {
       <h1
         style={{
           marginTop: 16,
-          fontSize: 38,
-          fontWeight: 800,
+          fontSize: 32,
+          fontWeight: 700,
           color: "#252630",
-          letterSpacing: "-0.03em",
-          lineHeight: 1.1,
+          letterSpacing: "-0.02em",
+          lineHeight: 1.15,
         }}
       >
         {activity.title}
