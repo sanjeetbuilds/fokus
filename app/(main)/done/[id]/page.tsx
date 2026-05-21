@@ -126,8 +126,8 @@ export default function CompletionPage() {
   const activityTitle = activity?.title ?? "That activity";
 
   return (
-    <main className="relative mx-auto flex min-h-[100svh] max-w-[680px] flex-col px-5 pt-[calc(env(safe-area-inset-top)+12px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
-      <div className="-mx-2 flex h-9 items-center">
+    <main className="relative mx-auto flex min-h-[100svh] max-w-[680px] flex-col pt-[calc(env(safe-area-inset-top)+12px)] pb-[calc(env(safe-area-inset-bottom)+32px)]">
+      <div className="-mx-2 flex h-9 items-center px-5">
         <button
           type="button"
           onClick={() => router.replace("/today")}
@@ -138,9 +138,11 @@ export default function CompletionPage() {
         </button>
       </div>
 
+      {/* Top section — grouped icon + Done + subtitle, centred in the
+          upper ~45% of the screen. */}
       <section
-        className="flex flex-col items-center"
-        style={{ marginTop: 64 }}
+        className="flex flex-col items-center px-6"
+        style={{ marginTop: 40 }}
       >
         {activity ? (
           <SkillIcon
@@ -151,9 +153,9 @@ export default function CompletionPage() {
         ) : null}
         <h1
           style={{
-            marginTop: 16,
-            fontSize: 48,
-            fontWeight: 700,
+            marginTop: 12,
+            fontSize: 52,
+            fontWeight: 800,
             color: "#252630",
             letterSpacing: "-0.03em",
             lineHeight: 1,
@@ -165,7 +167,7 @@ export default function CompletionPage() {
           className="text-center"
           style={{
             marginTop: 8,
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: 400,
             color: "#8E8D9B",
             lineHeight: 1.5,
@@ -176,11 +178,21 @@ export default function CompletionPage() {
         </p>
       </section>
 
-      <section style={{ marginTop: 56 }}>
+      {/* Reflection card — distinct middle block. */}
+      <section
+        style={{
+          marginTop: 40,
+          marginLeft: 24,
+          marginRight: 24,
+          background: "#FBFAF7",
+          borderRadius: 20,
+          padding: 20,
+        }}
+      >
         <p
           style={{
-            fontSize: 16,
-            fontWeight: 700,
+            fontSize: 14,
+            fontWeight: 600,
             color: "#252630",
             letterSpacing: "-0.005em",
           }}
@@ -191,12 +203,13 @@ export default function CompletionPage() {
           value={noteDraft}
           onChange={(e) => setNoteDraft(e.target.value)}
           placeholder="Anything that stood out, big or small. (Optional)"
-          className="mt-3 w-full resize-y rounded-[12px] px-4 py-3 text-[14px] text-ink"
+          className="mt-[10px] w-full resize-y text-[16px] text-ink placeholder:text-[#C2C0CB] focus:outline-none"
           style={{
-            minHeight: 100,
-            background: "#FFFFFF",
-            border: "1px solid #E5E3DA",
-            lineHeight: 1.6,
+            minHeight: 80,
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            lineHeight: 1.55,
           }}
         />
         {trimmedDraft.length > 0 ? (
@@ -209,8 +222,8 @@ export default function CompletionPage() {
               style={{
                 background: "#252630",
                 color: "#FFFFFF",
-                padding: "10px 18px",
-                fontSize: 14,
+                padding: "8px 14px",
+                fontSize: 13,
                 fontWeight: 700,
               }}
             >
@@ -230,19 +243,20 @@ export default function CompletionPage() {
 
       <span aria-hidden className="flex-1" />
 
-      <div className="flex flex-col items-center pt-10">
+      {/* Bottom action — quiet text + arrow, tappable but no button chrome. */}
+      <div className="flex flex-col items-center px-6 pt-10">
         <button
           type="button"
           onClick={() => router.push("/library?from=completion")}
-          className="inline-flex items-center gap-1.5 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
+          className="inline-flex flex-col items-center gap-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
           style={{
             background: "transparent",
             color: "#252630",
-            fontSize: 14,
-            fontWeight: 700,
+            fontSize: 15,
+            fontWeight: 600,
           }}
         >
-          Do another with {childName}?
+          <span>Do another with {childName}?</span>
           <ArrowRight
             size={16}
             strokeWidth={2}
