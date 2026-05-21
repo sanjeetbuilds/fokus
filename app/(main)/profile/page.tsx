@@ -1,12 +1,19 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useMemo, useState } from "react";
 
 import AppHeader from "@/components/layout/AppHeader";
 import Sheet from "@/components/ui/Sheet";
 import { useToast } from "@/components/ui/Toast";
+import { db } from "@/lib/db";
+import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { signOut } from "@/lib/supabase/auth";
-import { updateChild, type ChildRow } from "@/lib/supabase/queries";
+import {
+  deleteAccount,
+  updateChild,
+  type ChildRow,
+} from "@/lib/supabase/queries";
 import { primeChildCache, useChild } from "@/lib/use-child";
 import { ageFromDob } from "@/lib/utils/dates";
 
@@ -52,6 +59,8 @@ export default function ProfilePage() {
   const { toast } = useToast();
   const [editOpen, setEditOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const onSignOut = useCallback(async () => {
     if (signingOut) return;
@@ -69,6 +78,58 @@ export default function ProfilePage() {
       setSigningOut(false);
     }
   }, [signingOut, toast]);
+
+  const onConfirmDelete = useCallback(async () => {
+    if (deleting) return;
+    setDeleting(true);
+    try {
+      // 1. Photo cleanup. Prompt 3 wires the actual bucket; for now
+      //    the call is defensive — if photo_url exists it'll resolve
+      //    to {parentId}/{childId}.jpg under child-photos. Swallow
+      //    storage errors so a missing bucket / missing file doesn't
+      //    block account deletion.
+      if (child?.photo_url) {
+        try {
+          const supabase = getSupabaseBrowser();
+          await supabase.storage
+            .from("child-photos")
+            .remove([`${child.parent_id}/${child.id}.jpg`]);
+        } catch (err) {
+          console.warn("[/profile] photo cleanup skipped:", err);
+        }
+      }
+
+      // 2. Delete the auth.users row. cascade removes profiles +
+      //    child + activity_log via the foreign keys established in
+      //    migrations 001 and 002.
+      await deleteAccount();
+
+      // 3. Clear the Dexie cache so a future sign-in starts fresh.
+      try {
+        await db.delete();
+      } catch (err) {
+        console.warn("[/profile] dexie clear skipped:", err);
+      }
+
+      // 4. Flash for /sign-in to render once.
+      try {
+        window.sessionStorage.setItem(
+          "account_deleted_flash",
+          "true",
+        );
+      } catch {
+        /* private browsing — flash just won't fire */
+      }
+
+      // 5. Sign out. AuthGate's SIGNED_OUT handler redirects to
+      //    /sign-in where the flash is consumed.
+      await signOut();
+    } catch (err) {
+      console.error("[/profile] deleteAccount:", err);
+      toast("Couldn't delete. Try again.", { tone: "danger" });
+      setDeleting(false);
+    }
+  }, [child, deleting, toast]);
 
   return (
     <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col bg-bg pb-[calc(env(safe-area-inset-bottom)+96px)] pt-[calc(env(safe-area-inset-top)+8px)]">
@@ -125,7 +186,40 @@ export default function ProfilePage() {
         >
           {signingOut ? "Signing out…" : "Sign out"}
         </button>
+
+        <hr
+          style={{
+            border: 0,
+            borderTop: "1px solid #EEEEEE",
+            margin: 0,
+          }}
+        />
+
+        <button
+          type="button"
+          onClick={() => setConfirmDeleteOpen(true)}
+          className="w-full text-left transition-opacity"
+          style={{
+            padding: "16px 20px",
+            fontSize: 16,
+            color: "#C44",
+            background: "transparent",
+            border: "none",
+          }}
+        >
+          Delete account
+        </button>
       </div>
+
+      <DeleteAccountModal
+        open={confirmDeleteOpen}
+        deleting={deleting}
+        onCancel={() => {
+          if (deleting) return;
+          setConfirmDeleteOpen(false);
+        }}
+        onConfirm={() => void onConfirmDelete()}
+      />
 
       <EditDetailsSheet
         open={editOpen}
@@ -469,5 +563,115 @@ function Field({
       </p>
       {children}
     </div>
+  );
+}
+
+// ---------- Delete account modal ----------
+
+function DeleteAccountModal({
+  open,
+  deleting,
+  onCancel,
+  onConfirm,
+}: {
+  open: boolean;
+  deleting: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <AnimatePresence>
+      {open ? (
+        <motion.div
+          key="delete-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          className="fixed inset-0 z-50 flex items-center justify-center px-5"
+          style={{ background: "rgba(0,0,0,0.4)" }}
+          onClick={() => {
+            if (!deleting) onCancel();
+          }}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-title"
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full"
+            style={{
+              maxWidth: 380,
+              background: "#FFFFFF",
+              borderRadius: 16,
+              padding: "24px 20px 20px",
+            }}
+          >
+            <h2
+              id="delete-title"
+              style={{
+                fontSize: 22,
+                fontWeight: 800,
+                color: "#1A1A1A",
+                letterSpacing: "-0.02em",
+                lineHeight: 1.2,
+              }}
+            >
+              Delete your account?
+            </h2>
+            <p
+              style={{
+                marginTop: 12,
+                fontSize: 15,
+                color: "#1A1A1A",
+                lineHeight: 1.5,
+              }}
+            >
+              This removes your account, your child&apos;s profile, all
+              activity history, and the photo. This cannot be undone.
+            </p>
+
+            <div className="mt-6 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={onConfirm}
+                disabled={deleting}
+                className="w-full transition-opacity disabled:opacity-60"
+                style={{
+                  background: "#C44",
+                  color: "#FFFFFF",
+                  padding: "14px",
+                  borderRadius: 999,
+                  border: "none",
+                  fontSize: 15,
+                  fontWeight: 800,
+                }}
+              >
+                {deleting ? "Deleting…" : "Yes, delete everything"}
+              </button>
+              <button
+                type="button"
+                onClick={onCancel}
+                disabled={deleting}
+                className="w-full transition-opacity disabled:opacity-50"
+                style={{
+                  background: "transparent",
+                  color: "#6B6B6B",
+                  padding: "10px",
+                  border: "none",
+                  fontSize: 14,
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   );
 }

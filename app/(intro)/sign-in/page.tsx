@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import Wordmark from "@/components/shared/Wordmark";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
@@ -9,6 +9,10 @@ import { getSupabaseBrowser } from "@/lib/supabase/client";
  * Sign-in via Supabase magic link. Single email field; Supabase emails
  * a one-time link, the link routes back to /auth/callback, the callback
  * exchanges the code for a session, and the user lands on /.
+ *
+ * If a sessionStorage flag from the just-deleted account flow is
+ * present, a brief "Account deleted." flash is shown above the form
+ * for ~3 seconds, then it self-dismisses.
  */
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -16,6 +20,20 @@ export default function SignInPage() {
     "idle",
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [deletedFlash, setDeletedFlash] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem("account_deleted_flash") === "true") {
+        window.sessionStorage.removeItem("account_deleted_flash");
+        setDeletedFlash(true);
+        const t = window.setTimeout(() => setDeletedFlash(false), 3000);
+        return () => window.clearTimeout(t);
+      }
+    } catch {
+      /* private browsing — flash just won't fire */
+    }
+  }, []);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,6 +74,21 @@ export default function SignInPage() {
       </header>
 
       <div className="flex flex-1 flex-col px-6 pt-[60px]">
+        {deletedFlash ? (
+          <div
+            aria-live="polite"
+            className="mb-6 rounded-[10px] px-4 py-3"
+            style={{
+              background: "#F7F7F5",
+              border: "1px solid #EEEEEE",
+              fontSize: 14,
+              color: "#1A1A1A",
+              lineHeight: 1.45,
+            }}
+          >
+            Account deleted.
+          </div>
+        ) : null}
         <h1
           className="text-ink"
           style={{

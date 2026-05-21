@@ -192,3 +192,47 @@ export async function listActivityLog(): Promise<ActivityLogRow[]> {
   if (error) throw error;
   return (data ?? []) as ActivityLogRow[];
 }
+
+/* ===========================================================
+ *  account-level
+ *  =========================================================== */
+
+/**
+ * Delete the signed-in user's auth.users row. The migration-004 RPC
+ * is `security definer` so it can reach across the RLS boundary; the
+ * cascade defined in 001 + 002 removes profiles → child + activity_log.
+ *
+ * Caller is responsible for storage cleanup, signOut(), and clearing
+ * any local Dexie cache before redirecting to /sign-in.
+ */
+export async function deleteAccount(): Promise<void> {
+  const supabase = getSupabaseBrowser();
+  const { error } = await supabase.rpc("delete_account");
+  if (error) throw error;
+}
+
+export interface ProfileRow {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
+/**
+ * The signed-in parent's profiles row. Used by the data-export
+ * feature (T2.9). Returns null for unauthenticated callers.
+ */
+export async function getCurrentProfile(): Promise<ProfileRow | null> {
+  const supabase = getSupabaseBrowser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (error) throw error;
+  return data as ProfileRow | null;
+}
