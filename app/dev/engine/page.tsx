@@ -19,7 +19,6 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
 import { useToast } from "@/components/ui/Toast";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 import { ACTIVITIES } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
@@ -175,7 +174,6 @@ export default function EngineDevPage() {
           </p>
           <h1 className="mt-1 text-display text-ink">Adaptive picker</h1>
         </div>
-        <ThemeToggle />
       </div>
 
       {children.length === 0 ? (

@@ -22,11 +22,7 @@ export type SkillKey =
 
 // ---------- Parent ----------
 
-export type ThemePreference = "auto" | "light" | "dark";
-
 export interface ParentPreferences {
-  reminderTime?: string; // "20:00"
-  darkMode?: ThemePreference;
   onboarded: boolean;
   /** Once the parent dismisses the WelcomeModal post-onboarding, this
    *  sticks across reloads so it never reappears. */
@@ -44,60 +40,23 @@ export interface Parent {
 
 // ---------- Child ----------
 
-export interface ChildEngagement {
-  fleesFrom: string[];
-  goesDeepOn: string[];
-  inBetween: string[];
-}
-
+/**
+ * The engine-facing Child shape. Mirrors the lean public.child Supabase
+ * row (name + dob + pronouns + photo_url) plus the derived integer age
+ * the engine uses for age-range filtering.
+ *
+ * Deliberately holds no "what the child likes / avoids / struggles
+ * with" fields. Per SPEC §2 (the child is never measured) and the
+ * pre-launch cleanup pass, Fokus does not profile the child to
+ * personalize the daily pick.
+ */
 export interface Child {
   id: string;
   parentId: string;
   name: string;
-  /**
-   * Age in whole years. Derived from `dateOfBirth` at creation time; persisted
-   * for ergonomic reads and so the engine doesn't recompute on every score.
-   * Older records (created before dateOfBirth was added) keep just `age`.
-   */
-  age: number; // 5–10
-  /**
-   * Source of truth for child age. YYYY-MM-DD calendar date. Optional only
-   * to support records created before this field existed — new onboarding
-   * writes it, and the rest of the app reads `age` (derived).
-   */
+  age: number;
   dateOfBirth?: string;
-  grade: string; // "Nursery" | "KG" | "1st" | ...
-  /** @deprecated Use `dateOfBirth`. Kept for legacy records / dev seed. */
-  birthMonth?: number; // 1–12
-  /** @deprecated Use `dateOfBirth`. Kept for legacy records / dev seed. */
-  birthYear?: number;
-
-  engagement: ChildEngagement;
-
-  primaryLanguage: string;
-
-  interests: string[];
-  strengths: string[];
-  struggles: string[];
-
-  /**
-   * Optional base64 data URL of a parent-uploaded photo, downscaled to
-   * 256x256 client-side before encoding. Null/undefined falls back to the
-   * letter Avatar everywhere a child face would appear.
-   */
   photoUrl?: string | null;
-
-  /**
-   * Compact age range as captured in the round-4 onboarding form
-   * ("0-1 yr" / "2-4 yrs" / "4-6 yrs" / "6-9 yrs"). The numeric `age` is
-   * derived from this when the deeper fields aren't filled yet; once the
-   * parent enters DOB via settings, `dateOfBirth` becomes authoritative.
-   */
-  ageBand?: string | null;
-
-  /** Optional gender, captured later in the profile-completion flow. */
-  gender?: "boy" | "girl" | "unspecified" | null;
-
   createdAt: string;
   updatedAt: string;
   _syncStatus?: SyncStatus;

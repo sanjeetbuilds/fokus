@@ -4,7 +4,6 @@ import "./globals.css";
 import { AuthGate } from "@/components/shared/AuthGate";
 import { OnboardingGate } from "@/components/shared/OnboardingGate";
 import SplashGate from "@/components/shared/SplashGate";
-import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 
 const inter = Inter({
@@ -60,15 +59,13 @@ export default function RootLayout({
       className={`h-full ${inter.variable}`}
     >
       <body className="min-h-full bg-bg text-ink font-sans antialiased">
-        <ThemeProvider>
-          <ToastProvider>
-            <SplashGate>
-              <AuthGate>
-                <OnboardingGate>{children}</OnboardingGate>
-              </AuthGate>
-            </SplashGate>
-          </ToastProvider>
-        </ThemeProvider>
+        <ToastProvider>
+          <SplashGate>
+            <AuthGate>
+              <OnboardingGate>{children}</OnboardingGate>
+            </AuthGate>
+          </SplashGate>
+        </ToastProvider>
       </body>
     </html>
   );

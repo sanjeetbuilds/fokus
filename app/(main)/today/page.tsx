@@ -5,9 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import TodayActivityCard from "@/components/activity/TodayActivityCard";
 import AppHeader from "@/components/layout/AppHeader";
-import ReflectSheet from "@/components/today/ReflectSheet";
 import WelcomeModal from "@/components/today/WelcomeModal";
-import { useToast } from "@/components/ui/Toast";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
 import { db, getSessionsByDate } from "@/lib/db";
 import { pickActivity, RestDayError } from "@/lib/engine";
@@ -49,7 +47,6 @@ const MOOD_OPTIONS: { value: ChildMood; label: string }[] = [
  */
 export default function TodayPage() {
   const router = useRouter();
-  const { toast: _toast } = useToast();
   const setLastPickContext = useAppStore((s) => s.setLastPickContext);
 
   const { child: childRow, loading: childLoading } = useChild();
@@ -66,9 +63,6 @@ export default function TodayPage() {
   const [mood, setMood] = useState<ChildMood>("normal");
   const [pickedActivityId, setPickedActivityId] = useState<string | null>(null);
   const [restDay, setRestDay] = useState(false);
-  const [reflectActivityId, setReflectActivityId] = useState<string | null>(
-    null,
-  );
   // Salt that lets "Pick a different activity" re-run the engine with the
   // same time/mood — incrementing it bumps the effect below.
   const [pickSalt, setPickSalt] = useState(0);
@@ -152,11 +146,6 @@ export default function TodayPage() {
     router.push(`/activity/${pickedActivity.id}?${qs.toString()}`);
   }, [mood, pickedActivity, router, time]);
 
-  const onReflected = useCallback(async () => {
-    setReflectActivityId(null);
-    await reload();
-  }, [reload]);
-
   const loaded = !childLoading && sessionsLoaded;
 
   if (!loaded) {
@@ -176,9 +165,6 @@ export default function TodayPage() {
     );
   }
 
-  const reflectActivity = reflectActivityId
-    ? getActivityById(reflectActivityId) ?? null
-    : null;
   const alreadyLogged = todaysSessions.length > 0;
   const childName = childRow.name;
 
@@ -264,15 +250,6 @@ export default function TodayPage() {
           </section>
         ) : null}
       </div>
-
-      <ReflectSheet
-        open={reflectActivity !== null}
-        activity={reflectActivity}
-        childId={childRow.id}
-        childName={childName}
-        onClose={() => setReflectActivityId(null)}
-        onLogged={() => void onReflected()}
-      />
 
       <WelcomeModal
         childName={childName}
@@ -365,19 +342,7 @@ function toLegacyChild(row: ChildRow): Child {
     name: row.name,
     age,
     dateOfBirth: row.dob,
-    grade: "",
-    engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
-    primaryLanguage: "",
-    interests: [],
-    strengths: [],
-    struggles: [],
     photoUrl: row.photo_url,
-    gender:
-      row.pronouns === "she"
-        ? "girl"
-        : row.pronouns === "he"
-          ? "boy"
-          : "unspecified",
     createdAt: row.created_at,
     updatedAt: row.created_at,
   };

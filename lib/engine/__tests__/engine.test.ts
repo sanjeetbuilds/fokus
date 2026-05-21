@@ -29,12 +29,6 @@ function makeChild(patch: Partial<Child> = {}): Child {
     parentId: "parent-test",
     name: "Aarav",
     age: 7,
-    grade: "1st",
-    engagement: { fleesFrom: [], goesDeepOn: [], inBetween: [] },
-    primaryLanguage: "Hindi",
-    interests: [],
-    strengths: [],
-    struggles: [],
     createdAt: TODAY.toISOString(),
     updatedAt: TODAY.toISOString(),
     _syncStatus: "local",
@@ -133,48 +127,7 @@ describe("scoreActivity / pickActivity", () => {
     }
   });
 
-  it("d) interest match boosts cu8 (Animal Mystery)", () => {
-    const cu8 = getActivityById("cu8")!;
-    const withInterest = scoreActivity(
-      cu8,
-      makeChild({ interests: ["animals"] }),
-      [],
-      NORMAL_CTX,
-      TODAY,
-    );
-    const withoutInterest = scoreActivity(
-      cu8,
-      makeChild({ interests: [] }),
-      [],
-      NORMAL_CTX,
-      TODAY,
-    );
-    expect(withInterest.score).toBeGreaterThan(withoutInterest.score);
-  });
-
-  it("e) fleesFrom penalizes activities whose text matches the flee phrase", () => {
-    // Engine matches via literal substring on lowercased activityText
-    // (title + description + howTo + requires). ob1 contains "they study
-    // for 30 seconds", so "study" reliably triggers the penalty.
-    const flee = "study";
-    const ob1 = getActivityById("ob1")!;
-    const baseline = scoreActivity(ob1, makeChild(), [], NORMAL_CTX, TODAY);
-    const fleeing = scoreActivity(
-      ob1,
-      makeChild({
-        engagement: { fleesFrom: [flee], goesDeepOn: [], inBetween: [] },
-      }),
-      [],
-      NORMAL_CTX,
-      TODAY,
-    );
-    expect(fleeing.score).toBeLessThan(baseline.score);
-    expect(
-      fleeing.reasons.some((r) => r.toLowerCase().includes("engagement penalty")),
-    ).toBe(true);
-  });
-
-  it("f) same activity is not picked every time when state is similar (weighted-random)", () => {
+  it("d) same activity is not picked every time when state is similar (weighted-random)", () => {
     const child = makeChild();
     // 5 engaged sessions of cu1 in the past week
     const sessions = Array.from({ length: 5 }, (_, i) =>
@@ -197,7 +150,7 @@ describe("scoreActivity / pickActivity", () => {
     expect(new Set(picks.map((p) => p.id)).size).toBeGreaterThan(1);
   });
 
-  it("g) recent LOVED activity recurs sooner than recent FRUSTRATED one", () => {
+  it("e) recent LOVED activity recurs sooner than recent FRUSTRATED one", () => {
     const cu1 = getActivityById("cu1")!;
     const lovedSessions = [
       makeSession({ activityId: "cu1", date: daysAgo(8), response: "loved" }),

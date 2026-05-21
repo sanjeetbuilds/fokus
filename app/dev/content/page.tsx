@@ -13,7 +13,6 @@ import {
 import type { ComponentType, SVGProps } from "react";
 
 import Card from "@/components/ui/Card";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 import { ACTIVITIES, getActivitiesBySkill } from "@/lib/content/activities";
 import { INTRO_SCREENS } from "@/lib/content/intro";
@@ -69,7 +68,6 @@ export default function ContentDevPage() {
           </p>
           <h1 className="mt-1 text-display text-ink">Library</h1>
         </div>
-        <ThemeToggle />
       </div>
 
       {/* Totals */}

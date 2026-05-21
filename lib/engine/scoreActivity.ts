@@ -1,4 +1,4 @@
-import type { Activity, Child, Session, SkillKey } from "@/types";
+import type { Activity, Child, Session } from "@/types";
 import { daysSince } from "@/lib/utils/dates";
 import {
   activityIdToSkill,
@@ -6,23 +6,6 @@ import {
   type PickContext,
   type ScoredActivity,
 } from "./types";
-
-/**
- * Skill → struggle phrases. Used by Rule 9. Mirrors SPEC §7 exactly:
- *   "// etc." in the spec is left as a tail comment; we keep just the
- *   pairs the spec actually lists so we don't invent linkages.
- */
-const SKILL_TO_STRUGGLE: Partial<Record<SkillKey, readonly string[]>> = {
-  language: ["Speaking English", "Reading"],
-  emotional: ["Big feelings", "Losing games", "Sharing"],
-  resilience: [
-    "Trying new things",
-    "Finishing what they start",
-    "Losing games",
-  ],
-  decisiveness: ["Asking questions"],
-  curiosity: ["Asking questions"],
-};
 
 const DURATION_FIT: Record<
   PickContext["timeAvailable"],
@@ -38,9 +21,19 @@ const DURATION_FIT: Record<
  * context. Pure: no DB, no clock, no randomness. Returns the score and
  * an audit trail (reasons[]) for the /dev/engine debug page and tests.
  *
- * Implements SPEC §7. The original spec listed 10 rules; the
- * englishConfidence-based rule was dropped when that field was removed
- * from the schema, so we now run 9 rules in spec order.
+ * Cleanup pass: dropped the engagement / interests / struggle-priority
+ * rules that personalised the pick to tag selections on the (now
+ * deleted) child-profiling page. The remaining rules score by:
+ *   - time fit (duration vs context.timeAvailable)
+ *   - mood fit (difficulty + skill vs context.childMood)
+ *   - recency (don't repeat too soon)
+ *   - skill coverage (rotate)
+ *   - confidence trend in this skill
+ *   - age fit
+ *
+ * Rules 1 + 2 will be removed in the next pass when the Tune-today
+ * input disappears; the engine will be called with default context
+ * until then.
  */
 export function scoreActivity(
   activity: Activity,
@@ -94,45 +87,7 @@ export function scoreActivity(
       adjust(-10, "Mood high: difficulty 1 too easy");
   }
 
-  // ============ Rule 3: Engagement routing ============
-  const activityText = (
-    activity.title +
-    " " +
-    activity.description +
-    " " +
-    activity.howTo +
-    " " +
-    activity.requires
-  ).toLowerCase();
-
-  for (const deep of child.engagement.goesDeepOn) {
-    const needle = deep.toLowerCase();
-    if (activityText.includes(needle)) {
-      adjust(+25, `Engagement match (goes deep on "${deep}")`);
-    }
-    if (activity.worksWellWith.includes(needle)) {
-      adjust(+20, `Tagged worksWellWith "${deep}"`);
-    }
-  }
-  for (const flees of child.engagement.fleesFrom) {
-    const needle = flees.toLowerCase();
-    if (activityText.includes(needle)) {
-      adjust(-30, `Engagement penalty (flees from "${flees}")`);
-    }
-  }
-
-  // ============ Rule 4: Interest alignment ============
-  for (const interest of child.interests) {
-    const needle = interest.toLowerCase();
-    if (activityText.includes(needle)) {
-      adjust(+12, `Interest match: "${interest}"`);
-    }
-    if (activity.worksWellWith.includes(needle)) {
-      adjust(+15, `Interest tagged in worksWellWith: "${interest}"`);
-    }
-  }
-
-  // ============ Rule 5: Recency ============
+  // ============ Rule 3: Recency ============
   const lastDoneSession = [...sessions]
     .reverse()
     .find((s) => s.activityId === activity.id);
@@ -150,7 +105,7 @@ export function scoreActivity(
     }
   }
 
-  // ============ Rule 6: Skill coverage ============
+  // ============ Rule 4: Skill coverage ============
   const skillCountWeek = last7Days.filter(
     (s) => activityIdToSkill(s.activityId) === activity.skill,
   ).length;
@@ -158,7 +113,7 @@ export function scoreActivity(
   if (skillCountWeek === 1) adjust(+5, "Skill seen once this week");
   if (skillCountWeek >= 3) adjust(-30, "Skill overdone this week");
 
-  // ============ Rule 7: Confidence trend in this skill ============
+  // ============ Rule 5: Confidence trend in this skill ============
   const skillSessions = recent14.filter(
     (s) => activityIdToSkill(s.activityId) === activity.skill,
   );
@@ -179,24 +134,12 @@ export function scoreActivity(
       adjust(-15, "Skill trend positive: difficulty 1 too easy");
   }
 
-  // ============ Rule 8: Age fit ============
+  // ============ Rule 6: Age fit ============
   const [minAge, maxAge] = activity.ageRange;
   if (child.age < minAge) adjust(-50, "Child too young for this activity");
   if (child.age > maxAge) adjust(-20, "Child past upper age range");
   if (child.age === minAge && activity.difficulty === 3)
     adjust(-15, "At min age + difficulty 3");
-
-  // ============ Rule 9: Struggle prioritization ============
-  const relevant = SKILL_TO_STRUGGLE[activity.skill] ?? [];
-  const matchingStruggles = child.struggles.filter((s) =>
-    relevant.includes(s),
-  ).length;
-  if (matchingStruggles > 0) {
-    adjust(
-      matchingStruggles * 10,
-      `Struggle prioritization: ${matchingStruggles} match${matchingStruggles > 1 ? "es" : ""}`,
-    );
-  }
 
   return { activity, score, reasons };
 }

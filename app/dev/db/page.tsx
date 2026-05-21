@@ -7,7 +7,6 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Sheet from "@/components/ui/Sheet";
 import { useToast } from "@/components/ui/Toast";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 import {
   createChild,
@@ -127,18 +126,6 @@ export default function DbDevPage() {
         parentId: parent.id,
         name: "Aarav",
         age: 7,
-        grade: "1st",
-        birthMonth: 4,
-        birthYear: 2018,
-        engagement: {
-          fleesFrom: ["Studying", "Eating slowly", "Speaking in English"],
-          goesDeepOn: ["Drawing", "Building/Lego", "Pretend play"],
-          inBetween: ["Games", "Watching shows"],
-        },
-        primaryLanguage: "Hindi",
-        interests: ["Animals", "Space", "Drawing", "Dinosaurs"],
-        strengths: ["Curious", "Patient", "Detail-noticing"],
-        struggles: ["Speaking English", "Big feelings", "Losing games"],
       });
       toast(`Created child ${child.name}.`, { tone: "success" });
     });
@@ -206,7 +193,6 @@ export default function DbDevPage() {
           </p>
           <h1 className="mt-1 text-display text-ink">Database</h1>
         </div>
-        <ThemeToggle />
       </div>
 
       {dbError ? (
@@ -297,7 +283,7 @@ export default function DbDevPage() {
           <RecentRow
             key={c.id}
             heading={c.name}
-            meta={`age ${c.age} · ${c.grade}`}
+            meta={`age ${c.age}`}
             timestamp={c.updatedAt}
             id={c.id}
           />

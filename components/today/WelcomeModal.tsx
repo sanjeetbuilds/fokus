@@ -54,8 +54,8 @@ export default function WelcomeModal({
     }
     if (parentId) {
       try {
-        // Read current prefs and merge so we don't clobber reminderTime
-        // or darkMode that may have been set in the same session.
+        // Read current prefs and merge so we don't clobber any other flag
+        // set in the same session.
         const current = await getParent(parentId);
         await updateParent(parentId, {
           preferences: {

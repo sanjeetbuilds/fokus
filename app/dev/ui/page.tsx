@@ -24,7 +24,6 @@ import Sheet from "@/components/ui/Sheet";
 import TabBar from "@/components/ui/TabBar";
 import Textarea from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 const INTERESTS = [
   "Animals",
@@ -103,7 +102,6 @@ export default function UIDevPage() {
           </p>
           <h1 className="mt-1 text-display text-ink">Primitives</h1>
         </div>
-        <ThemeToggle />
       </div>
 
       <div className="flex flex-col gap-12">

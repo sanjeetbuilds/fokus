@@ -9,7 +9,6 @@ import type { Config } from "tailwindcss";
  * do not have to be rewritten for the rebrand.
  */
 const config: Config = {
-  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
