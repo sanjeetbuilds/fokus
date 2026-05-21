@@ -20,8 +20,8 @@ export interface TodayActivityCardProps {
  *   3. Tagline (1 sentence, ≤12 words)
  *   4. Start CTA pill
  *
- * Reference .dcard styling — dashed border, white surface — distinguishes
- * today's prompt from the solid wcard data tiles used elsewhere.
+ * Solid warm-tint surface (#FBFAF7) so the card reads as the day's
+ * primary object without the unfinished feel of a dashed border.
  */
 export default function TodayActivityCard({
   activity,
@@ -33,8 +33,7 @@ export default function TodayActivityCard({
     <article
       className="w-full"
       style={{
-        background: "#FFFFFF",
-        border: "1.5px dashed #C2C0CB",
+        background: "#FBFAF7",
         borderRadius: 22,
         padding: 24,
       }}

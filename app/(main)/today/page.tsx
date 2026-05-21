@@ -132,29 +132,19 @@ export default function TodayPage() {
       <AppHeader />
 
       <div className="px-6 pt-2">
-        <div
-          style={{
-            background: "#FBFAF7",
-            borderRadius: 16,
-            padding: 16,
-          }}
-        >
-          <HomeHeader child={childRow} />
-        </div>
+        <HomeHeader child={childRow} />
 
         <h1
           className="text-ink"
           style={{
-            marginTop: 24,
-            fontSize: 38,
-            fontWeight: 800,
-            lineHeight: 1.05,
-            letterSpacing: "-0.025em",
+            marginTop: 20,
+            fontSize: 28,
+            fontWeight: 700,
+            lineHeight: 1.15,
+            letterSpacing: "-0.02em",
           }}
         >
-          Today&apos;s
-          <br />
-          Focus
+          Today&apos;s focus.
         </h1>
 
         <div className="mt-6">
@@ -293,8 +283,7 @@ function RestDay({ childName }: { childName: string }) {
     <article
       className="w-full"
       style={{
-        background: "#FFFFFF",
-        border: "1.5px dashed #C2C0CB",
+        background: "#FBFAF7",
         borderRadius: 22,
         padding: 24,
       }}
@@ -333,8 +322,7 @@ function DoneForToday({
     <article
       className="w-full"
       style={{
-        background: "#FFFFFF",
-        border: "1.5px dashed #C2C0CB",
+        background: "#FBFAF7",
         borderRadius: 22,
         padding: 24,
       }}
