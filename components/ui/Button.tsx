@@ -15,14 +15,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT: Record<Variant, string> = {
-  // Forest-green CTA. Soft green-tinted lift on the cream surface; flattens
-  // on press via the active:scale below.
+  // Brand CTA. Ink #1A1A1A on white surfaces; pressed state via
+  // active:scale below.
   primary:
-    "bg-accent text-white shadow-[0_6px_16px_-4px_rgba(42,92,65,0.28)] hover:bg-accent-pressed",
+    "bg-ink text-white hover:opacity-90",
   secondary:
     "border border-line bg-bg-elevated text-ink hover:border-ink-secondary",
   tertiary:
-    "bg-transparent text-accent hover:text-accent-pressed",
+    "bg-transparent text-ink hover:opacity-70",
   destructive:
     "bg-danger text-white hover:opacity-90",
 };

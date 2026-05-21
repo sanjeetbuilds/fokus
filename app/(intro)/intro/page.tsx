@@ -83,8 +83,8 @@ export default function IntroPage() {
                 type="button"
                 onClick={() => go(step + 1)}
                 aria-label="Next"
-                className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white transition-transform duration-fast active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-                style={{ boxShadow: "0 6px 16px -4px rgba(156,165,255,0.4)" }}
+                className="inline-flex h-14 w-14 items-center justify-center rounded-full text-white transition-transform duration-fast active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                style={{ background: "#1A1A1A" }}
               >
                 <ArrowRight size={22} strokeWidth={2.25} aria-hidden />
               </button>
@@ -93,9 +93,9 @@ export default function IntroPage() {
             <button
               type="button"
               onClick={() => router.replace("/onboarding")}
-              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-accent text-[16px] font-extrabold text-white transition-transform duration-fast active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full text-[16px] font-extrabold text-white transition-transform duration-fast active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               style={{
-                boxShadow: "0 6px 16px -4px rgba(156,165,255,0.4)",
+                background: "#1A1A1A",
                 letterSpacing: "-0.01em",
               }}
             >
@@ -125,9 +125,7 @@ function Dots({ active, total }: { active: number; total: number }) {
             style={{
               width: on ? 22 : 6,
               height: 6,
-              background: on
-                ? "var(--accent)"
-                : "rgba(37,38,48,0.16)",
+              background: on ? "#1A1A1A" : "rgba(26,26,26,0.16)",
             }}
           />
         );
@@ -178,7 +176,7 @@ function IlloHalo({ children }: { children: React.ReactNode }) {
       style={{
         width: 180,
         height: 180,
-        background: "var(--accent-bg)",
+        background: "#F7F7F5",
       }}
     >
       {children}
@@ -265,7 +263,7 @@ function Slide2() {
               y1={32 - i * 3}
               x2={86 + i * 6}
               y2={16 - i * 4}
-              stroke="var(--accent)"
+              stroke="#1A1A1A"
               strokeWidth="1.5"
               strokeLinecap="round"
               opacity={1 - i * 0.25}

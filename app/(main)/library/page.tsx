@@ -170,7 +170,7 @@ function FeaturedPick({ activity }: { activity: Activity }) {
     >
       <div
         className="relative flex min-h-[128px] items-center gap-3.5 overflow-hidden rounded-[22px] p-4"
-        style={{ background: "var(--accent)" }}
+        style={{ background: skill.color }}
       >
         <div className="min-w-0 flex-1">
           <p
@@ -198,11 +198,6 @@ function FeaturedPick({ activity }: { activity: Activity }) {
             Start <ArrowRight size={11} strokeWidth={2.5} />
           </span>
         </div>
-        <SkillIcon
-          skillId={activity.skill}
-          size="lg"
-          iconName={activity.iconName}
-        />
       </div>
     </Link>
   );
