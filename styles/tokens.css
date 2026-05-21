@@ -20,14 +20,15 @@
   /* ---- Surfaces ---- */
   --bg: #FFFFFF;
   --bg-elevated: #FFFFFF;
-  --bg-input: #FFFFFF;
-  --bg-alt: #E5E3DA;       /* warm pill / fill */
-  --bg-overlay: rgba(26, 26, 26, 0.55);
+  --bg-input: #FBFAF7;            /* surface tint — warm wash on inputs */
+  --bg-alt: #E5E3DA;              /* warm pill / fill */
+  --bg-overlay: rgba(37, 38, 48, 0.55);
+  --surface-tint: #FBFAF7;        /* barely-perceptible warm white */
 
   /* ---- Ink ---- */
-  --ink: #1A1A1A;
-  --ink-secondary: #8E8D9B; /* reference --gray */
-  --ink-tertiary: #C2C0CB;  /* reference --gray-lt */
+  --ink: #252630;            /* reference --dark */
+  --ink-secondary: #8E8D9B;  /* reference --gray */
+  --ink-tertiary: #C2C0CB;   /* reference --gray-lt */
   --ink-quaternary: #C8C8C8;
 
   --line: #E5E3DA;          /* reference --gray-bd, warm beige */

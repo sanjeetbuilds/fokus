@@ -20,21 +20,21 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     description:
       "The reflex to look behind appearances and keep asking why instead of accepting the first answer.",
     iconName: "Sparkles",
-    color: "#F2C94C",
+    color: "#F4C84A",
   },
   language: {
     label: "Language confidence",
     description:
       "Speaking up in English without freezing. Fluency before accuracy, voice before vocabulary.",
     iconName: "BookOpen",
-    color: "#A8A4E8",
+    color: "#9CA5FF",
   },
   emotional: {
     label: "Emotional awareness",
     description:
       "Naming what's happening inside, sitting with it for a moment, and reading the same thing in other people.",
     iconName: "Heart",
-    color: "#E8A4B8",
+    color: "#E89070",
   },
   thinking: {
     label: "Thinking clarity",
@@ -48,14 +48,14 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     description:
       "Staying with hard things long enough to learn from them, and recovering when something doesn't go their way.",
     iconName: "Anchor",
-    color: "#7DB87A",
+    color: "#5DC87A",
   },
   creativity: {
     label: "Creativity",
     description:
       "Generating possibilities before evaluating them, and feeling free enough to be silly, weird, and wrong on the way to good.",
     iconName: "Wind",
-    color: "#E8806B",
+    color: "#E8836A",
   },
   observation: {
     label: "Observation",

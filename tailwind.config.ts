@@ -18,21 +18,25 @@ const config: Config = {
     extend: {
       colors: {
         // Skill palette — single source of truth, mirrors lib/content/skills.ts.
+        // Reference-remapped: amber / purple / coral / green dominate;
+        // emotional shifted to a warmer salmon to stay distinguishable
+        // from creativity's coral.
         skill: {
-          curiosity: "#F2C94C",
-          language: "#A8A4E8",
-          emotional: "#E8A4B8",
+          curiosity: "#F4C84A",
+          language: "#9CA5FF",
+          emotional: "#E89070",
           thinking: "#6B5B95",
-          resilience: "#7DB87A",
-          creativity: "#E8806B",
+          resilience: "#5DC87A",
+          creativity: "#E8836A",
           observation: "#5FB8B0",
           decisiveness: "#3D5A80",
         },
-        // New neutral aliases (preferred for new code).
-        muted: "#6B6B6B",
-        hint: "#8A8A8A",
+        // Neutral aliases (preferred for new code). Reference-tone'd.
+        muted: "#8E8D9B",
+        hint: "#C2C0CB",
         hair: "#E5E3DA",
-        fill: "#F7F7F5",
+        fill: "#FBFAF7",
+        "surface-tint": "#FBFAF7",
 
         bg: {
           DEFAULT: "var(--bg)",
