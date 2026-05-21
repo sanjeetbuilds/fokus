@@ -11,6 +11,7 @@ import {
   updateActivityLogNote,
   type ActivityLogRow,
 } from "@/lib/supabase/queries";
+import { replaceActivityLogInCache } from "@/lib/use-activity-log";
 import { useChild } from "@/lib/use-child";
 
 /**
@@ -89,6 +90,7 @@ export default function CompletionPage() {
         trimmedDraft.length === 0 ? null : trimmedDraft,
       );
       setRow(updated);
+      replaceActivityLogInCache(updated);
       setSavedToast(true);
       window.setTimeout(() => setSavedToast(false), 2000);
     } catch (err) {

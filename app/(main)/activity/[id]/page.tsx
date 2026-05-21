@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/Toast";
 import { getActivityById } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
 import { insertActivityLog } from "@/lib/supabase/queries";
+import { prependActivityLogToCache } from "@/lib/use-activity-log";
 import { useChild } from "@/lib/use-child";
 import type { Activity, ActivityExample } from "@/types";
 
@@ -66,6 +67,7 @@ function ActivityDetailBody() {
     setSubmitting(true);
     try {
       const row = await insertActivityLog(activity.id);
+      prependActivityLogToCache(row);
       router.push(`/done/${row.id}`);
     } catch (err) {
       console.error("[/activity] insertActivityLog:", err);
