@@ -32,10 +32,6 @@ import { useChild } from "@/lib/use-child";
  *
  * No streaks. No celebration. No next-up recommendation.
  *
- * Note: T2.5 spec listed the "What did you notice?" prompt at Inter
- * weight 500. The Phase-1 global constraint locks the app to
- * 400 / 800 only, so it renders at 800 here to stay within the
- * established type ramp.
  */
 export default function CompletionPage() {
   const router = useRouter();
@@ -118,7 +114,7 @@ export default function CompletionPage() {
           type="button"
           onClick={() => router.replace("/today")}
           className="mt-6 rounded-full px-5 py-3 text-[14px] font-bold text-white"
-          style={{ background: "#1A1A1A" }}
+          style={{ background: "#252630" }}
         >
           Back to Today
         </button>
@@ -158,7 +154,7 @@ export default function CompletionPage() {
             marginTop: 16,
             fontSize: 48,
             fontWeight: 700,
-            color: "#1A1A1A",
+            color: "#252630",
             letterSpacing: "-0.03em",
             lineHeight: 1,
           }}
@@ -171,7 +167,7 @@ export default function CompletionPage() {
             marginTop: 8,
             fontSize: 16,
             fontWeight: 400,
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             lineHeight: 1.5,
             maxWidth: 380,
           }}
@@ -185,7 +181,7 @@ export default function CompletionPage() {
           style={{
             fontSize: 16,
             fontWeight: 700,
-            color: "#1A1A1A",
+            color: "#252630",
             letterSpacing: "-0.005em",
           }}
         >
@@ -211,7 +207,7 @@ export default function CompletionPage() {
               disabled={!canSave}
               className="inline-flex items-center gap-1.5 rounded-full transition-opacity disabled:opacity-50"
               style={{
-                background: "#1A1A1A",
+                background: "#252630",
                 color: "#FFFFFF",
                 padding: "10px 18px",
                 fontSize: 14,
@@ -223,7 +219,7 @@ export default function CompletionPage() {
             {savedToast ? (
               <span
                 aria-live="polite"
-                style={{ fontSize: 13, color: "#6B6B6B" }}
+                style={{ fontSize: 13, color: "#8E8D9B" }}
               >
                 Saved.
               </span>
@@ -241,7 +237,7 @@ export default function CompletionPage() {
           className="inline-flex items-center gap-1.5 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
           style={{
             background: "transparent",
-            color: "#1A1A1A",
+            color: "#252630",
             fontSize: 14,
             fontWeight: 700,
           }}
@@ -251,7 +247,7 @@ export default function CompletionPage() {
             size={16}
             strokeWidth={2}
             aria-hidden
-            style={{ color: "#8A8A8A" }}
+            style={{ color: "#8E8D9B" }}
           />
         </button>
       </div>

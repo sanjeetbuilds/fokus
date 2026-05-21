@@ -4,9 +4,10 @@ import type { Config } from "tailwindcss";
  * Fokus Tailwind config — maps CSS variables (see styles/tokens.css)
  * to utilities so colors / type / spacing stay in one source of truth.
  *
- * Inter only, weights 400/800. Headlines use letterSpacing -0.02em.
- * Color names like accent-* still resolve so existing call sites
- * do not have to be rewritten for the rebrand.
+ * Plus Jakarta Sans, weights 300-800 (300 reserved for quiet
+ * taglines / footer hints; headlines run 800). Headlines use
+ * letterSpacing -0.025em. Color names like accent-* still resolve
+ * so existing call sites do not have to be rewritten for the rebrand.
  */
 const config: Config = {
   content: [

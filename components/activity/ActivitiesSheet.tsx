@@ -141,7 +141,7 @@ function ActivitiesSheetBody({
             style={{
               fontSize: 22,
               fontWeight: 700,
-              color: "#1A1A1A",
+              color: "#252630",
               letterSpacing: "-0.01em",
               lineHeight: 1.2,
             }}
@@ -152,7 +152,7 @@ function ActivitiesSheetBody({
             style={{
               marginTop: 2,
               fontSize: 13,
-              color: "#6B6B6B",
+              color: "#8E8D9B",
               lineHeight: 1.4,
             }}
           >
@@ -167,12 +167,12 @@ function ActivitiesSheetBody({
             width: 32,
             height: 32,
             borderRadius: 16,
-            background: "#F7F7F5",
+            background: "#FBFAF7",
             border: "none",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             flexShrink: 0,
           }}
           className="transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
@@ -261,7 +261,7 @@ function ActivityRow({
           style={{
             fontSize: 15,
             fontWeight: 700,
-            color: "#1A1A1A",
+            color: "#252630",
             letterSpacing: "-0.005em",
             lineHeight: 1.3,
           }}
@@ -272,7 +272,7 @@ function ActivityRow({
           style={{
             marginTop: 2,
             fontSize: 13,
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             lineHeight: 1.4,
           }}
         >
@@ -283,7 +283,7 @@ function ActivityRow({
         size={16}
         strokeWidth={2}
         aria-hidden
-        style={{ color: "#8A8A8A", flexShrink: 0 }}
+        style={{ color: "#8E8D9B", flexShrink: 0 }}
       />
     </Link>
   );
@@ -304,7 +304,7 @@ function NotYetTriedDivider() {
           padding: "0 12px",
           fontSize: 11,
           fontWeight: 700,
-          color: "#8A8A8A",
+          color: "#8E8D9B",
           textTransform: "uppercase",
           letterSpacing: "0.05em",
         }}

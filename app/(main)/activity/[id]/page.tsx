@@ -25,8 +25,6 @@ import type { Activity, ActivityExample } from "@/types";
  *   DIVIDER
  *   WHY IT WORKS heading, reason body
  *
- * Section heading weight uses 800 instead of T6's spec-cited 700 to
- * respect the global "Inter 400 / 800 only" constraint from T1.
  */
 export default function ActivityDetailPage() {
   return (
@@ -166,7 +164,7 @@ function ActivityDetailBody() {
             disabled={submitting}
             className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-bold text-white transition-opacity duration-fast ease-out active:opacity-80 disabled:opacity-60"
             style={{
-              background: "#1A1A1A",
+              background: "#252630",
             }}
           >
             {submitting ? "Saving…" : "Mark done"}
@@ -195,7 +193,7 @@ function ActivityHeader({ activity }: { activity: Activity }) {
           marginTop: 16,
           fontSize: 38,
           fontWeight: 800,
-          color: "#1A1A1A",
+          color: "#252630",
           letterSpacing: "-0.03em",
           lineHeight: 1.1,
         }}
@@ -207,7 +205,7 @@ function ActivityHeader({ activity }: { activity: Activity }) {
         style={{
           marginTop: 10,
           fontSize: 13,
-          color: "#6B6B6B",
+          color: "#8E8D9B",
           lineHeight: 1.5,
         }}
       >
@@ -250,7 +248,7 @@ function SectionWhatToDo({
         style={{
           fontSize: 16,
           fontWeight: 700,
-          color: "#1A1A1A",
+          color: "#252630",
           letterSpacing: "-0.005em",
         }}
       >
@@ -262,7 +260,7 @@ function SectionWhatToDo({
           marginTop: 12,
           fontSize: 15,
           fontWeight: 400,
-          color: "#1A1A1A",
+          color: "#252630",
           lineHeight: 1.55,
         }}
       >
@@ -296,7 +294,7 @@ function ExampleToggle({
           borderRadius: 999,
           border: "1px solid #E5E3DA",
           background: "#FFFFFF",
-          color: "#6B6B6B",
+          color: "#8E8D9B",
           fontSize: 13,
           fontWeight: 400,
         }}
@@ -334,7 +332,7 @@ function ExampleBody({
         <p
           style={{
             fontSize: 14,
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             lineHeight: 1.6,
             fontStyle: "italic",
           }}
@@ -357,7 +355,7 @@ function ExampleBody({
                 flexShrink: 0,
                 fontSize: 14,
                 fontWeight: 700,
-                color: "#1A1A1A",
+                color: "#252630",
                 lineHeight: 1.6,
               }}
             >
@@ -366,7 +364,7 @@ function ExampleBody({
             <dd
               style={{
                 fontSize: 14,
-                color: "#6B6B6B",
+                color: "#8E8D9B",
                 lineHeight: 1.6,
               }}
             >
@@ -380,7 +378,7 @@ function ExampleBody({
           style={{
             marginTop: 10,
             fontSize: 14,
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             lineHeight: 1.6,
             fontStyle: "italic",
           }}
@@ -401,7 +399,7 @@ function SectionWhyItWorks({ activity }: { activity: Activity }) {
         style={{
           fontSize: 16,
           fontWeight: 700,
-          color: "#1A1A1A",
+          color: "#252630",
           letterSpacing: "-0.005em",
         }}
       >
@@ -412,7 +410,7 @@ function SectionWhyItWorks({ activity }: { activity: Activity }) {
           marginTop: 12,
           fontSize: 15,
           fontWeight: 400,
-          color: "#1A1A1A",
+          color: "#252630",
           lineHeight: 1.55,
         }}
       >

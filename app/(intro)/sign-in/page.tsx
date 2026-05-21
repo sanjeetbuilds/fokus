@@ -79,10 +79,10 @@ export default function SignInPage() {
             aria-live="polite"
             className="mb-6 rounded-[10px] px-4 py-3"
             style={{
-              background: "#F7F7F5",
+              background: "#FBFAF7",
               border: "1px solid #E5E3DA",
               fontSize: 14,
-              color: "#1A1A1A",
+              color: "#252630",
               lineHeight: 1.45,
             }}
           >
@@ -102,7 +102,7 @@ export default function SignInPage() {
         </h1>
         <p
           className="mt-2"
-          style={{ fontSize: 16, lineHeight: 1.5, color: "#6B6B6B" }}
+          style={{ fontSize: 16, lineHeight: 1.5, color: "#8E8D9B" }}
         >
           We&apos;ll email you a one-time link.
         </p>
@@ -113,7 +113,7 @@ export default function SignInPage() {
               style={{
                 fontSize: 16,
                 fontWeight: 700,
-                color: "#1A1A1A",
+                color: "#252630",
                 lineHeight: 1.4,
               }}
             >
@@ -121,7 +121,7 @@ export default function SignInPage() {
             </p>
             <p
               className="mt-2"
-              style={{ fontSize: 14, color: "#6B6B6B", lineHeight: 1.5 }}
+              style={{ fontSize: 14, color: "#8E8D9B", lineHeight: 1.5 }}
             >
               We sent a link to {email.trim()}. Open it on this device to
               finish signing in.
@@ -148,7 +148,7 @@ export default function SignInPage() {
                   fontWeight: 700,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
-                  color: "#8A8A8A",
+                  color: "#8E8D9B",
                 }}
               >
                 Email
@@ -181,7 +181,7 @@ export default function SignInPage() {
               type="submit"
               disabled={state === "sending" || email.trim().length === 0}
               className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50"
-              style={{ background: "#1A1A1A" }}
+              style={{ background: "#252630" }}
             >
               {state === "sending" ? "Sending…" : "Send link"}
             </button>

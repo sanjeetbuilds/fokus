@@ -8,7 +8,7 @@ const FADE_MS = 250;
 
 /**
  * Round-6 cold-open splash. White background, centered: a pulsing accent
- * dot, the Inter 800 "fokus." wordmark, and an italic two-line tagline.
+ * dot, the Plus Jakarta Sans 800 "fokus." wordmark, and an italic two-line tagline.
  * Holds HOLD_MS, fades for FADE_MS, then unmounts. Per-session via
  * sessionStorage so warm reloads skip it.
  *

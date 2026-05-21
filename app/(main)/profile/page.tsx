@@ -29,12 +29,12 @@ const PRONOUNS_OPTIONS: { value: Pronouns; label: string }[] = [
 /**
  * Profile: identity + about + your-data + sign out.
  *
- *   Profile                                 Inter 28 / 800
+ *   Profile                                 38 / 800
  *
  *   ┌─ Child card ────────────────────┐
  *   │ [96x96 avatar]                  │
- *   │ {name}                          │  Inter 24 / 800
- *   │ Age {n} · {pronouns}            │  Inter 14 / muted
+ *   │ {name}                          │  24 / 800
+ *   │ Age {n} · {pronouns}            │  14 / muted
  *   │ Edit details                    │  text button, ink
  *   └─────────────────────────────────┘
  *
@@ -194,7 +194,7 @@ export default function ProfilePage() {
           style={{
             padding: "16px 20px",
             fontSize: 16,
-            color: "#1A1A1A",
+            color: "#252630",
             background: "transparent",
             border: "none",
           }}
@@ -205,7 +205,7 @@ export default function ProfilePage() {
           style={{
             padding: "0 20px 12px",
             fontSize: 12,
-            color: "#8A8A8A",
+            color: "#8E8D9B",
             lineHeight: 1.45,
           }}
         >
@@ -220,7 +220,7 @@ export default function ProfilePage() {
           style={{
             padding: "16px 20px",
             fontSize: 16,
-            color: "#1A1A1A",
+            color: "#252630",
             background: "transparent",
             border: "none",
           }}
@@ -293,7 +293,7 @@ function ChildCard({
         style={{
           width: 96,
           height: 96,
-          background: child.photo_url ? "transparent" : "#1A1A1A",
+          background: child.photo_url ? "transparent" : "#252630",
           backgroundImage: child.photo_url
             ? `url(${child.photo_url})`
             : undefined,
@@ -328,7 +328,7 @@ function ChildCard({
         style={{
           marginTop: 4,
           fontSize: 14,
-          color: "#6B6B6B",
+          color: "#8E8D9B",
           lineHeight: 1.4,
         }}
       >
@@ -342,7 +342,7 @@ function ChildCard({
           marginTop: 12,
           fontSize: 14,
           fontWeight: 700,
-          color: "#1A1A1A",
+          color: "#252630",
           background: "transparent",
           border: "none",
           padding: 0,
@@ -358,7 +358,7 @@ function ChildCard({
 
 const bodyStyle: React.CSSProperties = {
   fontSize: 14,
-  color: "#1A1A1A",
+  color: "#252630",
   lineHeight: 1.5,
 };
 
@@ -388,7 +388,7 @@ function Section({
         style={{
           fontSize: 13,
           fontWeight: 700,
-          color: "#8A8A8A",
+          color: "#8E8D9B",
           textTransform: "uppercase",
           letterSpacing: "0.05em",
           marginBottom: 8,
@@ -526,9 +526,9 @@ function EditDetailsForm({
                 onClick={() => setPronouns(opt.value)}
                 className="rounded-[10px] px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 style={{
-                  background: on ? "#1A1A1A" : "#FFFFFF",
-                  border: `1px solid ${on ? "#1A1A1A" : "#E5E3DA"}`,
-                  color: on ? "#FFFFFF" : "#1A1A1A",
+                  background: on ? "#252630" : "#FFFFFF",
+                  border: `1px solid ${on ? "#252630" : "#E5E3DA"}`,
+                  color: on ? "#FFFFFF" : "#252630",
                   fontSize: 15,
                   fontWeight: 700,
                 }}
@@ -547,7 +547,7 @@ function EditDetailsForm({
           disabled={!canSave}
           className="h-[52px] w-full rounded-[8px] text-white transition-opacity disabled:opacity-50"
           style={{
-            background: "#1A1A1A",
+            background: "#252630",
             fontSize: 15,
             fontWeight: 700,
           }}
@@ -561,7 +561,7 @@ function EditDetailsForm({
           className="w-full text-center transition-opacity disabled:opacity-50"
           style={{
             fontSize: 14,
-            color: "#6B6B6B",
+            color: "#8E8D9B",
             background: "transparent",
             border: "none",
             padding: "8px 0",
@@ -589,7 +589,7 @@ function Field({
           fontWeight: 700,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
-          color: "#8A8A8A",
+          color: "#8E8D9B",
           marginBottom: 6,
         }}
       >
@@ -650,7 +650,7 @@ function DeleteAccountModal({
               style={{
                 fontSize: 22,
                 fontWeight: 700,
-                color: "#1A1A1A",
+                color: "#252630",
                 letterSpacing: "-0.01em",
                 lineHeight: 1.2,
               }}
@@ -661,7 +661,7 @@ function DeleteAccountModal({
               style={{
                 marginTop: 12,
                 fontSize: 15,
-                color: "#1A1A1A",
+                color: "#252630",
                 lineHeight: 1.5,
               }}
             >
@@ -694,7 +694,7 @@ function DeleteAccountModal({
                 className="w-full transition-opacity disabled:opacity-50"
                 style={{
                   background: "transparent",
-                  color: "#6B6B6B",
+                  color: "#8E8D9B",
                   padding: "10px",
                   border: "none",
                   fontSize: 14,

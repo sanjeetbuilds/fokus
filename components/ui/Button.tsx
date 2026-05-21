@@ -15,7 +15,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT: Record<Variant, string> = {
-  // Brand CTA. Ink #1A1A1A on white surfaces; pressed state via
+  // Brand CTA. Ink #252630 on white surfaces; pressed state via
   // active:scale below.
   primary:
     "bg-ink text-white hover:opacity-90",

@@ -45,8 +45,8 @@ const TONE_CLASS: Record<NonNullable<WordmarkProps["tone"]>, { text: string; dot
 };
 
 /**
- * Fokus wordmark: Inter 800, uppercase, ink letterforms with a single
- * accent-blue dot offset to the cap-height baseline.
+ * Fokus wordmark: Plus Jakarta Sans 800, uppercase, ink letterforms
+ * with a single accent-blue dot offset to the cap-height baseline.
  */
 export default function Wordmark({
   size = "sm",

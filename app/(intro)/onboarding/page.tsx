@@ -193,7 +193,7 @@ function DetailsStep({
             className="mt-2"
             style={{
               fontSize: 12,
-              color: "#8A8A8A",
+              color: "#8E8D9B",
               lineHeight: 1.45,
             }}
           >
@@ -231,7 +231,7 @@ function DetailsStep({
           onClick={onContinue}
           disabled={!valid}
           className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-          style={{ background: "#1A1A1A" }}
+          style={{ background: "#252630" }}
         >
           Continue
         </button>
@@ -289,9 +289,9 @@ function PronounsStep({
               onClick={() => onChange(opt.value)}
               className="rounded-[12px] p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               style={{
-                background: on ? "#1A1A1A" : "#FFFFFF",
-                border: `1px solid ${on ? "#1A1A1A" : "#E5E3DA"}`,
-                color: on ? "#FFFFFF" : "#1A1A1A",
+                background: on ? "#252630" : "#FFFFFF",
+                border: `1px solid ${on ? "#252630" : "#E5E3DA"}`,
+                color: on ? "#FFFFFF" : "#252630",
               }}
             >
               <p style={{ fontSize: 18, fontWeight: 700 }}>{opt.label}</p>
@@ -299,7 +299,7 @@ function PronounsStep({
                 className="mt-1"
                 style={{
                   fontSize: 13,
-                  color: on ? "rgba(255,255,255,0.78)" : "#6B6B6B",
+                  color: on ? "rgba(255,255,255,0.78)" : "#8E8D9B",
                   lineHeight: 1.45,
                 }}
               >
@@ -312,7 +312,7 @@ function PronounsStep({
 
       <p
         className="mt-3"
-        style={{ fontSize: 13, color: "#8A8A8A", lineHeight: 1.45 }}
+        style={{ fontSize: 13, color: "#8E8D9B", lineHeight: 1.45 }}
       >
         You can change this in Profile anytime.
       </p>
@@ -325,7 +325,7 @@ function PronounsStep({
           onClick={onSubmit}
           disabled={busy}
           className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          style={{ background: "#1A1A1A" }}
+          style={{ background: "#252630" }}
         >
           {busy ? "Saving…" : "Continue"}
         </button>

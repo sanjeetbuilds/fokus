@@ -6,7 +6,7 @@ export interface IntroScreen {
 
 /**
  * The three intro screens shown before signup. Copy is intentionally
- * tight: title and body both in Inter, no auxiliary callouts.
+ * tight: title and body both in Plus Jakarta Sans, no auxiliary callouts.
  */
 export const INTRO_SCREENS: IntroScreen[] = [
   {
