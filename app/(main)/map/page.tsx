@@ -1,23 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import SkillIcon from "@/components/SkillIcon";
-import SkillTile from "@/components/SkillTile";
-import ActivitiesSheet from "@/components/activity/ActivitiesSheet";
 import AppHeader from "@/components/layout/AppHeader";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
-import { SKILL_KEYS } from "@/lib/content/skills";
 import type { ActivityLogRow } from "@/lib/supabase/queries";
 import { useActivityLog } from "@/lib/use-activity-log";
 import { useChild } from "@/lib/use-child";
-import type { SkillKey } from "@/types";
 
 /**
  * Track — parent-facing record of what they've done with their child.
  *
- *   header  "What we've done together"           28-30 / 700 ink
+ *   header  "What we've done together."          24-26 / 700 ink
  *   subhead "With {name}."                       14 / 400 muted
  *
  *   ┌── Explored ────┐  ┌── Done this month ──┐
@@ -26,23 +22,18 @@ import type { SkillKey } from "@/types";
  *   │   of 64        │  │   this month        │
  *   └─ skill yellow ─┘  └─ skill periwinkle ──┘
  *
- *   BY SKILL
- *   [2x4 SkillTile grid — variant='tried']
- *
  *   RECENT
  *   list of activity_log rows, most recent first, optional parent_note
  *
  * Empty state (zero rows):
- *   Both cards show 0. Skill tiles all "0 of 8 done". Recent section
- *   hidden. A quiet inline message points to /today.
+ *   Both stat cards show 0. Below them, a quiet centred message points
+ *   to /today (the per-skill exploration surface lives in Library).
  *
  * All data on this screen derives from a single useActivityLog query.
  */
 export default function TrackPage() {
   const { child, loading: childLoading } = useChild();
   const { rows, loading: rowsLoading } = useActivityLog();
-
-  const [openSkill, setOpenSkill] = useState<SkillKey | null>(null);
 
   const stats = useMemo(() => computeStats(rows), [rows]);
   const loaded = !childLoading && !rowsLoading;
@@ -95,28 +86,6 @@ export default function TrackPage() {
               />
             </div>
 
-            <div style={{ marginTop: 32 }}>
-              <SectionHeader>By skill</SectionHeader>
-              <div
-                style={{
-                  marginTop: 8,
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 12,
-                }}
-              >
-                {SKILL_KEYS.map((k) => (
-                  <SkillTile
-                    key={k}
-                    skillId={k}
-                    variant="tried"
-                    triedCount={stats.distinctBySkill.get(k)?.size ?? 0}
-                    onClick={() => setOpenSkill(k)}
-                  />
-                ))}
-              </div>
-            </div>
-
             {!isEmpty ? (
               <div style={{ marginTop: 32 }}>
                 <SectionHeader>Recent</SectionHeader>
@@ -136,36 +105,36 @@ export default function TrackPage() {
                 </ul>
               </div>
             ) : (
-              <div style={{ marginTop: 32 }}>
+              <div
+                style={{
+                  marginTop: 32,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
                 <p
                   style={{
                     fontSize: 15,
                     color: "#8E8D9B",
                     lineHeight: 1.5,
+                    textAlign: "center",
+                    maxWidth: 320,
                   }}
                 >
                   Nothing yet.{" "}
                   <Link
-                    href="/today"
+                    href="/"
                     style={{ color: "#252630", fontWeight: 700 }}
                   >
-                    Today screen
+                    Today&apos;s activity
                   </Link>{" "}
-                  is waiting.
+                  is waiting for you.
                 </p>
               </div>
             )}
           </>
         )}
       </div>
-
-      <ActivitiesSheet
-        open={openSkill !== null}
-        onClose={() => setOpenSkill(null)}
-        skillId={openSkill}
-        activityLog={rows}
-        fromContext="track"
-      />
     </main>
   );
 }
@@ -177,13 +146,10 @@ export default function TrackPage() {
 interface ComputedStats {
   distinctExplored: number;
   doneThisMonth: number;
-  distinctBySkill: Map<SkillKey, Set<string>>;
 }
 
 function computeStats(rows: ActivityLogRow[]): ComputedStats {
   const distinctIds = new Set<string>();
-  const distinctBySkill = new Map<SkillKey, Set<string>>();
-  for (const k of SKILL_KEYS) distinctBySkill.set(k, new Set());
 
   const now = new Date();
   const monthY = now.getUTCFullYear();
@@ -192,8 +158,6 @@ function computeStats(rows: ActivityLogRow[]): ComputedStats {
 
   for (const r of rows) {
     distinctIds.add(r.activity_id);
-    const skill = getActivityById(r.activity_id)?.skill;
-    if (skill) distinctBySkill.get(skill)?.add(r.activity_id);
 
     const d = new Date(r.completed_at);
     if (d.getUTCFullYear() === monthY && d.getUTCMonth() === monthM) {
@@ -204,7 +168,6 @@ function computeStats(rows: ActivityLogRow[]): ComputedStats {
   return {
     distinctExplored: distinctIds.size,
     doneThisMonth,
-    distinctBySkill,
   };
 }
 
