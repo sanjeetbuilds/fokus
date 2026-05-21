@@ -7,6 +7,7 @@ import AppHeader from "@/components/layout/AppHeader";
 import Sheet from "@/components/ui/Sheet";
 import { useToast } from "@/components/ui/Toast";
 import { db } from "@/lib/db";
+import { downloadExport } from "@/lib/export-data";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { signOut } from "@/lib/supabase/auth";
 import {
@@ -61,6 +62,20 @@ export default function ProfilePage() {
   const [signingOut, setSigningOut] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  const onExport = useCallback(async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      await downloadExport();
+    } catch (err) {
+      console.error("[/profile] export:", err);
+      toast("Couldn't export. Try again.", { tone: "danger" });
+    } finally {
+      setExporting(false);
+    }
+  }, [exporting, toast]);
 
   const onSignOut = useCallback(async () => {
     if (signingOut) return;
@@ -170,6 +185,32 @@ export default function ProfilePage() {
         </Section>
 
         <Divider />
+
+        <button
+          type="button"
+          onClick={() => void onExport()}
+          disabled={exporting}
+          className="w-full text-left transition-opacity disabled:opacity-50"
+          style={{
+            padding: "16px 20px",
+            fontSize: 14,
+            color: "#1A1A1A",
+            background: "transparent",
+            border: "none",
+          }}
+        >
+          {exporting ? "Preparing…" : "Export my data"}
+        </button>
+        <p
+          style={{
+            padding: "0 20px 12px",
+            fontSize: 12,
+            color: "#8A8A8A",
+            lineHeight: 1.45,
+          }}
+        >
+          Download everything we have about you, as a file.
+        </p>
 
         <button
           type="button"
