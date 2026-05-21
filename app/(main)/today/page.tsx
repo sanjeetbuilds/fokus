@@ -9,45 +9,32 @@ import WelcomeModal from "@/components/today/WelcomeModal";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
 import { db, getSessionsByDate } from "@/lib/db";
 import { pickActivity, RestDayError } from "@/lib/engine";
-import { useAppStore } from "@/lib/store/useAppStore";
 import type { ChildRow } from "@/lib/supabase/queries";
 import { useChild } from "@/lib/use-child";
 import { ageFromDob, today as todayIso } from "@/lib/utils/dates";
-import type {
-  Child,
-  ChildMood,
-  Session,
-  TimeAvailable,
-} from "@/types";
-
-const TIME_OPTIONS: { value: TimeAvailable; label: string }[] = [
-  { value: "short", label: "5 min" },
-  { value: "medium", label: "10–15 min" },
-  { value: "long", label: "20+ min" },
-];
-
-const MOOD_OPTIONS: { value: ChildMood; label: string }[] = [
-  { value: "low", label: "Low energy" },
-  { value: "normal", label: "Steady" },
-  { value: "high", label: "Buzzing" },
-];
+import type { Child, Session } from "@/types";
 
 /**
- * Today screen, rewired to read child from useChild() (Supabase).
+ * Today screen. Reads child from useChild() (Supabase).
  *
- *   AppHeader
- *   HomeHeader      avatar + name + "Age N · pronouns"   (T2.4)
+ *   AppHeader (Fokus wordmark only)
+ *   HomeHeader      avatar + name + "Age N · pronouns"
  *   "Today's focus." (28 / 800)
- *   Activity card                                         (primary)
- *   "Tune today" chips + "pick another"                   (secondary)
+ *   Activity card
  *
- * Sessions still read from Dexie in this commit (T2.5 will move
- * completion writes to Supabase activity_log; for now Dexie is empty
- * so the engine sees a fresh-history child and picks normally).
+ * That is the entire screen. No "Tune today" chips, no "pick a
+ * different activity" override, no time/mood filter, no streak.
+ * Fokus shows one activity per day; if the parent doesn't want to
+ * do it, they can browse Library and pick something else, but Today
+ * does not surface a re-roll.
+ *
+ * Sessions still read from Dexie here — the table is empty under the
+ * new account, so the engine sees a fresh-history child and picks
+ * deterministically from the rotation rules. Will move to a Supabase
+ * cache when Prompt 3 ships.
  */
 export default function TodayPage() {
   const router = useRouter();
-  const setLastPickContext = useAppStore((s) => s.setLastPickContext);
 
   const { child: childRow, loading: childLoading } = useChild();
   const legacyChild = useMemo(
@@ -59,13 +46,8 @@ export default function TodayPage() {
   const [todaysSessions, setTodaysSessions] = useState<Session[]>([]);
   const [sessionsLoaded, setSessionsLoaded] = useState(false);
 
-  const [time, setTime] = useState<TimeAvailable>("medium");
-  const [mood, setMood] = useState<ChildMood>("normal");
   const [pickedActivityId, setPickedActivityId] = useState<string | null>(null);
   const [restDay, setRestDay] = useState(false);
-  // Salt that lets "Pick a different activity" re-run the engine with the
-  // same time/mood — incrementing it bumps the effect below.
-  const [pickSalt, setPickSalt] = useState(0);
 
   const todayDate = useMemo(() => todayIso(), []);
 
@@ -100,22 +82,9 @@ export default function TodayPage() {
       return;
     }
     try {
-      const r = pickActivity(
-        legacyChild,
-        sessions,
-        { timeAvailable: time, childMood: mood },
-        new Date(),
-        ACTIVITIES,
-      );
+      const r = pickActivity(legacyChild, sessions, new Date(), ACTIVITIES);
       setPickedActivityId(r.pick.id);
       setRestDay(false);
-      setLastPickContext({
-        childId: legacyChild.id,
-        activityId: r.pick.id,
-        time,
-        mood,
-        date: todayDate,
-      });
     } catch (err) {
       if (err instanceof RestDayError) {
         setPickedActivityId(null);
@@ -124,27 +93,17 @@ export default function TodayPage() {
       }
       console.error("[/today] pickActivity:", err);
     }
-  }, [
-    legacyChild,
-    mood,
-    pickSalt,
-    sessions,
-    setLastPickContext,
-    time,
-    todayDate,
-    todaysSessions.length,
-  ]);
+  }, [legacyChild, sessions, todaysSessions.length]);
 
   const pickedActivity = useMemo(
     () => (pickedActivityId ? getActivityById(pickedActivityId) ?? null : null),
     [pickedActivityId],
   );
 
-  const onMoreDetail = useCallback(() => {
+  const onOpenActivity = useCallback(() => {
     if (!pickedActivity) return;
-    const qs = new URLSearchParams({ time, mood, from: "today" });
-    router.push(`/activity/${pickedActivity.id}?${qs.toString()}`);
-  }, [mood, pickedActivity, router, time]);
+    router.push(`/activity/${pickedActivity.id}?from=today`);
+  }, [pickedActivity, router]);
 
   const loaded = !childLoading && sessionsLoaded;
 
@@ -199,56 +158,14 @@ export default function TodayPage() {
           ) : pickedActivity ? (
             <TodayActivityCard
               activity={pickedActivity}
-              onStart={onMoreDetail}
+              onStart={onOpenActivity}
             />
           ) : (
             <p className="mt-6 text-center text-footnote text-ink-tertiary">
-              No activity matches that filter right now.
+              No activity for today.
             </p>
           )}
         </div>
-
-        {!alreadyLogged && !restDay ? (
-          <section className="mt-8">
-            <p
-              className="text-ink-tertiary"
-              style={{
-                fontSize: 11,
-                fontWeight: 800,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-              }}
-            >
-              Tune today
-            </p>
-            <p
-              className="mt-1 text-ink-tertiary"
-              style={{ fontSize: 12, lineHeight: 1.5 }}
-            >
-              Adjust if the activity doesn&apos;t fit right now.
-            </p>
-            <div className="mt-3 flex flex-col gap-2.5">
-              <CompactChipRow
-                options={TIME_OPTIONS}
-                value={time}
-                onChange={setTime}
-              />
-              <CompactChipRow
-                options={MOOD_OPTIONS}
-                value={mood}
-                onChange={setMood}
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => setPickSalt((s) => s + 1)}
-              className="mt-3 text-[13px] font-extrabold transition-colors hover:underline"
-              style={{ color: "var(--accent-deep)" }}
-            >
-              Pick a different activity
-            </button>
-          </section>
-        ) : null}
       </div>
 
       <WelcomeModal
@@ -346,44 +263,6 @@ function toLegacyChild(row: ChildRow): Child {
     createdAt: row.created_at,
     updatedAt: row.created_at,
   };
-}
-
-// ---------- CompactChipRow + states (unchanged from prior file) ----------
-
-function CompactChipRow<T extends string>({
-  options,
-  value,
-  onChange,
-}: {
-  options: { value: T; label: string }[];
-  value: T;
-  onChange: (v: T) => void;
-}) {
-  return (
-    <div className="flex gap-2">
-      {options.map((opt) => {
-        const on = value === opt.value;
-        return (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onChange(opt.value)}
-            className="rounded-full px-3 transition-colors"
-            style={{
-              height: 36,
-              fontSize: 13,
-              fontWeight: 800,
-              background: on ? "#1A1A1A" : "#FFFFFF",
-              color: on ? "#FFFFFF" : "#1A1A1A",
-              border: `1px solid ${on ? "#1A1A1A" : "#EEEEEE"}`,
-            }}
-          >
-            {opt.label}
-          </button>
-        );
-      })}
-    </div>
-  );
 }
 
 function RestDay({ childName }: { childName: string }) {

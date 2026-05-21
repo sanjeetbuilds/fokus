@@ -1,6 +1,6 @@
 import type { Activity, Child, Session } from "@/types";
 import { scoreActivity } from "./scoreActivity";
-import { RestDayError, type PickContext, type ScoredActivity } from "./types";
+import { RestDayError, type ScoredActivity } from "./types";
 
 export interface PickResult {
   pick: Activity;
@@ -8,11 +8,13 @@ export interface PickResult {
 }
 
 /**
- * Pick today's activity. Implements SPEC §7 verbatim:
- *   1. Score every activity.
+ * Pick today's activity.
+ *   1. Score every activity (recency / skill coverage / confidence
+ *      trend / age fit; no per-pick context).
  *   2. Sort descending.
  *   3. From the top 3, do a weighted-random draw (weight = max(1, score))
- *      so the same activity isn't picked back-to-back when state is similar.
+ *      so the same activity isn't picked back-to-back when state is
+ *      similar.
  *   4. If literally every activity scores below zero, throw RestDayError.
  *
  * `today` and `rng` are injected so tests can be deterministic.
@@ -20,13 +22,12 @@ export interface PickResult {
 export function pickActivity(
   child: Child,
   sessions: Session[],
-  context: PickContext,
   today: Date,
   activities: Activity[],
   rng: () => number = Math.random,
 ): PickResult {
   const scored = activities
-    .map((a) => scoreActivity(a, child, sessions, context, today))
+    .map((a) => scoreActivity(a, child, sessions, today))
     .sort((a, b) => b.score - a.score);
 
   if (scored.length === 0) {

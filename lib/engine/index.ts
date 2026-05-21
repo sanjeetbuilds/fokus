@@ -1,5 +1,4 @@
 export {
-  type PickContext,
   type ResponseValue,
   type ScoredActivity,
   responseValue,

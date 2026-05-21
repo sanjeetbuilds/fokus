@@ -1,22 +1,5 @@
 import { getActivityById } from "@/lib/content/activities";
-import type {
-  Activity,
-  SessionResponse,
-  SkillKey,
-  TimeAvailable,
-  ChildMood,
-} from "@/types";
-
-/**
- * The context the parent supplies on the Today screen: how much time they
- * have today and how their child seems right now. Same shape as
- * SessionContext (recorded on each Session), re-exported as PickContext
- * to make engine call sites self-documenting.
- */
-export interface PickContext {
-  timeAvailable: TimeAvailable;
-  childMood: ChildMood;
-}
+import type { Activity, SessionResponse, SkillKey } from "@/types";
 
 /**
  * Numeric value assigned to each response, per spec §7.

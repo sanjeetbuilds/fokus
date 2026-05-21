@@ -26,7 +26,6 @@ import {
   pickActivity,
   RestDayError,
   scoreActivity,
-  type PickContext,
   type PickResult,
   type ScoredActivity,
 } from "@/lib/engine";
@@ -122,16 +121,11 @@ export default function EngineDevPage() {
     [children, childId],
   );
 
-  const ctx: PickContext = useMemo(
-    () => ({ timeAvailable: time, childMood: mood }),
-    [time, mood],
-  );
-
   const onPick = useCallback(() => {
     if (!child) return;
     setBusy(true);
     try {
-      const r = pickActivity(child, sessions, ctx, new Date(), ACTIVITIES);
+      const r = pickActivity(child, sessions, new Date(), ACTIVITIES);
       setResult(r);
       setRestDay(false);
       setExpanded(new Set());
@@ -146,14 +140,14 @@ export default function EngineDevPage() {
     } finally {
       setBusy(false);
     }
-  }, [child, sessions, ctx, toast]);
+  }, [child, sessions, toast]);
 
   const live: ScoredActivity[] = useMemo(() => {
     if (!child) return [];
     return ACTIVITIES.map((a) =>
-      scoreActivity(a, child, sessions, ctx, new Date()),
+      scoreActivity(a, child, sessions, new Date()),
     ).sort((a, b) => b.score - a.score);
-  }, [child, sessions, ctx]);
+  }, [child, sessions]);
 
   const top10 = result?.scored.slice(0, 10) ?? live.slice(0, 10);
 

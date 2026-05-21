@@ -1,16 +1,12 @@
 /**
  * Engine unit tests; each test reads as a single behavioral claim about
- * SPEC §7. If you change the engine, the assertion that breaks tells you
- * which behavior you altered.
+ * the rotation rules. If you change the engine, the assertion that
+ * breaks tells you which behavior you altered.
  */
 import { describe, expect, it } from "vitest";
 
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
-import {
-  pickActivity,
-  scoreActivity,
-  type PickContext,
-} from "@/lib/engine";
+import { pickActivity, scoreActivity } from "@/lib/engine";
 import type { Child, Session, SessionResponse, SkillKey } from "@/types";
 
 // ---------- helpers ----------
@@ -49,32 +45,12 @@ function makeSession(patch: Partial<Session> & { activityId: string }): Session 
   };
 }
 
-const NORMAL_CTX: PickContext = {
-  timeAvailable: "medium",
-  childMood: "normal",
-};
-
 const lang = (id: string): SkillKey => getActivityById(id)!.skill;
 
 // ---------- tests ----------
 
 describe("scoreActivity / pickActivity", () => {
-  it("a) low mood drops every difficulty-3 activity below its normal-mood score", () => {
-    const child = makeChild();
-    const low = ACTIVITIES.map((a) =>
-      scoreActivity(a, child, [], { ...NORMAL_CTX, childMood: "low" }, TODAY),
-    );
-    const normal = ACTIVITIES.map((a) =>
-      scoreActivity(a, child, [], NORMAL_CTX, TODAY),
-    );
-    for (let i = 0; i < ACTIVITIES.length; i++) {
-      const act = ACTIVITIES[i]!;
-      if (act.difficulty !== 3) continue;
-      expect(low[i]!.score).toBeLessThan(normal[i]!.score);
-    }
-  });
-
-  it("b) neglected skill gets +30 after 7 days untouched; overdone skill gets -30", () => {
+  it("a) neglected skill gets +30 after 7 days untouched; overdone skill gets -30", () => {
     const child = makeChild();
     // 7 curiosity sessions, one per day, all engaged
     const sessions: Session[] = Array.from({ length: 7 }, (_, i) =>
@@ -85,7 +61,7 @@ describe("scoreActivity / pickActivity", () => {
       }),
     );
     const scored = ACTIVITIES.map((a) =>
-      scoreActivity(a, child, sessions, NORMAL_CTX, TODAY),
+      scoreActivity(a, child, sessions, TODAY),
     );
     const curiosity = scored.filter((s) => s.activity.skill === "curiosity");
     const otherTopSkills = new Set(
@@ -104,7 +80,7 @@ describe("scoreActivity / pickActivity", () => {
     expect([...otherTopSkills].some((k) => k !== "curiosity")).toBe(true);
   });
 
-  it("c) frustrated trend in resilience eases off every difficulty-3 resilience pick", () => {
+  it("b) frustrated trend in resilience eases off every difficulty-3 resilience pick", () => {
     const child = makeChild();
     // 3 frustrated sessions in resilience inside last 14 days
     const sessions: Session[] = [
@@ -117,7 +93,7 @@ describe("scoreActivity / pickActivity", () => {
     );
     expect(diff3Resilience.length).toBeGreaterThan(0);
     for (const a of diff3Resilience) {
-      const s = scoreActivity(a, child, sessions, NORMAL_CTX, TODAY);
+      const s = scoreActivity(a, child, sessions, TODAY);
       const trendReason = s.reasons.find((r) =>
         /skill trend negative/i.test(r),
       );
@@ -127,7 +103,7 @@ describe("scoreActivity / pickActivity", () => {
     }
   });
 
-  it("d) same activity is not picked every time when state is similar (weighted-random)", () => {
+  it("c) same activity is not picked every time when state is similar (weighted-random)", () => {
     const child = makeChild();
     // 5 engaged sessions of cu1 in the past week
     const sessions = Array.from({ length: 5 }, (_, i) =>
@@ -142,7 +118,7 @@ describe("scoreActivity / pickActivity", () => {
     let i = 0;
     const rng = () => rngSeq[i++ % rngSeq.length]!;
     const picks = Array.from({ length: 10 }, () =>
-      pickActivity(child, sessions, NORMAL_CTX, TODAY, ACTIVITIES, rng).pick,
+      pickActivity(child, sessions, TODAY, ACTIVITIES, rng).pick,
     );
     // The seeded activity should not be picked all 10 times…
     expect(picks.every((p) => p.id === "cu1")).toBe(false);
@@ -150,7 +126,7 @@ describe("scoreActivity / pickActivity", () => {
     expect(new Set(picks.map((p) => p.id)).size).toBeGreaterThan(1);
   });
 
-  it("e) recent LOVED activity recurs sooner than recent FRUSTRATED one", () => {
+  it("d) recent LOVED activity recurs sooner than recent FRUSTRATED one", () => {
     const cu1 = getActivityById("cu1")!;
     const lovedSessions = [
       makeSession({ activityId: "cu1", date: daysAgo(8), response: "loved" }),
@@ -162,18 +138,11 @@ describe("scoreActivity / pickActivity", () => {
         response: "frustrated",
       }),
     ];
-    const loved = scoreActivity(
-      cu1,
-      makeChild(),
-      lovedSessions,
-      NORMAL_CTX,
-      TODAY,
-    );
+    const loved = scoreActivity(cu1, makeChild(), lovedSessions, TODAY);
     const frustrated = scoreActivity(
       cu1,
       makeChild(),
       frustratedSessions,
-      NORMAL_CTX,
       TODAY,
     );
     expect(loved.score).toBeGreaterThan(frustrated.score);
