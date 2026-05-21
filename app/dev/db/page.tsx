@@ -413,7 +413,7 @@ function RecentRow({
     <Card>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-body font-extrabold text-ink">{heading}</p>
+          <p className="truncate text-body font-bold text-ink">{heading}</p>
           {meta ? (
             <p className="mt-1 truncate text-footnote text-ink-secondary">
               {meta}

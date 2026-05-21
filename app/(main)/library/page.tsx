@@ -84,17 +84,15 @@ function LibraryBody() {
         ) : null}
 
         <h1
-          className="text-[50px] font-extrabold text-ink"
+          className="text-[30px] font-bold text-ink"
           style={{
-            lineHeight: 1.05,
-            letterSpacing: "-0.035em",
+            lineHeight: 1.1,
+            letterSpacing: "-0.01em",
             paddingTop: 6,
             marginBottom: 22,
           }}
         >
-          Activity
-          <br />
-          Library
+          Activity Library
         </h1>
 
         <div className="-mr-6 mb-5 flex gap-2 overflow-x-auto pb-1">
@@ -118,8 +116,8 @@ function LibraryBody() {
         {featured ? <FeaturedPick activity={featured} /> : null}
 
         <h2
-          className="text-[22px] font-extrabold text-ink"
-          style={{ letterSpacing: "-0.02em", marginBottom: 16 }}
+          className="text-[22px] font-bold text-ink"
+          style={{ letterSpacing: "-0.01em", marginBottom: 16 }}
         >
           All activities
         </h2>
@@ -170,7 +168,7 @@ function FilterPill({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-extrabold transition-colors"
+      className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-bold transition-colors"
       style={{
         background: active ? activeBg : "#FFFFFF",
         border: `1px solid ${active ? activeBg : "#EEEEEE"}`,
@@ -195,14 +193,14 @@ function FeaturedPick({ activity }: { activity: Activity }) {
       >
         <div className="min-w-0 flex-1">
           <p
-            className="text-[12px] font-extrabold"
+            className="text-[12px] font-bold"
             style={{ color: "rgba(255,255,255,0.68)", marginBottom: 6 }}
           >
             Today&apos;s pick
           </p>
           <p
-            className="font-extrabold text-white"
-            style={{ fontSize: 22, lineHeight: 1.2, letterSpacing: "-0.025em" }}
+            className="font-bold text-white"
+            style={{ fontSize: 22, lineHeight: 1.2, letterSpacing: "-0.01em" }}
           >
             {activity.title}
           </p>
@@ -213,7 +211,7 @@ function FeaturedPick({ activity }: { activity: Activity }) {
             {activity.description}
           </p>
           <span
-            className="mt-2 inline-flex items-center gap-1 rounded-[10px] px-2.5 py-[3px] text-[11px] font-extrabold text-white"
+            className="mt-2 inline-flex items-center gap-1 rounded-[10px] px-2.5 py-[3px] text-[11px] font-bold text-white"
             style={{ background: "rgba(255,255,255,0.22)" }}
           >
             Start <ArrowRight size={11} strokeWidth={2.5} />
@@ -248,7 +246,7 @@ function ActivityRow({
       />
       <div className="min-w-0 flex-1">
         <p
-          className="text-[16px] font-extrabold text-ink"
+          className="text-[16px] font-bold text-ink"
           style={{ marginBottom: 3 }}
         >
           {activity.title}
@@ -258,7 +256,7 @@ function ActivityRow({
         </p>
         <div className="mt-1 flex items-center gap-1.5">
           <span
-            className="inline-flex items-center rounded-[10px] px-2 py-[3px] text-[11px] font-extrabold"
+            className="inline-flex items-center rounded-[10px] px-2 py-[3px] text-[11px] font-bold"
             style={{
               color: skill.color,
               background: `${skill.color}1F`,
@@ -277,7 +275,7 @@ function ActivityRow({
           className="inline-flex shrink-0 items-center gap-1"
           style={{
             fontSize: 13,
-            fontWeight: 800,
+            fontWeight: 700,
             color: "#1A1A1A",
           }}
         >
@@ -313,7 +311,7 @@ function CompletionBanner({
         className="flex-1"
         style={{
           fontSize: 14,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#1A1A1A",
           lineHeight: 1.4,
           letterSpacing: "-0.005em",

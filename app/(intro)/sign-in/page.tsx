@@ -92,10 +92,10 @@ export default function SignInPage() {
         <h1
           className="text-ink"
           style={{
-            fontSize: 36,
-            fontWeight: 800,
+            fontSize: 30,
+            fontWeight: 700,
             lineHeight: 1.1,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.01em",
           }}
         >
           Sign in.
@@ -112,7 +112,7 @@ export default function SignInPage() {
             <p
               style={{
                 fontSize: 16,
-                fontWeight: 800,
+                fontWeight: 700,
                 color: "#1A1A1A",
                 lineHeight: 1.4,
               }}
@@ -145,7 +145,7 @@ export default function SignInPage() {
                 className="mb-2"
                 style={{
                   fontSize: 11,
-                  fontWeight: 800,
+                  fontWeight: 700,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
                   color: "#8A8A8A",
@@ -180,7 +180,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={state === "sending" || email.trim().length === 0}
-              className="h-[56px] w-full rounded-[6px] text-[16px] font-extrabold text-white transition-opacity disabled:opacity-50"
+              className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50"
               style={{ background: "#1A1A1A" }}
             >
               {state === "sending" ? "Sending…" : "Send link"}

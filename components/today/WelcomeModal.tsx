@@ -106,7 +106,7 @@ export default function WelcomeModal({
               className="text-center"
               style={{
                 fontSize: 11,
-                fontWeight: 800,
+                fontWeight: 700,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 color: "#3A2418",
@@ -121,7 +121,7 @@ export default function WelcomeModal({
               className="mt-3 text-center"
               style={{
                 fontSize: 22,
-                fontWeight: 800,
+                fontWeight: 700,
                 lineHeight: 1.2,
                 letterSpacing: "-0.005em",
                 color: "#3A2418",
@@ -165,7 +165,7 @@ export default function WelcomeModal({
               style={{
                 background: "#2A1F14",
                 fontSize: 16,
-                fontWeight: 800,
+                fontWeight: 700,
                 letterSpacing: "-0.005em",
               }}
             >

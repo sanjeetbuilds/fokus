@@ -31,7 +31,7 @@ export default function ActivityRow({ activity }: ActivityRowProps) {
       />
 
       <div className="min-w-0 flex-1">
-        <p className="text-[15px] font-extrabold leading-tight text-ink">
+        <p className="text-[15px] font-bold leading-tight text-ink">
           {activity.title}
         </p>
         <p className="mt-0.5 truncate text-[12px] text-ink-tertiary">
@@ -39,7 +39,7 @@ export default function ActivityRow({ activity }: ActivityRowProps) {
         </p>
         <div className="mt-1 flex items-center gap-2">
           <span
-            className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-extrabold"
+            className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold"
             style={{
               backgroundColor: `${skill.color}1F`,
               color: skill.color,

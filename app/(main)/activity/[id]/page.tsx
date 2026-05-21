@@ -138,7 +138,7 @@ function ActivityDetailBody() {
             type="button"
             onClick={onMarkDone}
             disabled={submitting}
-            className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-extrabold text-white transition-opacity duration-fast ease-out active:opacity-80 disabled:opacity-60"
+            className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-bold text-white transition-opacity duration-fast ease-out active:opacity-80 disabled:opacity-60"
             style={{
               background: "#1A1A1A",
             }}
@@ -168,9 +168,9 @@ function ActivityHeader({ activity }: { activity: Activity }) {
         style={{
           marginTop: 16,
           fontSize: 32,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#1A1A1A",
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.01em",
           lineHeight: 1.1,
         }}
       >
@@ -223,7 +223,7 @@ function SectionWhatToDo({
       <h2
         style={{
           fontSize: 16,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#1A1A1A",
           letterSpacing: "-0.005em",
         }}
@@ -330,7 +330,7 @@ function ExampleBody({
               style={{
                 flexShrink: 0,
                 fontSize: 14,
-                fontWeight: 800,
+                fontWeight: 700,
                 color: "#1A1A1A",
                 lineHeight: 1.6,
               }}
@@ -374,7 +374,7 @@ function SectionWhyItWorks({ activity }: { activity: Activity }) {
       <h2
         style={{
           fontSize: 16,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#1A1A1A",
           letterSpacing: "-0.005em",
         }}

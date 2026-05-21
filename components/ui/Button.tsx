@@ -28,9 +28,9 @@ const VARIANT: Record<Variant, string> = {
 };
 
 const SIZE: Record<Size, string> = {
-  sm: "h-9 px-3 text-callout font-extrabold gap-1.5",
-  md: "h-[50px] px-5 text-[16px] font-extrabold gap-2",
-  lg: "h-14 px-6 text-[17px] font-extrabold gap-2",
+  sm: "h-9 px-3 text-callout font-bold gap-1.5",
+  md: "h-[50px] px-5 text-[16px] font-bold gap-2",
+  lg: "h-14 px-6 text-[17px] font-bold gap-2",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -58,7 +58,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       // class-merging / specificity never reverts it.
       style={{ borderRadius: 9999, ...style }}
       className={cn(
-        "inline-flex select-none items-center justify-center font-extrabold",
+        "inline-flex select-none items-center justify-center font-bold",
         "transition-transform duration-100 ease-out active:scale-[0.97]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
         "disabled:pointer-events-none disabled:opacity-50",

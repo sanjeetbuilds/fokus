@@ -98,7 +98,7 @@ function TopBar() {
     <div className="flex items-center justify-between pt-5">
       <Link
         href="/dev/ui"
-        className="inline-flex h-9 items-center gap-1 rounded-md px-2 text-[13px] font-extrabold text-ink-secondary hover:text-ink"
+        className="inline-flex h-9 items-center gap-1 rounded-md px-2 text-[13px] font-bold text-ink-secondary hover:text-ink"
       >
         <ChevronLeft size={16} strokeWidth={1.75} aria-hidden />
         back to dev
@@ -111,7 +111,7 @@ function TopBar() {
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
     <p
-      className="text-[12px] font-extrabold uppercase tracking-[0.14em] text-ink-tertiary"
+      className="text-[12px] font-bold uppercase tracking-[0.14em] text-ink-tertiary"
     >
       {children}
     </p>
@@ -133,7 +133,7 @@ function WordmarkHero() {
         style={{ backgroundColor: "var(--accent)" }}
       />
       <span
-        className="text-[64px] font-extrabold uppercase tracking-[-0.04em] text-accent"
+        className="text-[64px] font-bold uppercase tracking-[-0.04em] text-accent"
         style={{ lineHeight: 1 }}
       >
         Fokus
@@ -150,7 +150,7 @@ function WordmarkSmall() {
         className="inline-block h-1.5 w-1.5 translate-y-[-2px] rounded-full"
         style={{ backgroundColor: "var(--accent)" }}
       />
-      <span className="text-[18px] font-extrabold uppercase tracking-[-0.02em] text-accent">
+      <span className="text-[18px] font-bold uppercase tracking-[-0.01em] text-accent">
         Fokus
       </span>
     </span>
@@ -208,7 +208,7 @@ function PaletteRow() {
               boxShadow: s.border ? "inset 0 0 0 1px var(--line)" : undefined,
             }}
           />
-          <span className="text-[10px] font-extrabold text-ink">{s.label}</span>
+          <span className="text-[10px] font-bold text-ink">{s.label}</span>
           <span className="text-[9px] font-mono text-ink-tertiary">
             {s.value}
           </span>
@@ -231,7 +231,7 @@ function Section2Type() {
         <div className="mt-8 space-y-8">
           <TypeRow label="Display · 44px · 700 · tracking −0.02em">
             <h2
-              className="text-[44px] font-extrabold tracking-[-0.02em] text-ink"
+              className="text-[44px] font-bold tracking-[-0.01em] text-ink"
               style={{ lineHeight: 1.05 }}
             >
               Today with Leo
@@ -240,7 +240,7 @@ function Section2Type() {
 
           <TypeRow label="Page title · 32px · 700">
             <h2
-              className="text-[32px] font-extrabold tracking-[-0.02em] text-ink"
+              className="text-[32px] font-bold tracking-[-0.01em] text-ink"
               style={{ lineHeight: 1.1 }}
             >
               All activities
@@ -248,13 +248,13 @@ function Section2Type() {
           </TypeRow>
 
           <TypeRow label="Section title · 22px · 600">
-            <h3 className="text-[22px] font-extrabold leading-[1.2] text-ink">
+            <h3 className="text-[22px] font-bold leading-[1.2] text-ink">
               What you&apos;re really building
             </h3>
           </TypeRow>
 
           <TypeRow label="Headline · 17px · 600">
-            <p className="text-[17px] font-extrabold leading-[1.35] text-ink">
+            <p className="text-[17px] font-bold leading-[1.35] text-ink">
               The Why Chain
             </p>
           </TypeRow>
@@ -267,7 +267,7 @@ function Section2Type() {
           </TypeRow>
 
           <TypeRow label="Caption · 13px · 500 · ink-secondary">
-            <p className="text-[13px] font-extrabold uppercase tracking-[0.08em] text-ink-secondary">
+            <p className="text-[13px] font-bold uppercase tracking-[0.08em] text-ink-secondary">
               Curiosity · 10 min
             </p>
           </TypeRow>
@@ -280,7 +280,7 @@ function Section2Type() {
 function TypeRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <p className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.1em] text-ink-tertiary">
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-ink-tertiary">
         {label}
       </p>
       {children}
@@ -307,11 +307,11 @@ function Section3Today() {
 
           {/* Body */}
           <div className="mt-8">
-            <p className="text-[13px] font-extrabold text-ink-secondary">
+            <p className="text-[13px] font-bold text-ink-secondary">
               Wednesday, 14 May
             </p>
             <h1
-              className="mt-2 text-[44px] font-extrabold tracking-[-0.02em] text-ink"
+              className="mt-2 text-[44px] font-bold tracking-[-0.01em] text-ink"
               style={{ lineHeight: 1.05 }}
             >
               Today with Leo
@@ -320,7 +320,7 @@ function Section3Today() {
             <div className="mt-7 h-px w-full bg-line-subtle" />
 
             <div className="mt-7">
-              <p className="text-[12px] font-extrabold uppercase tracking-[0.12em] text-ink-tertiary">
+              <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-ink-tertiary">
                 Time available
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -331,7 +331,7 @@ function Section3Today() {
             </div>
 
             <div className="mt-7">
-              <p className="text-[12px] font-extrabold uppercase tracking-[0.12em] text-ink-tertiary">
+              <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-ink-tertiary">
                 Leo&apos;s energy
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -360,7 +360,7 @@ function MockChip({
 }) {
   return (
     <span
-      className={`inline-flex h-11 select-none items-center rounded-full px-5 text-[15px] font-extrabold ${
+      className={`inline-flex h-11 select-none items-center rounded-full px-5 text-[15px] font-bold ${
         selected
           ? "bg-accent text-white"
           : "border border-line bg-bg text-ink"
@@ -374,7 +374,7 @@ function MockChip({
 function MockPrimary({ children }: { children: ReactNode }) {
   return (
     <div
-      className="flex h-14 w-full select-none items-center justify-center rounded-[14px] bg-accent text-[17px] font-extrabold text-white"
+      className="flex h-14 w-full select-none items-center justify-center rounded-[14px] bg-accent text-[17px] font-bold text-white"
       style={{ boxShadow: "0 6px 16px rgba(58, 79, 204, 0.25)" }}
     >
       {children}
@@ -384,7 +384,7 @@ function MockPrimary({ children }: { children: ReactNode }) {
 
 function MockSecondary({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-14 select-none items-center justify-center rounded-[14px] border border-line bg-bg-elevated px-5 text-[16px] font-extrabold text-ink">
+    <div className="flex h-14 select-none items-center justify-center rounded-[14px] border border-line bg-bg-elevated px-5 text-[16px] font-bold text-ink">
       {children}
     </div>
   );
@@ -407,7 +407,7 @@ function Section4Activity() {
             <button
               type="button"
               aria-label="Back"
-              className="inline-flex h-9 items-center gap-1 rounded-md px-1 text-[15px] font-extrabold text-ink-secondary"
+              className="inline-flex h-9 items-center gap-1 rounded-md px-1 text-[15px] font-bold text-ink-secondary"
             >
               <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
               Back
@@ -434,12 +434,12 @@ function Section4Activity() {
             </div>
           </div>
 
-          <p className="mt-5 text-[12px] font-extrabold uppercase tracking-[0.12em] text-ink-secondary">
+          <p className="mt-5 text-[12px] font-bold uppercase tracking-[0.12em] text-ink-secondary">
             Curiosity · 10 min · Medium
           </p>
 
           <h1
-            className="mt-3 text-[40px] font-extrabold tracking-[-0.02em] text-ink"
+            className="mt-3 text-[40px] font-bold tracking-[-0.01em] text-ink"
             style={{ lineHeight: 1.05 }}
           >
             The Why Chain
@@ -458,7 +458,7 @@ function Section4Activity() {
               boxShadow: "inset 0 0 0 1px var(--line-subtle)",
             }}
           >
-            <p className="text-[12px] font-extrabold uppercase tracking-[0.14em] text-accent">
+            <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-accent">
               How to do it
             </p>
             <p
@@ -517,7 +517,7 @@ function ClosedCard({
         />
       ) : null}
       <span
-        className={`text-[13px] font-extrabold uppercase tracking-[0.12em] ${
+        className={`text-[13px] font-bold uppercase tracking-[0.12em] ${
           accentStripe ? "text-accent" : "text-ink-secondary"
         }`}
       >
@@ -559,7 +559,7 @@ function Section5Intro() {
           {/* Body text: bigger, looser */}
           <div className="mt-12 space-y-5">
             <p
-              className="text-[24px] font-extrabold tracking-[-0.01em] text-ink"
+              className="text-[24px] font-bold tracking-[-0.01em] text-ink"
               style={{ lineHeight: 1.25 }}
             >
               These aren&apos;t taught anywhere.
@@ -595,7 +595,7 @@ function Section5Intro() {
 
           {/* Footer row */}
           <div className="mt-10 flex items-center justify-between">
-            <span className="text-[15px] font-extrabold text-ink-tertiary">
+            <span className="text-[15px] font-bold text-ink-tertiary">
               Skip
             </span>
             <div
@@ -647,7 +647,7 @@ function AxisIllustration() {
         y={128}
         textAnchor="middle"
         fontSize={13}
-        fontWeight={800}
+        fontWeight={700}
         fill="var(--ink-secondary)"
         fontFamily="inherit"
       >
@@ -660,7 +660,7 @@ function AxisIllustration() {
         y={128}
         textAnchor="middle"
         fontSize={13}
-        fontWeight={800}
+        fontWeight={700}
         fill="var(--ink-secondary)"
         fontFamily="inherit"
       >
@@ -721,7 +721,7 @@ function IllustrationTile({
       >
         <div className="text-ink">{children}</div>
       </div>
-      <span className="text-[12px] font-extrabold uppercase tracking-[0.12em] text-ink-tertiary">
+      <span className="text-[12px] font-bold uppercase tracking-[0.12em] text-ink-tertiary">
         {label}
       </span>
     </div>

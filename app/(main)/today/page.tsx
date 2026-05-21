@@ -139,9 +139,9 @@ export default function TodayPage() {
           style={{
             marginTop: 24,
             fontSize: 28,
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.1,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.01em",
           }}
         >
           Today&apos;s focus.
@@ -204,7 +204,7 @@ function HomeHeader({ child }: { child: ChildRow }) {
           justifyContent: "center",
           color: "#FFFFFF",
           fontSize: 18,
-          fontWeight: 800,
+          fontWeight: 700,
           flexShrink: 0,
         }}
       >
@@ -214,7 +214,7 @@ function HomeHeader({ child }: { child: ChildRow }) {
         <p
           style={{
             fontSize: 20,
-            fontWeight: 800,
+            fontWeight: 700,
             color: "#1A1A1A",
             lineHeight: 1.2,
             letterSpacing: "-0.01em",
@@ -278,9 +278,9 @@ function RestDay({ childName }: { childName: string }) {
       <p
         style={{
           fontSize: 22,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#1A1A1A",
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.01em",
           lineHeight: 1.2,
         }}
       >
@@ -317,9 +317,9 @@ function DoneForToday({
       <p
         style={{
           fontSize: 22,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#1A1A1A",
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.01em",
           lineHeight: 1.2,
         }}
       >

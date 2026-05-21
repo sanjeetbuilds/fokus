@@ -298,7 +298,7 @@ export default function UIDevPage() {
                   <button
                     type="button"
                     onClick={() => toast("Done tapped.")}
-                    className="inline-flex h-9 items-center rounded-md px-2 text-callout font-extrabold text-accent hover:text-accent-pressed"
+                    className="inline-flex h-9 items-center rounded-md px-2 text-callout font-bold text-accent hover:text-accent-pressed"
                   >
                     Done
                   </button>

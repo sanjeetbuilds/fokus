@@ -87,7 +87,7 @@ export default function SplashGate({ children }: { children: ReactNode }) {
           style={{
             marginTop: 24,
             fontSize: 36,
-            fontWeight: 800,
+            fontWeight: 700,
             letterSpacing: "-0.01em",
             lineHeight: 1,
           }}

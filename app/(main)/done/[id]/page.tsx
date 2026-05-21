@@ -116,7 +116,7 @@ export default function CompletionPage() {
         <button
           type="button"
           onClick={() => router.replace("/today")}
-          className="mt-6 rounded-full px-5 py-3 text-[14px] font-extrabold text-white"
+          className="mt-6 rounded-full px-5 py-3 text-[14px] font-bold text-white"
           style={{ background: "#1A1A1A" }}
         >
           Back to Today
@@ -148,7 +148,7 @@ export default function CompletionPage() {
         <h1
           style={{
             fontSize: 48,
-            fontWeight: 800,
+            fontWeight: 700,
             color: "#1A1A1A",
             letterSpacing: "-0.03em",
             lineHeight: 1,
@@ -174,7 +174,7 @@ export default function CompletionPage() {
         <p
           style={{
             fontSize: 16,
-            fontWeight: 800,
+            fontWeight: 700,
             color: "#1A1A1A",
             letterSpacing: "-0.005em",
           }}
@@ -205,7 +205,7 @@ export default function CompletionPage() {
                 color: "#FFFFFF",
                 padding: "10px 18px",
                 fontSize: 14,
-                fontWeight: 800,
+                fontWeight: 700,
               }}
             >
               {saving ? "Saving…" : "Save note"}
@@ -233,7 +233,7 @@ export default function CompletionPage() {
             background: "transparent",
             color: "#1A1A1A",
             fontSize: 14,
-            fontWeight: 800,
+            fontWeight: 700,
           }}
         >
           Do another with {childName}?

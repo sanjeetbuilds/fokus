@@ -162,10 +162,10 @@ function DetailsStep({
       <h1
         className="text-ink"
         style={{
-          fontSize: 36,
-          fontWeight: 800,
+          fontSize: 30,
+          fontWeight: 700,
           lineHeight: 1.1,
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.01em",
         }}
       >
         Let&apos;s begin.
@@ -230,7 +230,7 @@ function DetailsStep({
           type="button"
           onClick={onContinue}
           disabled={!valid}
-          className="h-[56px] w-full rounded-[6px] text-[16px] font-extrabold text-white transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
           style={{ background: "#1A1A1A" }}
         >
           Continue
@@ -269,9 +269,9 @@ function PronounsStep({
         className="text-ink"
         style={{
           fontSize: 32,
-          fontWeight: 800,
+          fontWeight: 700,
           lineHeight: 1.15,
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.01em",
         }}
       >
         How does {name} like to be referred to?
@@ -294,7 +294,7 @@ function PronounsStep({
                 color: on ? "#FFFFFF" : "#1A1A1A",
               }}
             >
-              <p style={{ fontSize: 18, fontWeight: 800 }}>{opt.label}</p>
+              <p style={{ fontSize: 18, fontWeight: 700 }}>{opt.label}</p>
               <p
                 className="mt-1"
                 style={{
@@ -324,7 +324,7 @@ function PronounsStep({
           type="button"
           onClick={onSubmit}
           disabled={busy}
-          className="h-[56px] w-full rounded-[6px] text-[16px] font-extrabold text-white transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           style={{ background: "#1A1A1A" }}
         >
           {busy ? "Saving…" : "Continue"}
@@ -377,7 +377,7 @@ function Field({
         className="mb-2 text-ink-tertiary"
         style={{
           fontSize: 11,
-          fontWeight: 800,
+          fontWeight: 700,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
         }}

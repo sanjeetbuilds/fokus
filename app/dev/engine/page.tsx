@@ -280,13 +280,13 @@ export default function EngineDevPage() {
               <table className="w-full text-left text-footnote">
                 <thead className="border-b border-line-subtle bg-bg text-caption uppercase tracking-[0.08em] text-ink-tertiary">
                   <tr>
-                    <th className="px-3 py-3 font-extrabold">#</th>
-                    <th className="px-3 py-3 font-extrabold">Title</th>
-                    <th className="px-3 py-3 font-extrabold">Skill</th>
-                    <th className="px-3 py-3 font-extrabold">Min</th>
-                    <th className="px-3 py-3 font-extrabold">Diff</th>
-                    <th className="px-3 py-3 font-extrabold">Score</th>
-                    <th className="px-3 py-3 font-extrabold"></th>
+                    <th className="px-3 py-3 font-bold">#</th>
+                    <th className="px-3 py-3 font-bold">Title</th>
+                    <th className="px-3 py-3 font-bold">Skill</th>
+                    <th className="px-3 py-3 font-bold">Min</th>
+                    <th className="px-3 py-3 font-bold">Diff</th>
+                    <th className="px-3 py-3 font-bold">Score</th>
+                    <th className="px-3 py-3 font-bold"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -356,7 +356,7 @@ function SkillChip({ skill }: { skill: SkillKey }) {
   const Icon = ICONS[def.iconName];
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-caption font-extrabold text-white"
+      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-caption font-bold text-white"
       style={{ backgroundColor: def.color }}
     >
       {Icon ? <Icon size={12} strokeWidth={2} aria-hidden /> : null}
@@ -392,7 +392,7 @@ function Row({
         <td className="px-3 py-3 text-ink">{a.title}</td>
         <td className="px-3 py-3">
           <span
-            className="inline-flex h-5 items-center gap-1 rounded-full px-2 text-caption font-extrabold text-white"
+            className="inline-flex h-5 items-center gap-1 rounded-full px-2 text-caption font-bold text-white"
             style={{ backgroundColor: def.color }}
           >
             {def.label}

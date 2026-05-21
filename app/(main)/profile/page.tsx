@@ -156,9 +156,9 @@ export default function ProfilePage() {
           style={{
             paddingTop: 6,
             fontSize: 28,
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.1,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.01em",
             marginBottom: 28,
           }}
         >
@@ -301,7 +301,7 @@ function ChildCard({
           backgroundPosition: "center",
           color: "#FFFFFF",
           fontSize: 36,
-          fontWeight: 800,
+          fontWeight: 700,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -317,8 +317,8 @@ function ChildCard({
         style={{
           marginTop: 16,
           fontSize: 24,
-          fontWeight: 800,
-          letterSpacing: "-0.02em",
+          fontWeight: 700,
+          letterSpacing: "-0.01em",
           lineHeight: 1.15,
         }}
       >
@@ -341,7 +341,7 @@ function ChildCard({
         style={{
           marginTop: 12,
           fontSize: 14,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#1A1A1A",
           background: "transparent",
           border: "none",
@@ -387,7 +387,7 @@ function Section({
       <p
         style={{
           fontSize: 13,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#8A8A8A",
           textTransform: "uppercase",
           letterSpacing: "0.05em",
@@ -530,7 +530,7 @@ function EditDetailsForm({
                   border: `1px solid ${on ? "#1A1A1A" : "#EEEEEE"}`,
                   color: on ? "#FFFFFF" : "#1A1A1A",
                   fontSize: 15,
-                  fontWeight: 800,
+                  fontWeight: 700,
                 }}
               >
                 {opt.label}
@@ -549,7 +549,7 @@ function EditDetailsForm({
           style={{
             background: "#1A1A1A",
             fontSize: 15,
-            fontWeight: 800,
+            fontWeight: 700,
           }}
         >
           {saving ? "Saving…" : "Save"}
@@ -586,7 +586,7 @@ function Field({
       <p
         style={{
           fontSize: 11,
-          fontWeight: 800,
+          fontWeight: 700,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
           color: "#8A8A8A",
@@ -649,9 +649,9 @@ function DeleteAccountModal({
               id="delete-title"
               style={{
                 fontSize: 22,
-                fontWeight: 800,
+                fontWeight: 700,
                 color: "#1A1A1A",
-                letterSpacing: "-0.02em",
+                letterSpacing: "-0.01em",
                 lineHeight: 1.2,
               }}
             >
@@ -682,7 +682,7 @@ function DeleteAccountModal({
                   borderRadius: 999,
                   border: "none",
                   fontSize: 15,
-                  fontWeight: 800,
+                  fontWeight: 700,
                 }}
               >
                 {deleting ? "Deleting…" : "Yes, delete everything"}

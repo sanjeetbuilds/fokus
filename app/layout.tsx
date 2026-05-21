@@ -8,7 +8,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "800"],
+  weight: ["400", "700", "800"],
   variable: "--font-inter",
   display: "swap",
 });

@@ -9,8 +9,8 @@ export default function AppHeader() {
   return (
     <header className="flex items-center justify-between px-6 pt-1">
       <span
-        className="text-[18px] font-extrabold text-ink"
-        style={{ letterSpacing: "-0.02em" }}
+        className="text-[18px] font-bold text-ink"
+        style={{ letterSpacing: "-0.01em" }}
       >
         Fokus
       </span>

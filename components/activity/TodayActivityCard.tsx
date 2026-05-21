@@ -51,7 +51,7 @@ export default function TodayActivityCard({
         <span
           style={{
             fontSize: 14,
-            fontWeight: 800,
+            fontWeight: 700,
             color: "#6B6B6B",
             letterSpacing: "-0.005em",
           }}
@@ -73,10 +73,10 @@ export default function TodayActivityCard({
       <h2
         style={{
           marginTop: 20,
-          fontSize: 36,
-          fontWeight: 800,
+          fontSize: 30,
+          fontWeight: 700,
           color: "#1A1A1A",
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.01em",
           lineHeight: 1.05,
         }}
       >
@@ -107,7 +107,7 @@ export default function TodayActivityCard({
           padding: "14px 22px",
           borderRadius: 999,
           fontSize: 15,
-          fontWeight: 800,
+          fontWeight: 700,
         }}
       >
         Start

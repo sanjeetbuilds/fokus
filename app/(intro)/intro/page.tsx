@@ -47,7 +47,7 @@ export default function IntroPage() {
           <button
             type="button"
             onClick={skip}
-            className="rounded-md px-2 py-1.5 text-[14px] font-extrabold text-ink-tertiary transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="rounded-md px-2 py-1.5 text-[14px] font-bold text-ink-tertiary transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             Skip
           </button>
@@ -93,7 +93,7 @@ export default function IntroPage() {
             <button
               type="button"
               onClick={() => router.replace("/onboarding")}
-              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full text-[16px] font-extrabold text-white transition-transform duration-fast active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full text-[16px] font-bold text-white transition-transform duration-fast active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               style={{
                 background: "#1A1A1A",
                 letterSpacing: "-0.01em",
@@ -152,7 +152,7 @@ function SlideShell({
         className="mt-10 text-center text-ink"
         style={{
           fontSize: 32,
-          fontWeight: 800,
+          fontWeight: 700,
           lineHeight: 1.15,
           letterSpacing: "-0.01em",
         }}
@@ -212,7 +212,7 @@ function Slide0() {
             textAnchor="middle"
             fontSize="7.5"
             fontFamily="var(--font-inter)"
-            fontWeight="800"
+            fontWeight="700"
             fill="var(--ink-tertiary)"
           >
             marks · behavior · speed

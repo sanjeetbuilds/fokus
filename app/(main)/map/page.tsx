@@ -45,9 +45,9 @@ export default function TrackPage() {
           style={{
             paddingTop: 6,
             fontSize: 28,
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.1,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.01em",
             marginBottom: 4,
           }}
         >
@@ -114,7 +114,7 @@ function MonthlyCount({ rows }: { rows: ActivityLogRow[] }) {
         Nothing yet this month.{" "}
         <Link
           href="/today"
-          style={{ color: "#1A1A1A", fontWeight: 800 }}
+          style={{ color: "#1A1A1A", fontWeight: 700 }}
         >
           Today screen
         </Link>{" "}
@@ -125,7 +125,7 @@ function MonthlyCount({ rows }: { rows: ActivityLogRow[] }) {
 
   return (
     <p style={{ fontSize: 16, color: "#6B6B6B", lineHeight: 1.5 }}>
-      <span style={{ color: "#1A1A1A", fontWeight: 800 }}>{count}</span> done
+      <span style={{ color: "#1A1A1A", fontWeight: 700 }}>{count}</span> done
       together this month.
     </p>
   );
@@ -330,7 +330,7 @@ function SkillTile({
       <p
         style={{
           fontSize: 14,
-          fontWeight: 800,
+          fontWeight: 700,
           color: "#1A1A1A",
           lineHeight: 1.3,
         }}
@@ -446,7 +446,7 @@ function RecentRow({ row }: { row: ActivityLogRow }) {
 
 const rowTitleStyle: React.CSSProperties = {
   fontSize: 15,
-  fontWeight: 800,
+  fontWeight: 700,
   color: "#1A1A1A",
   letterSpacing: "-0.005em",
   lineHeight: 1.35,
@@ -468,7 +468,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
     <p
       style={{
         fontSize: 13,
-        fontWeight: 800,
+        fontWeight: 700,
         color: "#8A8A8A",
         textTransform: "uppercase",
         letterSpacing: "0.05em",
