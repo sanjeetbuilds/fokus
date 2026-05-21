@@ -155,10 +155,10 @@ export default function ProfilePage() {
           className="text-ink"
           style={{
             paddingTop: 6,
-            fontSize: 28,
-            fontWeight: 700,
-            lineHeight: 1.1,
-            letterSpacing: "-0.01em",
+            fontSize: 50,
+            fontWeight: 800,
+            lineHeight: 1.05,
+            letterSpacing: "-0.035em",
             marginBottom: 28,
           }}
         >
@@ -316,9 +316,9 @@ function ChildCard({
         className="text-ink"
         style={{
           marginTop: 16,
-          fontSize: 24,
-          fontWeight: 700,
-          letterSpacing: "-0.01em",
+          fontSize: 28,
+          fontWeight: 800,
+          letterSpacing: "-0.025em",
           lineHeight: 1.15,
         }}
       >

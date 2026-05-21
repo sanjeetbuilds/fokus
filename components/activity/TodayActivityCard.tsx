@@ -74,10 +74,10 @@ export default function TodayActivityCard({
         style={{
           marginTop: 20,
           fontSize: 30,
-          fontWeight: 700,
+          fontWeight: 800,
           color: "#1A1A1A",
-          letterSpacing: "-0.01em",
-          lineHeight: 1.05,
+          letterSpacing: "-0.025em",
+          lineHeight: 1.1,
         }}
       >
         {activity.title}

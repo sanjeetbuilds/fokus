@@ -138,13 +138,15 @@ export default function TodayPage() {
           className="text-ink"
           style={{
             marginTop: 24,
-            fontSize: 28,
-            fontWeight: 700,
-            lineHeight: 1.1,
-            letterSpacing: "-0.01em",
+            fontSize: 50,
+            fontWeight: 800,
+            lineHeight: 1.05,
+            letterSpacing: "-0.035em",
           }}
         >
-          Today&apos;s focus.
+          Today&apos;s
+          <br />
+          Focus
         </h1>
 
         <div className="mt-6">

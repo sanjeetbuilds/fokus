@@ -193,10 +193,10 @@ function ActivityHeader({ activity }: { activity: Activity }) {
       <h1
         style={{
           marginTop: 16,
-          fontSize: 32,
-          fontWeight: 700,
+          fontSize: 38,
+          fontWeight: 800,
           color: "#1A1A1A",
-          letterSpacing: "-0.01em",
+          letterSpacing: "-0.03em",
           lineHeight: 1.1,
         }}
       >

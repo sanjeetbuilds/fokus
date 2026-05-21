@@ -162,10 +162,10 @@ function DetailsStep({
       <h1
         className="text-ink"
         style={{
-          fontSize: 30,
-          fontWeight: 700,
+          fontSize: 38,
+          fontWeight: 800,
           lineHeight: 1.1,
-          letterSpacing: "-0.01em",
+          letterSpacing: "-0.03em",
         }}
       >
         Let&apos;s begin.

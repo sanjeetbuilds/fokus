@@ -57,15 +57,17 @@ export default function TrackPage() {
         <h1
           style={{
             paddingTop: 6,
-            fontSize: 28,
-            fontWeight: 700,
+            fontSize: 50,
+            fontWeight: 800,
             color: "#1A1A1A",
-            letterSpacing: "-0.01em",
-            lineHeight: 1.1,
-            marginBottom: 4,
+            letterSpacing: "-0.035em",
+            lineHeight: 1.05,
+            marginBottom: 6,
           }}
         >
-          What we&apos;ve done together
+          What we&apos;ve
+          <br />
+          done together
         </h1>
         <p
           style={{
@@ -228,13 +230,13 @@ function StatCards({
       }}
     >
       <StatCard
-        background="#FFF6DC"
+        background="#F4C84A"
         number={exploredCount}
         firstLine="explored"
         secondLine={`of ${TOTAL_ACTIVITIES}`}
       />
       <StatCard
-        background="#E8E5F8"
+        background="#9CA5FF"
         number={doneThisMonth}
         firstLine="done"
         secondLine="this month"
@@ -258,20 +260,22 @@ function StatCard({
     <div
       style={{
         background,
-        borderRadius: 16,
-        padding: 16,
+        borderRadius: 22,
+        padding: 18,
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
         gap: 6,
+        minHeight: 130,
+        justifyContent: "space-between",
       }}
     >
       <span
         style={{
           fontSize: 36,
-          fontWeight: 700,
-          color: "#1A1A1A",
-          letterSpacing: "-0.01em",
+          fontWeight: 800,
+          color: "#FFFFFF",
+          letterSpacing: "-0.025em",
           lineHeight: 1,
         }}
       >
@@ -280,13 +284,14 @@ function StatCard({
       <span
         style={{
           fontSize: 12,
-          color: "#1A1A1A",
+          fontWeight: 600,
+          color: "rgba(255,255,255,0.92)",
           lineHeight: 1.3,
         }}
       >
         {firstLine}
         <br />
-        <span style={{ color: "#6B6B6B" }}>{secondLine}</span>
+        <span style={{ color: "rgba(255,255,255,0.7)" }}>{secondLine}</span>
       </span>
     </div>
   );
