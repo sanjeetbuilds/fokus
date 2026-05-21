@@ -100,3 +100,95 @@ export async function updateChild(input: ChildUpdateInput): Promise<ChildRow> {
   if (error) throw error;
   return data as ChildRow;
 }
+
+/* ===========================================================
+ *  activity_log
+ *  =========================================================== */
+
+export interface ActivityLogRow {
+  id: string;
+  parent_id: string;
+  activity_id: string;
+  completed_at: string;
+  parent_note: string | null;
+}
+
+/**
+ * Record a completed activity for the signed-in parent. completed_at
+ * defaults to now() server-side; we don't pass it explicitly so the
+ * timestamp is authoritative.
+ */
+export async function insertActivityLog(
+  activityId: string,
+): Promise<ActivityLogRow> {
+  const supabase = getSupabaseBrowser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not signed in");
+
+  const { data, error } = await supabase
+    .from("activity_log")
+    .insert({ parent_id: user.id, activity_id: activityId })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as ActivityLogRow;
+}
+
+/**
+ * Get a single activity_log row by id. RLS scopes it to the signed-in
+ * parent's rows automatically; passing someone else's id returns null.
+ */
+export async function getActivityLog(
+  id: string,
+): Promise<ActivityLogRow | null> {
+  const supabase = getSupabaseBrowser();
+  const { data, error } = await supabase
+    .from("activity_log")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data as ActivityLogRow | null;
+}
+
+/**
+ * Attach (or replace) the reflection note on an existing activity_log
+ * row. Returns the updated row.
+ */
+export async function updateActivityLogNote(
+  id: string,
+  parentNote: string | null,
+): Promise<ActivityLogRow> {
+  const supabase = getSupabaseBrowser();
+  const { data, error } = await supabase
+    .from("activity_log")
+    .update({ parent_note: parentNote })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as ActivityLogRow;
+}
+
+/**
+ * All activity_log rows for the signed-in parent, most recent first.
+ * Used by Track (T2.6) and the export-data feature (T2.9).
+ */
+export async function listActivityLog(): Promise<ActivityLogRow[]> {
+  const supabase = getSupabaseBrowser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("activity_log")
+    .select("*")
+    .eq("parent_id", user.id)
+    .order("completed_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as ActivityLogRow[];
+}

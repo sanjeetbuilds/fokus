@@ -1,13 +1,15 @@
 "use client";
 
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 import SkillIcon from "@/components/SkillIcon";
 import AppHeader from "@/components/layout/AppHeader";
 import { ACTIVITIES } from "@/lib/content/activities";
 import { SKILLS, SKILL_KEYS } from "@/lib/content/skills";
+import { useChild } from "@/lib/use-child";
 import type { Activity, SkillKey } from "@/types";
 
 type FilterKey = "all" | SkillKey;
@@ -16,9 +18,29 @@ type FilterKey = "all" | SkillKey;
  * Library — pill filters across the 8 spec skills (no invented
  * categories), purple Today's Pick hero, and a list of activity rows
  * with contextual Lucide icons in skill-tinted squares.
+ *
+ * When arrived from /done/[id] (?from=completion), a dismissable
+ * banner sits above the title saying "Pick another with {name}."
  */
 export default function LibraryPage() {
+  return (
+    <Suspense fallback={null}>
+      <LibraryBody />
+    </Suspense>
+  );
+}
+
+function LibraryBody() {
   const [filter, setFilter] = useState<FilterKey>("all");
+  const searchParams = useSearchParams();
+  const { child } = useChild();
+  const [bannerOpen, setBannerOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams?.get("from") === "completion") {
+      setBannerOpen(true);
+    }
+  }, [searchParams]);
 
   const filtered = useMemo(
     () =>
@@ -30,12 +52,20 @@ export default function LibraryPage() {
 
   const featured = filtered[0];
   const rest = featured ? filtered.slice(1) : filtered;
+  const childName = child?.name ?? "your child";
 
   return (
     <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col bg-bg pb-[calc(env(safe-area-inset-bottom)+96px)] pt-[calc(env(safe-area-inset-top)+8px)]">
       <AppHeader />
 
       <div className="px-6 pt-1">
+        {bannerOpen ? (
+          <CompletionBanner
+            childName={childName}
+            onDismiss={() => setBannerOpen(false)}
+          />
+        ) : null}
+
         <h1
           className="text-[50px] font-extrabold text-ink"
           style={{
@@ -230,6 +260,42 @@ function ActivityRow({
       >
         <ChevronRight size={13} strokeWidth={2.5} className="text-ink-tertiary" />
       </span>
+    </div>
+  );
+}
+
+function CompletionBanner({
+  childName,
+  onDismiss,
+}: {
+  childName: string;
+  onDismiss: () => void;
+}) {
+  return (
+    <div
+      className="mb-4 flex items-center gap-2 rounded-[12px] px-4 py-3"
+      style={{ background: "#F7F7F5", border: "1px solid #EEEEEE" }}
+    >
+      <p
+        className="flex-1"
+        style={{
+          fontSize: 14,
+          fontWeight: 800,
+          color: "#1A1A1A",
+          lineHeight: 1.4,
+          letterSpacing: "-0.005em",
+        }}
+      >
+        Pick another with {childName}.
+      </p>
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label="Dismiss"
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-ink-tertiary transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        <X size={16} strokeWidth={2} aria-hidden />
+      </button>
     </div>
   );
 }

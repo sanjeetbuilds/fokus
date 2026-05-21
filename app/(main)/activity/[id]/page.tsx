@@ -1,28 +1,18 @@
 "use client";
 
 import { ChevronDown, ChevronLeft, ChevronUp } from "lucide-react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Suspense, useCallback, useMemo, useState } from "react";
 
 import SkillIcon from "@/components/SkillIcon";
 import Wordmark from "@/components/shared/Wordmark";
 import Button from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
 import { getActivityById } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
-import { getChild } from "@/lib/db";
-import { useAppStore } from "@/lib/store/useAppStore";
-import type {
-  Activity,
-  ActivityExample,
-  ChildMood,
-  TimeAvailable,
-} from "@/types";
+import { insertActivityLog } from "@/lib/supabase/queries";
+import { useChild } from "@/lib/use-child";
+import type { Activity, ActivityExample } from "@/types";
 
 /**
  * Activity detail — three-part structure, no redundancy.
@@ -56,53 +46,33 @@ function LoadingShell() {
 function ActivityDetailBody() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
-  const searchParams = useSearchParams();
-
   const id = params?.id;
   const activity = useMemo(
     () => (id ? getActivityById(id) : undefined),
     [id],
   );
 
-  const lastPickContext = useAppStore((s) => s.lastPickContext);
-  const activeChildId = useAppStore((s) => s.activeChildId);
-  const [childName, setChildName] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!activeChildId) {
-      setChildName(null);
-      return;
-    }
-    void (async () => {
-      try {
-        const c = await getChild(activeChildId);
-        if (!cancelled) setChildName(c?.name ?? null);
-      } catch (err) {
-        console.error("[/activity] load child:", err);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [activeChildId]);
-
-  const time = (searchParams?.get("time") as TimeAvailable | null) ??
-    (lastPickContext?.activityId === id ? lastPickContext.time : null) ??
-    "medium";
-  const mood = (searchParams?.get("mood") as ChildMood | null) ??
-    (lastPickContext?.activityId === id ? lastPickContext.mood : null) ??
-    "normal";
+  const { child } = useChild();
+  const childName = child?.name ?? null;
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
 
   const onBack = useCallback(() => {
     router.back();
   }, [router]);
 
-  const onLogIt = useCallback(() => {
-    if (!activity) return;
-    const qs = new URLSearchParams({ time, mood });
-    router.push(`/log/${activity.id}?${qs.toString()}`);
-  }, [activity, mood, router, time]);
+  const onMarkDone = useCallback(async () => {
+    if (!activity || submitting) return;
+    setSubmitting(true);
+    try {
+      const row = await insertActivityLog(activity.id);
+      router.push(`/done/${row.id}`);
+    } catch (err) {
+      console.error("[/activity] insertActivityLog:", err);
+      toast("Couldn't save. Try again.", { tone: "danger" });
+      setSubmitting(false);
+    }
+  }, [activity, router, submitting, toast]);
 
   if (!activity) {
     return (
@@ -164,13 +134,14 @@ function ActivityDetailBody() {
         <div className="mx-auto flex max-w-[680px]">
           <button
             type="button"
-            onClick={onLogIt}
-            className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-extrabold text-white transition-opacity duration-fast ease-out active:opacity-80"
+            onClick={onMarkDone}
+            disabled={submitting}
+            className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-extrabold text-white transition-opacity duration-fast ease-out active:opacity-80 disabled:opacity-60"
             style={{
               background: "#1A1A1A",
             }}
           >
-            We did it
+            {submitting ? "Saving…" : "Mark done"}
           </button>
         </div>
       </div>
