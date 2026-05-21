@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import SkillIcon from "@/components/SkillIcon";
 import { useToast } from "@/components/ui/Toast";
 import { getActivityById } from "@/lib/content/activities";
 import {
@@ -145,8 +146,16 @@ export default function CompletionPage() {
         className="flex flex-col items-center"
         style={{ marginTop: 64 }}
       >
+        {activity ? (
+          <SkillIcon
+            skillId={activity.skill}
+            size="lg"
+            iconName={activity.iconName}
+          />
+        ) : null}
         <h1
           style={{
+            marginTop: 16,
             fontSize: 48,
             fontWeight: 700,
             color: "#1A1A1A",
@@ -157,8 +166,9 @@ export default function CompletionPage() {
           Done.
         </h1>
         <p
-          className="mt-4 text-center"
+          className="text-center"
           style={{
+            marginTop: 8,
             fontSize: 16,
             fontWeight: 400,
             color: "#6B6B6B",

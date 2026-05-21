@@ -9,7 +9,6 @@ import SkillIcon from "@/components/SkillIcon";
 import AppHeader from "@/components/layout/AppHeader";
 import { ACTIVITIES } from "@/lib/content/activities";
 import { SKILLS, SKILL_KEYS } from "@/lib/content/skills";
-import { useActivityLog } from "@/lib/use-activity-log";
 import { useChild } from "@/lib/use-child";
 import type { Activity, SkillKey } from "@/types";
 
@@ -42,7 +41,6 @@ function LibraryBody() {
 
   const [filter, setFilter] = useState<FilterKey>(initialFilter);
   const { child } = useChild();
-  const { triedActivityIds } = useActivityLog();
   const [bannerOpen, setBannerOpen] = useState(false);
 
   useEffect(() => {
@@ -129,11 +127,7 @@ function LibraryBody() {
                 href={`/activity/${a.id}?from=library`}
                 className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
               >
-                <ActivityRow
-                  activity={a}
-                  isLast={i === rest.length - 1}
-                  tried={triedActivityIds.has(a.id)}
-                />
+                <ActivityRow activity={a} isLast={i === rest.length - 1} />
               </Link>
             </li>
           ))}
@@ -225,11 +219,9 @@ function FeaturedPick({ activity }: { activity: Activity }) {
 function ActivityRow({
   activity,
   isLast,
-  tried,
 }: {
   activity: Activity;
   isLast: boolean;
-  tried: boolean;
 }) {
   const skill = SKILLS[activity.skill];
   return (
@@ -269,28 +261,13 @@ function ActivityRow({
           </span>
         </div>
       </div>
-      {tried ? (
-        <span
-          aria-label="Try again"
-          className="inline-flex shrink-0 items-center gap-1"
-          style={{
-            fontSize: 13,
-            fontWeight: 700,
-            color: "#1A1A1A",
-          }}
-        >
-          Try again
-          <ArrowRight size={14} strokeWidth={2.25} aria-hidden />
-        </span>
-      ) : (
-        <span
-          aria-hidden
-          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full"
-          style={{ background: "var(--bg-alt)" }}
-        >
-          <ChevronRight size={13} strokeWidth={2.5} className="text-ink-tertiary" />
-        </span>
-      )}
+      <span
+        aria-hidden
+        className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full"
+        style={{ background: "var(--bg-alt)" }}
+      >
+        <ChevronRight size={13} strokeWidth={2.5} className="text-ink-tertiary" />
+      </span>
     </div>
   );
 }
