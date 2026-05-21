@@ -48,17 +48,15 @@ export default function TrackPage() {
         <h1
           style={{
             paddingTop: 6,
-            fontSize: 38,
-            fontWeight: 800,
+            fontSize: 26,
+            fontWeight: 700,
             color: "#252630",
-            letterSpacing: "-0.025em",
-            lineHeight: 1.05,
+            letterSpacing: "-0.02em",
+            lineHeight: 1.2,
             marginBottom: 8,
           }}
         >
-          What we&apos;ve
-          <br />
-          done together
+          What we&apos;ve done together.
         </h1>
         <p
           style={{
