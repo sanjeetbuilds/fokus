@@ -45,25 +45,11 @@ async function seed(page: import("puppeteer-core").Page, name = "Honey") {
       name: childName,
       age: 7,
       dateOfBirth: dobIso,
-      grade: "",
-      engagement: { goesDeepOn: [], fleesFrom: [], inBetween: [] },
-      primaryLanguage: "",
-      interests: [],
-      strengths: [],
-      struggles: [],
       photoUrl: null,
-      gender: "unspecified",
       createdAt: now,
       updatedAt: now,
       _syncStatus: "local",
     });
-    window.localStorage.setItem(
-      "fokus_app_state",
-      JSON.stringify({
-        state: { parentId, activeChildId: childId, lastPickContext: null },
-        version: 2,
-      }),
-    );
     window.sessionStorage.setItem("fokus_splash_shown", "1");
   }, name);
 }
