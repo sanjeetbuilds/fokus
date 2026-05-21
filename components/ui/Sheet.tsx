@@ -75,10 +75,15 @@ export default function Sheet({
               className,
             )}
           >
-            <div className="flex shrink-0 justify-center pt-3 pb-2">
+            <div className="flex shrink-0 justify-center pt-2 pb-3">
               <span
                 aria-hidden
-                className="h-1 w-9 rounded-full bg-line"
+                style={{
+                  width: 36,
+                  height: 4,
+                  borderRadius: 2,
+                  background: "#E5E3DA",
+                }}
               />
             </div>
             {title ? (

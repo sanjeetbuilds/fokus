@@ -29,7 +29,7 @@ const SIZE: Record<SkillIconSize, { box: number; icon: number }> = {
 /**
  * The only place in the app that builds the skill icon square.
  *
- *   - 14px corner radius
+ *   - 16px corner radius (reference .act-ico)
  *   - solid skill color background
  *   - white Lucide glyph at stroke-width 2.25
  *   - three sizes: sm (40x40 / 20px), md (56x56 / 28px), lg (80x80 / 40px)
@@ -58,7 +58,7 @@ export default function SkillIcon({
         justifyContent: "center",
         width: dim.box,
         height: dim.box,
-        borderRadius: 14,
+        borderRadius: 16,
         background: skill.color,
         color: "#FFFFFF",
         flexShrink: 0,

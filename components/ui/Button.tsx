@@ -28,8 +28,11 @@ const VARIANT: Record<Variant, string> = {
 };
 
 const SIZE: Record<Size, string> = {
+  // sm / md / lg map to the reference's pill heights. md is the
+  // canonical CTA height (54px → 27 radius for the pill); sm is a
+  // half-step lighter for inline actions.
   sm: "h-9 px-3 text-callout font-bold gap-1.5",
-  md: "h-[50px] px-5 text-[16px] font-bold gap-2",
+  md: "h-[54px] px-5 text-[16px] font-bold gap-2",
   lg: "h-14 px-6 text-[17px] font-bold gap-2",
 };
 
