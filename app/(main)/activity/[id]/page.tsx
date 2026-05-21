@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronLeft, ChevronUp } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useMemo, useState } from "react";
 
 import SkillIcon from "@/components/SkillIcon";
@@ -47,6 +47,9 @@ function LoadingShell() {
 function ActivityDetailBody() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const fromContext = searchParams?.get("from") ?? null;
+
   const id = params?.id;
   const activity = useMemo(
     () => (id ? getActivityById(id) : undefined),
@@ -58,9 +61,32 @@ function ActivityDetailBody() {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
 
+  /**
+   * Back behaviour: if the route was opened with ?from=<screen>, we
+   * navigate explicitly to that screen via router.replace so a deep
+   * link / refresh of the activity URL still returns somewhere
+   * sensible. Otherwise plain router.back() pops history.
+   *
+   *   from=track   → /map
+   *   from=library → /library
+   *   from=today   → /today
+   *   missing      → router.back()
+   */
   const onBack = useCallback(() => {
+    if (fromContext === "track") {
+      router.replace("/map");
+      return;
+    }
+    if (fromContext === "library") {
+      router.replace("/library");
+      return;
+    }
+    if (fromContext === "today") {
+      router.replace("/today");
+      return;
+    }
     router.back();
-  }, [router]);
+  }, [fromContext, router]);
 
   const onMarkDone = useCallback(async () => {
     if (!activity || submitting) return;
