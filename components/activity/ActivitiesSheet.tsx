@@ -123,63 +123,85 @@ function ActivitiesSheetBody({
       ? `${triedCount} of ${total} tried`
       : `${total} activities`;
   const hasDivider = tried.length > 0 && untried.length > 0;
+  // 8-digit hex: hex + "14" ≈ 8% alpha header wash.
+  const tint = `${skill.color}14`;
+  // Slightly weaker tint for the bottom-edge fade into white.
+  const tintFade = `${skill.color}0F`;
 
   return (
     <>
-      {/* Skill header */}
+      {/* Skill header zone — bleeds past Sheet's px-5 py-4 padding so
+          the tint spans the full sheet width and starts immediately
+          below the drag handle. */}
       <div
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: 12,
-          marginBottom: 16,
+          margin: "-16px -20px 0 -20px",
+          padding: "20px 20px 16px 20px",
+          background: tint,
         }}
       >
-        <SkillIcon skillId={skillId} size="md" />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h2
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              color: "#252630",
-              letterSpacing: "-0.01em",
-              lineHeight: 1.2,
-            }}
-          >
-            {skill.label}
-          </h2>
-          <p
-            style={{
-              marginTop: 2,
-              fontSize: 13,
-              color: "#8E8D9B",
-              lineHeight: 1.4,
-            }}
-          >
-            {countLine}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
+        <div
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 16,
-            background: "#FBFAF7",
-            border: "none",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#8E8D9B",
-            flexShrink: 0,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
           }}
-          className="transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
-          <X size={20} strokeWidth={1.75} aria-hidden />
-        </button>
+          <SkillIcon skillId={skillId} size="md" />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h2
+              style={{
+                fontSize: 22,
+                fontWeight: 700,
+                color: "#252630",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.2,
+              }}
+            >
+              {skill.label}
+            </h2>
+            <p
+              style={{
+                marginTop: 2,
+                fontSize: 13,
+                color: "#8E8D9B",
+                lineHeight: 1.4,
+              }}
+            >
+              {countLine}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              background: "transparent",
+              border: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#252630",
+              flexShrink: 0,
+            }}
+            className="transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <X size={20} strokeWidth={1.75} aria-hidden />
+          </button>
+        </div>
       </div>
+      {/* Tint-to-white fade strip below the header zone. */}
+      <div
+        aria-hidden
+        style={{
+          margin: "0 -20px 12px -20px",
+          height: 16,
+          background: `linear-gradient(${tintFade}, transparent)`,
+        }}
+      />
 
       {/* Activity list */}
       <ul style={{ display: "flex", flexDirection: "column" }}>
@@ -234,9 +256,11 @@ function ActivityRow({
   fromContext: "library" | "track";
   onClick: () => void;
 }) {
+  const isTried = stats !== null;
   const meta = stats
     ? `Done ${stats.count} time${stats.count === 1 ? "" : "s"} · last ${formatDate(stats.lastDate)}`
     : `${activity.duration} min`;
+  const skillColor = SKILLS[activity.skill].color;
 
   return (
     <Link
@@ -246,7 +270,7 @@ function ActivityRow({
         display: "flex",
         alignItems: "center",
         gap: 12,
-        padding: "12px 0",
+        padding: "14px 0",
         textDecoration: "none",
       }}
       className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
@@ -272,10 +296,26 @@ function ActivityRow({
           style={{
             marginTop: 2,
             fontSize: 13,
-            color: "#8E8D9B",
+            fontWeight: 500,
+            color: "#6B6B6B",
             lineHeight: 1.4,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
           }}
         >
+          {isTried ? (
+            <span
+              aria-hidden
+              style={{
+                width: 4,
+                height: 4,
+                borderRadius: 2,
+                background: skillColor,
+                flexShrink: 0,
+              }}
+            />
+          ) : null}
           {meta}
         </p>
       </div>
@@ -295,18 +335,18 @@ function NotYetTriedDivider() {
       style={{
         display: "flex",
         alignItems: "center",
-        padding: "16px 0 12px",
+        padding: "20px 0 16px",
       }}
     >
       <span style={{ flex: 1, height: 0.5, background: "#E5E3DA" }} />
       <span
         style={{
           padding: "0 12px",
-          fontSize: 11,
-          fontWeight: 700,
-          color: "#8E8D9B",
+          fontSize: 10,
+          fontWeight: 600,
+          color: "#C2C0CB",
           textTransform: "uppercase",
-          letterSpacing: "0.05em",
+          letterSpacing: "0.1em",
         }}
       >
         Not yet tried
