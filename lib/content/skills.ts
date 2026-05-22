@@ -28,7 +28,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     iconName: "Sparkles",
     color: "#F4C84A",
     firstTimeNote:
-      "Curiosity activities are usually the easiest to start. No setup, any age, anywhere.",
+      "No setup, any age, anywhere.",
   },
   language: {
     label: "Language confidence",
@@ -37,7 +37,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     iconName: "BookOpen",
     color: "#9CA5FF",
     firstTimeNote:
-      "Language activities work best as ordinary moments. Five minutes is plenty for the first one.",
+      "Five minutes is plenty for a first try.",
   },
   emotional: {
     label: "Emotional awareness",
@@ -46,7 +46,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     iconName: "Heart",
     color: "#E89070",
     firstTimeNote:
-      "Emotional skills start by naming feelings out loud. The first one only takes five minutes.",
+      "Just name a feeling out loud.",
   },
   thinking: {
     label: "Thinking clarity",
@@ -55,7 +55,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     iconName: "Brain",
     color: "#6B5B95",
     firstTimeNote:
-      "Thinking activities are short conversations. No materials, no homework feel.",
+      "It's a short conversation, no homework feel.",
   },
   resilience: {
     label: "Resilience",
@@ -64,7 +64,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     iconName: "Anchor",
     color: "#5DC87A",
     firstTimeNote:
-      "Resilience grows from sitting with something hard. Pick anything mildly frustrating to start.",
+      "Pick anything mildly hard and stay with it.",
   },
   creativity: {
     label: "Creativity",
@@ -73,7 +73,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     iconName: "Wind",
     color: "#E8836A",
     firstTimeNote:
-      "Creativity activities are play with a small constraint. Silly is good. Wrong is fine.",
+      "Silly is good. Wrong is fine.",
   },
   observation: {
     label: "Observation",
@@ -82,7 +82,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     iconName: "Eye",
     color: "#5FB8B0",
     firstTimeNote:
-      "Observation activities just slow you down. Eyes, ears, hands. No outcome to chase.",
+      "Slow down. Eyes, ears, hands.",
   },
   decisiveness: {
     label: "Decisiveness",
@@ -91,7 +91,7 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     iconName: "Compass",
     color: "#3D5A80",
     firstTimeNote:
-      "Decisiveness needs real choices with real consequences. Start with one dinner.",
+      "One real choice with a real consequence.",
   },
 };
 
