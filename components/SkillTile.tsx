@@ -54,13 +54,15 @@ export default function SkillTile({
         gap: 0,
         padding: 14,
         background: skill.bg,
-        borderRadius: 16,
+        borderRadius: 18,
         textAlign: "left",
         cursor: "pointer",
         boxShadow: "var(--shadow-level-1)",
         position: "relative",
         overflow: "hidden",
         isolation: "isolate",
+        minHeight: 130,
+        width: "100%",
       }}
       className="transition-opacity active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
@@ -72,25 +74,27 @@ export default function SkillTile({
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
+          width: "100%",
         }}
       >
         <span
           aria-hidden
           style={{
-            width: 48,
-            height: 48,
+            width: 44,
+            height: 44,
             borderRadius: 12,
             background: skill.blob,
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
             color: skill.iconColor,
+            flexShrink: 0,
           }}
         >
           <ActivityIcon
             iconName={skill.iconName}
             skill={skillId}
-            size={24}
+            size={22}
             strokeWidth={2.25}
             style={{ color: skill.iconColor }}
           />

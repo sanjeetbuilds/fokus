@@ -29,8 +29,8 @@ export default function Blobs({ variant, color }: BlobsProps) {
           aria-hidden
           style={{
             position: "absolute",
-            top: -22,
-            right: -18,
+            top: -25,
+            right: -20,
             width: 90,
             height: 90,
             borderRadius: "50%",
@@ -43,8 +43,8 @@ export default function Blobs({ variant, color }: BlobsProps) {
           aria-hidden
           style={{
             position: "absolute",
-            bottom: -12,
-            left: 8,
+            bottom: -15,
+            left: -10,
             width: 55,
             height: 55,
             borderRadius: "50%",
