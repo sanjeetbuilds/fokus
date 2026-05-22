@@ -68,7 +68,7 @@ export default function SkillTile({
       }}
       className="transition-opacity active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
-      <SkillIcon skillId={skillId} size="md" />
+      <SkillIcon skillId={skillId} size="tile" />
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         <span
           style={{
