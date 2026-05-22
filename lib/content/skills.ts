@@ -12,6 +12,12 @@ export interface SkillDefinition {
   description: string;
   iconName: string;
   color: string;
+  /**
+   * One-sentence "why start here" note shown in the Today first-time
+   * context block. Generic to the skill (not personalised to the
+   * child), explaining why this category is a comfortable on-ramp.
+   */
+  firstTimeNote: string;
 }
 
 export const SKILLS: Record<SkillKey, SkillDefinition> = {
@@ -21,6 +27,8 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
       "The reflex to look behind appearances and keep asking why instead of accepting the first answer.",
     iconName: "Sparkles",
     color: "#F4C84A",
+    firstTimeNote:
+      "Curiosity activities are usually the easiest to start. No setup, any age, anywhere.",
   },
   language: {
     label: "Language confidence",
@@ -28,6 +36,8 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
       "Speaking up in English without freezing. Fluency before accuracy, voice before vocabulary.",
     iconName: "BookOpen",
     color: "#9CA5FF",
+    firstTimeNote:
+      "Language activities work best as ordinary moments. Five minutes is plenty for the first one.",
   },
   emotional: {
     label: "Emotional awareness",
@@ -35,6 +45,8 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
       "Naming what's happening inside, sitting with it for a moment, and reading the same thing in other people.",
     iconName: "Heart",
     color: "#E89070",
+    firstTimeNote:
+      "Emotional skills start by naming feelings out loud. The first one only takes five minutes.",
   },
   thinking: {
     label: "Thinking clarity",
@@ -42,6 +54,8 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
       "Separating knowing from hearing-and-repeating, generating alternatives, and reasoning out loud.",
     iconName: "Brain",
     color: "#6B5B95",
+    firstTimeNote:
+      "Thinking activities are short conversations. No materials, no homework feel.",
   },
   resilience: {
     label: "Resilience",
@@ -49,6 +63,8 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
       "Staying with hard things long enough to learn from them, and recovering when something doesn't go their way.",
     iconName: "Anchor",
     color: "#5DC87A",
+    firstTimeNote:
+      "Resilience grows from sitting with something hard. Pick anything mildly frustrating to start.",
   },
   creativity: {
     label: "Creativity",
@@ -56,6 +72,8 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
       "Generating possibilities before evaluating them, and feeling free enough to be silly, weird, and wrong on the way to good.",
     iconName: "Wind",
     color: "#E8836A",
+    firstTimeNote:
+      "Creativity activities are play with a small constraint. Silly is good. Wrong is fine.",
   },
   observation: {
     label: "Observation",
@@ -63,6 +81,8 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
       "Seeing what's there (sounds, textures, faces, small changes) instead of moving past it on autopilot.",
     iconName: "Eye",
     color: "#5FB8B0",
+    firstTimeNote:
+      "Observation activities just slow you down. Eyes, ears, hands. No outcome to chase.",
   },
   decisiveness: {
     label: "Decisiveness",
@@ -70,6 +90,8 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
       "Making real choices, sitting with the consequences, and matching the speed of the decision to the size of its stakes.",
     iconName: "Compass",
     color: "#3D5A80",
+    firstTimeNote:
+      "Decisiveness needs real choices with real consequences. Start with one dinner.",
   },
 };
 

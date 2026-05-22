@@ -1,17 +1,18 @@
 import type { Activity, SkillKey } from "@/types";
 
 import { ACTIVITY_EXAMPLES } from "./activity-examples";
+import { ACTIVITY_HOOKS } from "./activity-hooks";
 import { ACTIVITY_ICONS } from "./activity-icons";
 
 /**
  * The Fokus activity library: 64 activities, 8 per skill, content
  * copied verbatim from SPEC §8. Order: by skill, then by id within skill.
  *
- * The `example` field for each activity lives in `./activity-examples.ts`
- * and is merged in at module load. Keeping them separate keeps this file
- * scannable as a content catalog.
+ * The `example`, `hook`, and `iconName` fields for each activity live
+ * in sibling files and are merged in at module load. Keeping them
+ * separate keeps this file scannable as a content catalog.
  */
-const ACTIVITIES_BASE: Array<Omit<Activity, "example" | "iconName">> = [
+const ACTIVITIES_BASE: Array<Omit<Activity, "example" | "iconName" | "hook">> = [
   // ============================================================
   // CURIOSITY
   // ============================================================
@@ -1409,7 +1410,11 @@ export const ACTIVITIES: Activity[] = ACTIVITIES_BASE.map((a) => {
   if (!iconName) {
     throw new Error(`Missing iconName for activity "${a.id}".`);
   }
-  return { ...a, example, iconName };
+  const hook = ACTIVITY_HOOKS[a.id];
+  if (!hook) {
+    throw new Error(`Missing hook for activity "${a.id}".`);
+  }
+  return { ...a, example, iconName, hook };
 });
 
 // ---------- helpers ----------

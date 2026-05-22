@@ -4,7 +4,7 @@ import ActivityIcon from "@/components/activity/ActivityIcon";
 import { SKILLS } from "@/lib/content/skills";
 import type { SkillKey } from "@/types";
 
-export type SkillIconSize = "sm" | "md" | "lg";
+export type SkillIconSize = "xs" | "sm" | "tile" | "md" | "lg";
 
 export interface SkillIconProps {
   skillId: SkillKey;
@@ -21,7 +21,9 @@ export interface SkillIconProps {
 }
 
 const SIZE: Record<SkillIconSize, { box: number; icon: number }> = {
+  xs: { box: 36, icon: 18 },
   sm: { box: 40, icon: 20 },
+  tile: { box: 48, icon: 24 },
   md: { box: 56, icon: 28 },
   lg: { box: 80, icon: 40 },
 };

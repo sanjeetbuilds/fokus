@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, X } from "lucide-react";
+import { X } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
@@ -123,85 +123,63 @@ function ActivitiesSheetBody({
       ? `${triedCount} of ${total} tried`
       : `${total} activities`;
   const hasDivider = tried.length > 0 && untried.length > 0;
-  // 8-digit hex: hex + "14" ≈ 8% alpha header wash.
-  const tint = `${skill.color}14`;
-  // Slightly weaker tint for the bottom-edge fade into white.
-  const tintFade = `${skill.color}0F`;
 
   return (
     <>
-      {/* Skill header zone — bleeds past Sheet's px-5 py-4 padding so
-          the tint spans the full sheet width and starts immediately
-          below the drag handle. */}
+      {/* Skill header — flat, on white. No colored strip behind it. */}
       <div
         style={{
-          margin: "-16px -20px 0 -20px",
-          padding: "20px 20px 16px 20px",
-          background: tint,
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 12,
+          marginBottom: 12,
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            gap: 12,
-          }}
-        >
-          <SkillIcon skillId={skillId} size="md" />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h2
-              style={{
-                fontSize: 22,
-                fontWeight: 700,
-                color: "#252630",
-                letterSpacing: "-0.01em",
-                lineHeight: 1.2,
-              }}
-            >
-              {skill.label}
-            </h2>
-            <p
-              style={{
-                marginTop: 2,
-                fontSize: 13,
-                color: "#8E8D9B",
-                lineHeight: 1.4,
-              }}
-            >
-              {countLine}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
+        <SkillIcon skillId={skillId} size="md" />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h2
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 16,
-              background: "transparent",
-              border: "none",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
+              fontSize: 22,
+              fontWeight: 700,
               color: "#252630",
-              flexShrink: 0,
+              letterSpacing: "-0.01em",
+              lineHeight: 1.2,
             }}
-            className="transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
-            <X size={20} strokeWidth={1.75} aria-hidden />
-          </button>
+            {skill.label}
+          </h2>
+          <p
+            style={{
+              marginTop: 2,
+              fontSize: 13,
+              color: "#8E8D9B",
+              lineHeight: 1.4,
+            }}
+          >
+            {countLine}
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 16,
+            background: "transparent",
+            border: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#8E8D9B",
+            flexShrink: 0,
+          }}
+          className="transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          <X size={20} strokeWidth={1.75} aria-hidden />
+        </button>
       </div>
-      {/* Tint-to-white fade strip below the header zone. */}
-      <div
-        aria-hidden
-        style={{
-          margin: "0 -20px 12px -20px",
-          height: 16,
-          background: `linear-gradient(${tintFade}, transparent)`,
-        }}
-      />
 
       {/* Activity list */}
       <ul style={{ display: "flex", flexDirection: "column" }}>
@@ -257,10 +235,9 @@ function ActivityRow({
   onClick: () => void;
 }) {
   const isTried = stats !== null;
-  const meta = stats
+  const triedMeta = stats
     ? `Done ${stats.count} time${stats.count === 1 ? "" : "s"} · last ${formatDate(stats.lastDate)}`
-    : `${activity.duration} min`;
-  const skillColor = SKILLS[activity.skill].color;
+    : "";
 
   return (
     <Link
@@ -277,14 +254,14 @@ function ActivityRow({
     >
       <SkillIcon
         skillId={activity.skill}
-        size="sm"
+        size="xs"
         iconName={activity.iconName}
       />
       <div style={{ flex: 1, minWidth: 0 }}>
         <p
           style={{
             fontSize: 15,
-            fontWeight: 700,
+            fontWeight: 600,
             color: "#252630",
             letterSpacing: "-0.005em",
             lineHeight: 1.3,
@@ -292,39 +269,44 @@ function ActivityRow({
         >
           {activity.title}
         </p>
-        <p
-          style={{
-            marginTop: 2,
-            fontSize: 13,
-            fontWeight: 500,
-            color: "#6B6B6B",
-            lineHeight: 1.4,
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
-          {isTried ? (
-            <span
-              aria-hidden
-              style={{
-                width: 4,
-                height: 4,
-                borderRadius: 2,
-                background: skillColor,
-                flexShrink: 0,
-              }}
-            />
-          ) : null}
-          {meta}
-        </p>
+        {isTried ? (
+          <p
+            style={{
+              marginTop: 2,
+              fontSize: 12,
+              fontWeight: 500,
+              color: "#5DC87A",
+              lineHeight: 1.4,
+            }}
+          >
+            {triedMeta}
+          </p>
+        ) : (
+          <p
+            style={{
+              marginTop: 2,
+              fontSize: 12,
+              fontWeight: 400,
+              color: "#8E8D9B",
+              lineHeight: 1.4,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {activity.hook}
+          </p>
+        )}
       </div>
-      <ChevronRight
-        size={16}
-        strokeWidth={2}
-        aria-hidden
-        style={{ color: "#8E8D9B", flexShrink: 0 }}
-      />
+      <span
+        style={{
+          fontSize: 12,
+          color: "#8E8D9B",
+          flexShrink: 0,
+        }}
+      >
+        {activity.duration} min
+      </span>
     </Link>
   );
 }
@@ -335,7 +317,7 @@ function NotYetTriedDivider() {
       style={{
         display: "flex",
         alignItems: "center",
-        padding: "20px 0 16px",
+        padding: "8px 0",
       }}
     >
       <span style={{ flex: 1, height: 0.5, background: "#E5E3DA" }} />

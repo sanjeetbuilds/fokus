@@ -144,6 +144,13 @@ export interface Activity {
   requires: ActivityRequires;
 
   description: string;
+  /**
+   * One-line hook (≤8 words, present tense, what the parent literally
+   * does with the child). Shown under the title in the Library bottom
+   * sheet for untried activities so the parent can decide whether to
+   * tap without opening the detail screen.
+   */
+  hook: string;
   hiddenCurriculum: string;
   howTo: string;
   watchFor: string;
