@@ -155,10 +155,10 @@ export default function ProfilePage() {
           className="text-ink"
           style={{
             paddingTop: 6,
-            fontSize: 38,
-            fontWeight: 800,
-            lineHeight: 1.05,
-            letterSpacing: "-0.025em",
+            fontSize: 24,
+            fontWeight: 700,
+            lineHeight: 1.2,
+            letterSpacing: "-0.02em",
             marginBottom: 28,
           }}
         >
