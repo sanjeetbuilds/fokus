@@ -30,3 +30,98 @@
     line-height: 1.1;
   }
 }
+
+/* ============================================================
+   Activity detail — skill aura (reference: onboarding slide 3).
+   Set --aura-color on the wrapper to tint the glow, orbits and
+   ring with the activity's skill colour.
+   ============================================================ */
+
+.fokus-aura {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.fokus-aura-glow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--aura-color, #9CA5FF) 0%,
+    transparent 70%
+  );
+  opacity: 0.32;
+  animation: fokus-aura-pulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.fokus-aura-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1.5px solid var(--aura-color, #9CA5FF);
+  pointer-events: none;
+  animation: fokus-aura-ring 3s ease-out infinite;
+}
+.fokus-aura-ring.d2 { animation-delay: 1s; }
+.fokus-aura-ring.d3 { animation-delay: 2s; }
+
+.fokus-aura-orbits {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fokus-aura-orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--aura-color, #9CA5FF);
+  opacity: 0.85;
+}
+.fokus-aura-orb.o1 { animation: fokus-orb1 9s linear infinite; }
+.fokus-aura-orb.o2 { animation: fokus-orb2 9s linear infinite; }
+.fokus-aura-orb.o3 { animation: fokus-orb3 9s linear infinite; }
+
+@keyframes fokus-aura-pulse {
+  0%, 100% { opacity: 0.28; transform: scale(1); }
+  50%      { opacity: 0.5;  transform: scale(1.06); }
+}
+
+@keyframes fokus-aura-ring {
+  0%   { transform: translate(-50%, -50%) scale(0.7); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
+}
+
+/* Three offset rotation paths so the orbs spread around the circle. */
+@keyframes fokus-orb1 {
+  from { transform: rotate(0deg)   translateX(58px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(58px) rotate(-360deg); }
+}
+@keyframes fokus-orb2 {
+  from { transform: rotate(120deg) translateX(58px) rotate(-120deg); }
+  to   { transform: rotate(480deg) translateX(58px) rotate(-480deg); }
+}
+@keyframes fokus-orb3 {
+  from { transform: rotate(240deg) translateX(58px) rotate(-240deg); }
+  to   { transform: rotate(600deg) translateX(58px) rotate(-600deg); }
+}
+
+/* Respect reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  .fokus-aura-glow,
+  .fokus-aura-ring,
+  .fokus-aura-orb {
+    animation: none;
+  }
+  .fokus-aura-ring { opacity: 0.25; }
+}

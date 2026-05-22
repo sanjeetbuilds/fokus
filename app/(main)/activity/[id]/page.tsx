@@ -185,19 +185,49 @@ function ActivityHeader({ activity }: { activity: Activity }) {
       style={{
         // Bleed past main's px-5 (20px) so the zone spans full width.
         margin: "0 -20px 28px -20px",
-        padding: "20px 24px 24px 24px",
+        padding: "32px 24px 28px 24px",
         background: tint,
       }}
     >
-      <SkillIcon
-        skillId={activity.skill}
-        size="lg"
-        iconName={activity.iconName}
-      />
+      {/* Animated skill aura — three expanding rings, a soft glow,
+          and three orbiting dots, all tinted with the skill colour
+          via --aura-color. Reference: onboarding slide 3 + skill
+          detail. Honours prefers-reduced-motion. */}
+      <div
+        className="fokus-aura"
+        style={
+          { ["--aura-color" as string]: skill.color } as React.CSSProperties
+        }
+      >
+        <span aria-hidden className="fokus-aura-glow" />
+        <span aria-hidden className="fokus-aura-ring" />
+        <span aria-hidden className="fokus-aura-ring d2" />
+        <span aria-hidden className="fokus-aura-ring d3" />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <SkillIcon
+            skillId={activity.skill}
+            size="lg"
+            iconName={activity.iconName}
+          />
+        </div>
+        <div aria-hidden className="fokus-aura-orbits">
+          <span className="fokus-aura-orb o1" />
+          <span className="fokus-aura-orb o2" />
+          <span className="fokus-aura-orb o3" />
+        </div>
+      </div>
 
       <h1
         style={{
-          marginTop: 16,
+          marginTop: 28,
           fontSize: 32,
           fontWeight: 700,
           color: "#252630",
