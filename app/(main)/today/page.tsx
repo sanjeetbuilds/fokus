@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -10,6 +12,7 @@ import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
 import { db, getSessionsByDate } from "@/lib/db";
 import { pickActivity, RestDayError } from "@/lib/engine";
 import type { ChildRow } from "@/lib/supabase/queries";
+import { useActivityLog } from "@/lib/use-activity-log";
 import { useChild } from "@/lib/use-child";
 import { ageFromDob, today as todayIso } from "@/lib/utils/dates";
 import type { Child, Session } from "@/types";
@@ -37,6 +40,8 @@ export default function TodayPage() {
   const router = useRouter();
 
   const { child: childRow, loading: childLoading } = useChild();
+  const { rows: activityLogRows, loading: activityLogLoading } =
+    useActivityLog();
   const legacyChild = useMemo(
     () => (childRow ? toLegacyChild(childRow) : null),
     [childRow],
@@ -105,7 +110,11 @@ export default function TodayPage() {
     router.push(`/activity/${pickedActivity.id}?from=today`);
   }, [pickedActivity, router]);
 
-  const loaded = !childLoading && sessionsLoaded;
+  const loaded = !childLoading && sessionsLoaded && !activityLogLoading;
+  // First-time = the parent has never completed any activity.
+  // Drives the "Why start here?" context block + the "First time?
+  // Browse by skill" tip line below the card.
+  const isFirstTime = activityLogRows.length === 0;
 
   if (!loaded) {
     return (
@@ -159,6 +168,7 @@ export default function TodayPage() {
             <TodayActivityCard
               activity={pickedActivity}
               onStart={onOpenActivity}
+              showFirstTimeContext={isFirstTime}
             />
           ) : (
             <p className="mt-6 text-center text-footnote text-ink-tertiary">
@@ -166,6 +176,49 @@ export default function TodayPage() {
             </p>
           )}
         </div>
+
+        {/* Quiet secondary action — only on the pick-an-activity state.
+            Rest-day and done-for-today don't need the escape hatch. */}
+        {!restDay && !alreadyLogged && pickedActivity ? (
+          <>
+            <Link
+              href="/library"
+              style={{
+                marginTop: 16,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 14,
+                fontWeight: 500,
+                color: "#252630",
+                textDecoration: "none",
+              }}
+            >
+              Not this? See all {ACTIVITIES.length} ideas
+              <ArrowRight size={14} strokeWidth={2} aria-hidden />
+            </Link>
+            {isFirstTime ? (
+              <p
+                style={{
+                  marginTop: 8,
+                  fontSize: 13,
+                  fontWeight: 400,
+                  color: "#8E8D9B",
+                  lineHeight: 1.5,
+                }}
+              >
+                First time? Browse by skill in the{" "}
+                <Link
+                  href="/library"
+                  style={{ color: "#252630", fontWeight: 600 }}
+                >
+                  Library
+                </Link>
+                .
+              </p>
+            ) : null}
+          </>
+        ) : null}
 
         <p
           style={{
