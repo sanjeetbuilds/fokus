@@ -1,6 +1,7 @@
 "use client";
 
-import SkillIcon from "@/components/SkillIcon";
+import ActivityIcon from "@/components/activity/ActivityIcon";
+import Blobs from "@/components/shared/Blobs";
 import { ACTIVITIES } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
 import type { SkillKey } from "@/types";
@@ -23,18 +24,10 @@ export interface SkillTileProps {
 }
 
 /**
- * Single source of truth for the skill tile chrome used by both
- * /library (the 2×4 grid) and /map (the "By skill" grid). Self-
- * computes the total activities-per-skill from lib/content/activities.ts
- * so it stays correct if the library grows.
- *
- *   ┌─────────────────┐
- *   │ [md SkillIcon]  │
- *   │                 │
- *   │ Curiosity       │   15 / 700 ink, letterSpacing -0.005em
- *   │ 8 activities    │   13 / 400 muted
- *   └─────────────────┘
- *   white bg, 0.5px hair border, 16-radius, 16-padding
+ * Single source of truth for the skill tile chrome used by /library.
+ * Background uses the skill's bg tint; blobs add depth; text uses the
+ * skill's iconColor (primary) and mid (count) tones so the entire
+ * tile reads with chromatic harmony.
  */
 export default function SkillTile({
   skillId,
@@ -47,7 +40,7 @@ export default function SkillTile({
 
   const countLine =
     variant === "tried"
-      ? `${triedCount ?? 0} of ${total} done`
+      ? `${triedCount ?? 0} of ${total} tried`
       : `${total} activities`;
 
   return (
@@ -58,34 +51,68 @@ export default function SkillTile({
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
-        gap: 10,
+        gap: 0,
         padding: 14,
-        background: "#FFFFFF",
-        border: "1.5px solid #E5E3DA",
-        borderRadius: 22,
+        background: skill.bg,
+        borderRadius: 16,
         textAlign: "left",
         cursor: "pointer",
+        boxShadow: "var(--shadow-level-1)",
+        position: "relative",
+        overflow: "hidden",
+        isolation: "isolate",
       }}
       className="transition-opacity active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
-      <SkillIcon skillId={skillId} size="tile" />
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <Blobs variant="tile" color={skill.blob} />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+        }}
+      >
+        <span
+          aria-hidden
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: skill.blob,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: skill.iconColor,
+          }}
+        >
+          <ActivityIcon
+            iconName={skill.iconName}
+            skill={skillId}
+            size={24}
+            strokeWidth={2.25}
+            style={{ color: skill.iconColor }}
+          />
+        </span>
         <span
           style={{
-            fontSize: 15,
+            marginTop: 10,
+            fontSize: 13,
             fontWeight: 700,
-            color: "#252630",
+            color: skill.iconColor,
             letterSpacing: "-0.005em",
-            lineHeight: 1.3,
+            lineHeight: 1.2,
           }}
         >
           {skill.label}
         </span>
         <span
           style={{
-            fontSize: 13,
-            fontWeight: 400,
-            color: "#8E8D9B",
+            marginTop: 4,
+            fontSize: 11,
+            fontWeight: 500,
+            color: skill.mid,
             lineHeight: 1.4,
           }}
         >

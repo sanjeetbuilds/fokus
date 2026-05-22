@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import SkillIcon from "@/components/SkillIcon";
 import Sheet from "@/components/ui/Sheet";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
@@ -252,11 +253,28 @@ function ActivityRow({
       }}
       className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
     >
-      <SkillIcon
-        skillId={activity.skill}
-        size="xs"
-        iconName={activity.iconName}
-      />
+      <span
+        aria-hidden
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 11,
+          background: SKILLS[activity.skill].bg,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: SKILLS[activity.skill].iconColor,
+          flexShrink: 0,
+        }}
+      >
+        <ActivityIcon
+          iconName={activity.iconName}
+          skill={activity.skill}
+          size={18}
+          strokeWidth={2.25}
+          style={{ color: SKILLS[activity.skill].iconColor }}
+        />
+      </span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p
           style={{
@@ -287,7 +305,7 @@ function ActivityRow({
               marginTop: 2,
               fontSize: 12,
               fontWeight: 400,
-              color: "#8E8D9B",
+              color: SKILLS[activity.skill].mid,
               lineHeight: 1.4,
               whiteSpace: "nowrap",
               overflow: "hidden",
