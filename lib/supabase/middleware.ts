@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Public paths that don't require a Supabase session.
  *
+ *   /welcome         ; splash + intro + final CTA, the unauthed entry point
  *   /sign-in         ; the magic-link form itself
  *   /auth/*          ; the magic-link callback
  *   /api/*           ; diagnostic + future server endpoints
@@ -14,6 +15,7 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 function isPublic(pathname: string): boolean {
   return (
+    pathname === "/welcome" ||
     pathname === "/sign-in" ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/api") ||
@@ -25,8 +27,9 @@ function isPublic(pathname: string): boolean {
  * Canonical Supabase + Next.js middleware: refresh the session cookie
  * on every request, then redirect based on auth state.
  *
- *   no session + non-public path  →  /sign-in
+ *   no session + non-public path  →  /welcome
  *   session     + /sign-in        →  /
+ *   session     + /welcome        →  /
  *   anything else                 →  pass through
  *
  * Env-var presence is checked up-front: if the build is missing the
@@ -49,7 +52,7 @@ export async function updateSession(request: NextRequest) {
     );
     if (!isPublic(pathname)) {
       const redirect = request.nextUrl.clone();
-      redirect.pathname = "/sign-in";
+      redirect.pathname = "/welcome";
       return NextResponse.redirect(redirect);
     }
     return NextResponse.next({ request });
@@ -83,11 +86,11 @@ export async function updateSession(request: NextRequest) {
 
     if (!user && !isPublic(pathname)) {
       const redirect = request.nextUrl.clone();
-      redirect.pathname = "/sign-in";
+      redirect.pathname = "/welcome";
       return NextResponse.redirect(redirect);
     }
 
-    if (user && pathname === "/sign-in") {
+    if (user && (pathname === "/sign-in" || pathname === "/welcome")) {
       const redirect = request.nextUrl.clone();
       redirect.pathname = "/";
       return NextResponse.redirect(redirect);
@@ -97,7 +100,7 @@ export async function updateSession(request: NextRequest) {
   } catch (err) {
     // The previous "pass through on any error" was a bypass: it let
     // unauthed users reach gated routes. Now we fail closed; log the
-    // root cause and redirect to /sign-in for any non-public path so
+    // root cause and redirect to /welcome for any non-public path so
     // a transient Supabase failure can't punch a hole in auth.
     console.error(
       "[supabase middleware] session refresh threw:",
@@ -105,7 +108,7 @@ export async function updateSession(request: NextRequest) {
     );
     if (!isPublic(pathname)) {
       const redirect = request.nextUrl.clone();
-      redirect.pathname = "/sign-in";
+      redirect.pathname = "/welcome";
       redirect.searchParams.set("error", "session_refresh_failed");
       return NextResponse.redirect(redirect);
     }

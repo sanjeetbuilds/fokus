@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
 
 import Wordmark from "@/components/shared/Wordmark";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
@@ -15,6 +16,25 @@ import { getSupabaseBrowser } from "@/lib/supabase/client";
  * for ~3 seconds, then it self-dismisses.
  */
 export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInBody />
+    </Suspense>
+  );
+}
+
+type CopyVariant = "default" | "return" | "new";
+
+function pickVariant(params: URLSearchParams | null): CopyVariant {
+  if (!params) return "default";
+  if (params.get("return") === "true") return "return";
+  if (params.get("new") === "true") return "new";
+  return "default";
+}
+
+function SignInBody() {
+  const searchParams = useSearchParams();
+  const variant = pickVariant(searchParams);
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">(
     "idle",
@@ -98,7 +118,11 @@ export default function SignInPage() {
             letterSpacing: "-0.02em",
           }}
         >
-          Welcome to Fokus.
+          {variant === "return"
+            ? "Welcome back."
+            : variant === "new"
+              ? "Let's get you set up."
+              : "Welcome to Fokus."}
         </h1>
         <p
           className="mt-3"
@@ -109,9 +133,11 @@ export default function SignInPage() {
             color: "#8E8D9B",
           }}
         >
-          One activity a day, with your child.
-          <br />
-          Sign in to get started.
+          {variant === "return"
+            ? "Enter your email and we'll send a link to sign in."
+            : variant === "new"
+              ? "Enter your email and we'll send you a link to start."
+              : "Enter your email and we'll send a link. No password needed."}
         </p>
 
         {state === "sent" ? (
