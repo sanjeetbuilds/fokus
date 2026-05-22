@@ -17,7 +17,7 @@ import { SKILLS } from "@/lib/content/skills";
 import type { ActivityLogRow, ChildRow } from "@/lib/supabase/queries";
 import {
   otherIdeasForToday,
-  pickNextSwap,
+  pickRandomSwap,
   todaysHeroActivity,
   warnMissingHooks,
 } from "@/lib/today-pick";
@@ -26,7 +26,7 @@ import { useChild } from "@/lib/use-child";
 import { ageFromDob } from "@/lib/utils/dates";
 import type { Activity, SkillKey } from "@/types";
 
-const SWAP_KEY = "fokus_today_swaps";
+const SWAP_KEY = "fokus_today";
 
 interface SwapState {
   date: string; // YYYY-MM-DD
@@ -127,10 +127,10 @@ export default function TodayPage() {
   );
 
   const onSwap = useCallback(() => {
-    const next = pickNextSwap(currentActivity, todayDate, ACTIVITIES, triedIds);
+    const next = pickRandomSwap(currentActivity, ACTIVITIES, triedIds);
     setCurrentActivityId(next.id);
     writeSwapState({ date: todayIso, activityId: next.id });
-  }, [currentActivity, todayDate, todayIso, triedIds]);
+  }, [currentActivity, todayIso, triedIds]);
 
   const otherIdeas = useMemo(
     () => otherIdeasForToday(todayDate, currentActivity, ACTIVITIES, triedIds),
@@ -503,11 +503,11 @@ function HeroCard({
           gap: 10,
         }}
       >
-        <MetaPill icon={<Clock size={12} strokeWidth={2.25} aria-hidden />}>
+        <MetaPill icon={<Clock size={11} strokeWidth={2.25} aria-hidden />}>
           {activity.duration} min
         </MetaPill>
         <MetaPill
-          icon={<Sparkles size={12} strokeWidth={2.25} aria-hidden />}
+          icon={<Sparkles size={11} strokeWidth={2.25} aria-hidden />}
         >
           Ages {minAge} to {maxAge}
         </MetaPill>
@@ -590,7 +590,7 @@ function MetaPill({
         alignItems: "center",
         gap: 5,
         background: "rgba(255,255,255,0.22)",
-        borderRadius: 20,
+        borderRadius: 999,
         padding: "5px 10px",
         fontSize: 11,
         fontWeight: 600,

@@ -6,7 +6,7 @@ import {
   dateSeed,
   dayOfYear,
   otherIdeasForToday,
-  pickNextSwap,
+  pickRandomSwap,
   todaysHeroActivity,
   todaysSkill,
   todaysSwapOrder,
@@ -83,22 +83,38 @@ describe("today-pick — swap order", () => {
   });
 });
 
-describe("today-pick — pickNextSwap", () => {
+describe("today-pick — pickRandomSwap", () => {
   it("skips tried ids and never returns the current activity", () => {
     const d = utc("2026-05-22");
     const current = todaysHeroActivity(d, ACTIVITIES);
     const tried = new Set([current.id]);
-    const next = pickNextSwap(current, d, ACTIVITIES, tried);
+    // Pin rand() at 0 so the choice is deterministic for the test.
+    const next = pickRandomSwap(current, ACTIVITIES, tried, () => 0);
     expect(next.id).not.toBe(current.id);
     expect(tried.has(next.id)).toBe(false);
   });
 
-  it("cycles through anyway when everything has been tried", () => {
+  it("falls back to any non-current activity when everything has been tried", () => {
     const d = utc("2026-05-22");
     const current = todaysHeroActivity(d, ACTIVITIES);
     const tried = new Set(ACTIVITIES.map((a) => a.id));
-    const next = pickNextSwap(current, d, ACTIVITIES, tried);
+    const next = pickRandomSwap(current, ACTIVITIES, tried, () => 0);
     expect(next.id).not.toBe(current.id);
+  });
+
+  it("the pick spans the full untried pool across many calls", () => {
+    const d = utc("2026-05-22");
+    const current = todaysHeroActivity(d, ACTIVITIES);
+    const tried = new Set([current.id]);
+    const seen = new Set<string>();
+    // Walk a deterministic sequence of rands across the full pool.
+    const pool = ACTIVITIES.filter((a) => a.id !== current.id);
+    for (let i = 0; i < pool.length; i++) {
+      const r = i / pool.length;
+      seen.add(pickRandomSwap(current, ACTIVITIES, tried, () => r).id);
+    }
+    // Should cover every untried activity at least once.
+    expect(seen.size).toBe(pool.length);
   });
 });
 

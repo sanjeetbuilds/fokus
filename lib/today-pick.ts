@@ -95,26 +95,26 @@ export function todaysSwapOrder(
 }
 
 /**
- * Walk forward in today's permutation from the current activity until
- * we find the next untried one. If everything has been tried, just
- * advance to the next slot regardless.
+ * Pick a random untried activity, excluding the current hero. If every
+ * activity has been tried, fall back to a random pick from the full
+ * deck excluding the current hero. `rand` is injectable so tests can
+ * pin the choice — defaults to Math.random.
  */
-export function pickNextSwap(
+export function pickRandomSwap(
   current: Activity,
-  d: Date,
   activities: readonly Activity[],
   triedIds: ReadonlySet<string>,
+  rand: () => number = Math.random,
 ): Activity {
-  const order = todaysSwapOrder(d, activities);
-  const startIdx = order.findIndex((a) => a.id === current.id);
-  const safeStart = startIdx === -1 ? 0 : startIdx;
-  const allTried = activities.every((a) => triedIds.has(a.id));
-  const n = order.length;
-  for (let step = 1; step <= n; step++) {
-    const next = order[(safeStart + step) % n]!;
-    if (allTried || !triedIds.has(next.id)) return next;
-  }
-  return current;
+  const candidates = activities.filter(
+    (a) => a.id !== current.id && !triedIds.has(a.id),
+  );
+  const pool =
+    candidates.length > 0
+      ? candidates
+      : activities.filter((a) => a.id !== current.id);
+  if (pool.length === 0) return current;
+  return pool[Math.floor(rand() * pool.length)]!;
 }
 
 /**
