@@ -91,15 +91,17 @@ function LibraryBody() {
         <h1
           style={{
             paddingTop: 6,
-            fontSize: 28,
-            fontWeight: 700,
+            fontSize: 50,
+            fontWeight: 800,
             color: "#252630",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.15,
+            letterSpacing: "-0.035em",
+            lineHeight: 1.05,
             marginBottom: 22,
           }}
         >
-          Activity Library
+          Activity
+          <br />
+          Library
         </h1>
 
         <Tabs
