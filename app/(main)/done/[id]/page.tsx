@@ -4,9 +4,10 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import SkillIcon from "@/components/SkillIcon";
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import { useToast } from "@/components/ui/Toast";
 import { getActivityById } from "@/lib/content/activities";
+import { SKILLS } from "@/lib/content/skills";
 import {
   getActivityLog,
   updateActivityLogNote,
@@ -145,11 +146,27 @@ export default function CompletionPage() {
         style={{ marginTop: 40 }}
       >
         {activity ? (
-          <SkillIcon
-            skillId={activity.skill}
-            size="lg"
-            iconName={activity.iconName}
-          />
+          <span
+            aria-hidden
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 14,
+              background: SKILLS[activity.skill].blob,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: SKILLS[activity.skill].iconColor,
+            }}
+          >
+            <ActivityIcon
+              iconName={activity.iconName}
+              skill={activity.skill}
+              size={40}
+              strokeWidth={2.25}
+              style={{ color: SKILLS[activity.skill].iconColor }}
+            />
+          </span>
         ) : null}
         <h1
           style={{
@@ -184,7 +201,7 @@ export default function CompletionPage() {
           marginTop: 40,
           marginLeft: 24,
           marginRight: 24,
-          background: "#FBFAF7",
+          background: "#F7F7F5",
           borderRadius: 20,
           padding: 20,
         }}
