@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import ActivityIcon from "@/components/activity/ActivityIcon";
+import ActivityRow from "@/components/activity/ActivityRow";
 import ActivitiesSheet from "@/components/activity/ActivitiesSheet";
 import AppHeader from "@/components/layout/AppHeader";
 import Blobs from "@/components/shared/Blobs";
@@ -56,6 +57,26 @@ export default function TrackPage() {
       if (skill) m.get(skill)?.add(r.activity_id);
     }
     return m;
+  }, [rows]);
+
+  // Aggregate the activity_log into one entry per distinct activity_id,
+  // sorted by most-recent completion. Each entry carries the cumulative
+  // count + the latest completion date for the row's tried meta line.
+  const recentStats = useMemo(() => {
+    const map = new Map<string, { count: number; lastDate: Date }>();
+    for (const r of rows) {
+      const d = new Date(r.completed_at);
+      const existing = map.get(r.activity_id);
+      if (existing) {
+        existing.count += 1;
+        if (d > existing.lastDate) existing.lastDate = d;
+      } else {
+        map.set(r.activity_id, { count: 1, lastDate: d });
+      }
+    }
+    return Array.from(map.entries())
+      .map(([activityId, stats]) => ({ activityId, ...stats }))
+      .sort((a, b) => b.lastDate.getTime() - a.lastDate.getTime());
   }, [rows]);
 
   return (
@@ -155,21 +176,28 @@ export default function TrackPage() {
                     listStyle: "none",
                     padding: 0,
                     margin: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
                   }}
                 >
-                  {rows.map((row, i) => (
-                    <li
-                      key={row.id}
-                      style={{
-                        borderBottom:
-                          i === rows.length - 1
-                            ? undefined
-                            : "0.5px solid #F0F0F0",
-                      }}
-                    >
-                      <RecentRow row={row} now={new Date()} />
-                    </li>
-                  ))}
+                  {recentStats.map((entry) => {
+                    const activity = getActivityById(entry.activityId);
+                    if (!activity) return null;
+                    return (
+                      <li key={entry.activityId}>
+                        <ActivityRow
+                          activity={activity}
+                          variant="tried"
+                          tried={{
+                            count: entry.count,
+                            lastDate: entry.lastDate.toISOString(),
+                          }}
+                          fromContext="track"
+                        />
+                      </li>
+                    );
+                  })}
                 </ul>
               </>
             )}
@@ -521,102 +549,6 @@ function SkillCard({
 }
 
 // ============================================================
-// Recent row
-// ============================================================
-
-function RecentRow({ row, now }: { row: ActivityLogRow; now: Date }) {
-  const activity = useMemo(
-    () => getActivityById(row.activity_id) ?? null,
-    [row.activity_id],
-  );
-  if (!activity) return null;
-  const skill = SKILLS[activity.skill];
-  const rel = relativeShortDate(row.completed_at, now);
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 12,
-        padding: "14px 0",
-      }}
-    >
-      <span
-        aria-hidden
-        style={{
-          width: 38,
-          height: 38,
-          borderRadius: 11,
-          background: skill.bg,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: skill.color,
-          flexShrink: 0,
-        }}
-      >
-        <ActivityIcon
-          iconName={activity.iconName}
-          skill={activity.skill}
-          size={20}
-          strokeWidth={2.25}
-          style={{ color: skill.color }}
-        />
-      </span>
-      <div style={{ minWidth: 0, flex: 1 }}>
-        <p
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#252630",
-            letterSpacing: "-0.005em",
-            lineHeight: 1.3,
-          }}
-        >
-          {activity.title}
-        </p>
-        <p
-          style={{
-            marginTop: 2,
-            fontSize: 12,
-            fontWeight: 400,
-            color: "#8E8D9B",
-            lineHeight: 1.4,
-          }}
-        >
-          {skill.label} · {activity.duration} min
-        </p>
-        {row.parent_note ? (
-          <p
-            style={{
-              marginTop: 4,
-              fontSize: 12,
-              fontStyle: "italic",
-              color: "#8E8D9B",
-              lineHeight: 1.5,
-            }}
-          >
-            {row.parent_note}
-          </p>
-        ) : null}
-      </div>
-      <span
-        style={{
-          fontSize: 12,
-          fontWeight: 400,
-          color: "#8E8D9B",
-          flexShrink: 0,
-          marginLeft: "auto",
-        }}
-      >
-        {rel}
-      </span>
-    </div>
-  );
-}
-
-// ============================================================
 // Empty state
 // ============================================================
 
@@ -693,21 +625,3 @@ function SectionLabel({
   );
 }
 
-function relativeShortDate(iso: string, now: Date): string {
-  const then = new Date(iso);
-  if (Number.isNaN(then.getTime())) return "";
-  const startOfThen = new Date(then);
-  startOfThen.setHours(0, 0, 0, 0);
-  const startOfNow = new Date(now);
-  startOfNow.setHours(0, 0, 0, 0);
-  const days = Math.floor(
-    (startOfNow.getTime() - startOfThen.getTime()) / 86_400_000,
-  );
-  if (days <= 0) return "Today";
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days} days ago`;
-  return then.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-  });
-}

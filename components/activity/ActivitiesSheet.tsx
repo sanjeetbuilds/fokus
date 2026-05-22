@@ -1,10 +1,9 @@
 "use client";
 
 import { X } from "lucide-react";
-import Link from "next/link";
 import { useMemo } from "react";
 
-import ActivityIcon from "@/components/activity/ActivityIcon";
+import ActivityRow from "@/components/activity/ActivityRow";
 import SkillIcon from "@/components/SkillIcon";
 import Sheet from "@/components/ui/Sheet";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
@@ -182,38 +181,42 @@ function ActivitiesSheetBody({
         </button>
       </div>
 
-      {/* Activity list */}
-      <ul style={{ display: "flex", flexDirection: "column" }}>
-        {tried.map((a, i) => (
-          <li
-            key={a.id}
-            style={{
-              borderBottom:
-                i === tried.length - 1 && !hasDivider
-                  ? undefined
-                  : "1px solid #E5E3DA",
-            }}
-          >
-            <ActivityRow
-              activity={a}
-              stats={statsById.get(a.id) ?? null}
-              fromContext={fromContext}
-              onClick={onClose}
-            />
-          </li>
-        ))}
+      {/* Activity list. Each row is the new shared ActivityRow card
+          (white, Level 1 shadow). We use gap between rows instead of
+          dividers since each card carries its own elevation. */}
+      <ul
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          listStyle: "none",
+          padding: 0,
+          margin: 0,
+        }}
+      >
+        {tried.map((a) => {
+          const stats = statsById.get(a.id)!;
+          return (
+            <li key={a.id}>
+              <ActivityRow
+                activity={a}
+                variant="tried"
+                tried={{
+                  count: stats.count,
+                  lastDate: stats.lastDate.toISOString(),
+                }}
+                fromContext={fromContext}
+                onClick={onClose}
+              />
+            </li>
+          );
+        })}
         {hasDivider ? <NotYetTriedDivider /> : null}
-        {untried.map((a, i) => (
-          <li
-            key={a.id}
-            style={{
-              borderBottom:
-                i === untried.length - 1 ? undefined : "1px solid #E5E3DA",
-            }}
-          >
+        {untried.map((a) => (
+          <li key={a.id}>
             <ActivityRow
               activity={a}
-              stats={null}
+              variant="default"
               fromContext={fromContext}
               onClick={onClose}
             />
@@ -221,111 +224,6 @@ function ActivitiesSheetBody({
         ))}
       </ul>
     </>
-  );
-}
-
-function ActivityRow({
-  activity,
-  stats,
-  fromContext,
-  onClick,
-}: {
-  activity: Activity;
-  stats: { count: number; lastDate: Date } | null;
-  fromContext: "library" | "track";
-  onClick: () => void;
-}) {
-  const isTried = stats !== null;
-  const triedMeta = stats
-    ? `Done ${stats.count} time${stats.count === 1 ? "" : "s"} · last ${formatDate(stats.lastDate)}`
-    : "";
-
-  return (
-    <Link
-      href={`/activity/${activity.id}?from=${fromContext}`}
-      onClick={onClick}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "14px 0",
-        textDecoration: "none",
-      }}
-      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
-    >
-      <span
-        aria-hidden
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 11,
-          background: SKILLS[activity.skill].bg,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: SKILLS[activity.skill].iconColor,
-          flexShrink: 0,
-        }}
-      >
-        <ActivityIcon
-          iconName={activity.iconName}
-          skill={activity.skill}
-          size={18}
-          strokeWidth={2.25}
-          style={{ color: SKILLS[activity.skill].iconColor }}
-        />
-      </span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p
-          style={{
-            fontSize: 15,
-            fontWeight: 600,
-            color: "#252630",
-            letterSpacing: "-0.005em",
-            lineHeight: 1.3,
-          }}
-        >
-          {activity.title}
-        </p>
-        {isTried ? (
-          <p
-            style={{
-              marginTop: 2,
-              fontSize: 12,
-              fontWeight: 500,
-              color: "#5DC87A",
-              lineHeight: 1.4,
-            }}
-          >
-            {triedMeta}
-          </p>
-        ) : (
-          <p
-            style={{
-              marginTop: 2,
-              fontSize: 12,
-              fontWeight: 400,
-              color: SKILLS[activity.skill].mid,
-              lineHeight: 1.4,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {activity.hook}
-          </p>
-        )}
-      </div>
-      <span
-        style={{
-          fontSize: 12,
-          color: "#8E8D9B",
-          flexShrink: 0,
-        }}
-      >
-        {activity.duration} min
-      </span>
-    </Link>
   );
 }
 
@@ -354,8 +252,4 @@ function NotYetTriedDivider() {
       <span style={{ flex: 1, height: 0.5, background: "#E5E3DA" }} />
     </li>
   );
-}
-
-function formatDate(d: Date): string {
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
 }
