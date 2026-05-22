@@ -92,19 +92,26 @@ export default function SignInPage() {
         <h1
           className="text-ink"
           style={{
-            fontSize: 38,
-            fontWeight: 800,
-            lineHeight: 1.1,
-            letterSpacing: "-0.03em",
+            fontSize: 28,
+            fontWeight: 700,
+            lineHeight: 1.15,
+            letterSpacing: "-0.02em",
           }}
         >
-          Sign in.
+          Welcome to Fokus.
         </h1>
         <p
-          className="mt-2"
-          style={{ fontSize: 16, lineHeight: 1.5, color: "#8E8D9B" }}
+          className="mt-3"
+          style={{
+            fontSize: 15,
+            fontWeight: 300,
+            lineHeight: 1.6,
+            color: "#8E8D9B",
+          }}
         >
-          We&apos;ll email you a one-time link.
+          One activity a day, with your child.
+          <br />
+          Sign in to get started.
         </p>
 
         {state === "sent" ? (
@@ -174,17 +181,41 @@ export default function SignInPage() {
                 >
                   {errorMessage}
                 </p>
-              ) : null}
+              ) : (
+                <p
+                  className="mt-2"
+                  style={{
+                    fontSize: 12,
+                    color: "#8E8D9B",
+                    lineHeight: 1.45,
+                  }}
+                >
+                  We&apos;ll send a link to your inbox. No password.
+                </p>
+              )}
             </div>
 
-            <button
-              type="submit"
-              disabled={state === "sending" || email.trim().length === 0}
-              className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50"
-              style={{ background: "#252630" }}
-            >
-              {state === "sending" ? "Sending…" : "Send link"}
-            </button>
+            <div className="flex flex-col items-center gap-3">
+              <button
+                type="submit"
+                disabled={state === "sending" || email.trim().length === 0}
+                className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50"
+                style={{ background: "#252630" }}
+              >
+                {state === "sending" ? "Sending…" : "Send link"}
+              </button>
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 400,
+                  color: "#C2C0CB",
+                  textAlign: "center",
+                  lineHeight: 1.5,
+                }}
+              >
+                Your data stays private. Only you can see it.
+              </p>
+            </div>
           </form>
         )}
       </div>
