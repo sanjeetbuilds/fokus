@@ -23,7 +23,6 @@ function isNoChildAllowed(path: string): boolean {
   return (
     path.startsWith("/onboarding") ||
     path === "/intro" ||
-    path === "/welcome" ||
     path === "/sign-in" ||
     path.startsWith("/auth") ||
     path.startsWith("/api") ||
@@ -58,17 +57,6 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
       try {
         const child = await getCurrentChild();
         if (cancelled) return;
-
-        // The user is authed; the welcome flow's session state is no
-        // longer needed and shouldn't repopulate if they ever sign out
-        // and back in.
-        if (pathname !== "/welcome") {
-          try {
-            sessionStorage.removeItem("fokus_welcome_screen");
-          } catch {
-            /* private browsing; harmless */
-          }
-        }
 
         if (!child) {
           if (!isNoChildAllowed(pathname)) {
