@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import ActivityIcon from "@/components/activity/ActivityIcon";
 import ActivitiesSheet from "@/components/activity/ActivitiesSheet";
 import AppHeader from "@/components/layout/AppHeader";
+import Blobs from "@/components/shared/Blobs";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
 import { SKILLS, SKILL_KEYS } from "@/lib/content/skills";
 import type { ActivityLogRow } from "@/lib/supabase/queries";
@@ -113,24 +114,39 @@ export default function TrackPage() {
                   <WeekChart data={weekData} />
                 </div>
 
-                <SectionLabel style={{ marginTop: 20 }}>By skill</SectionLabel>
-                <div
-                  style={{
-                    marginTop: 8,
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 10,
-                  }}
-                >
-                  {SKILL_KEYS.map((k) => (
-                    <SkillCard
-                      key={k}
-                      skillId={k}
-                      triedCount={triedBySkill.get(k)?.size ?? 0}
-                      onOpen={() => setOpenSkill(k)}
-                    />
-                  ))}
-                </div>
+                {(() => {
+                  // Only render the By skill section for skills the parent
+                  // has actually started; Track is a record of what's
+                  // been done, not a checklist of what hasn't.
+                  const startedSkills = SKILL_KEYS.filter(
+                    (k) => (triedBySkill.get(k)?.size ?? 0) > 0,
+                  );
+                  if (startedSkills.length === 0) return null;
+                  return (
+                    <>
+                      <SectionLabel style={{ marginTop: 20 }}>
+                        By skill
+                      </SectionLabel>
+                      <div
+                        style={{
+                          marginTop: 8,
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: 10,
+                        }}
+                      >
+                        {startedSkills.map((k) => (
+                          <SkillCard
+                            key={k}
+                            skillId={k}
+                            triedCount={triedBySkill.get(k)?.size ?? 0}
+                            onOpen={() => setOpenSkill(k)}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
 
                 <SectionLabel style={{ marginTop: 20 }}>Recent</SectionLabel>
                 <ul
@@ -243,22 +259,28 @@ function StatCard({
     <div
       style={{
         background,
-        borderRadius: 18,
-        padding: 16,
+        borderRadius: 20,
+        padding: 18,
         display: "flex",
         flexDirection: "column",
         gap: 8,
         minHeight: 110,
         justifyContent: "space-between",
+        position: "relative",
+        overflow: "hidden",
+        isolation: "isolate",
       }}
     >
+      <Blobs variant="stat" />
       <span
         style={{
-          fontSize: 34,
+          fontSize: 38,
           fontWeight: 800,
           color: "#FFFFFF",
-          letterSpacing: "-0.03em",
+          letterSpacing: "-0.04em",
           lineHeight: 1,
+          position: "relative",
+          zIndex: 1,
         }}
       >
         {number}
@@ -267,8 +289,10 @@ function StatCard({
         style={{
           fontSize: 11,
           fontWeight: 500,
-          color: "rgba(255,255,255,0.75)",
-          lineHeight: 1.3,
+          color: "rgba(255,255,255,0.72)",
+          lineHeight: 1.4,
+          position: "relative",
+          zIndex: 1,
         }}
       >
         {firstLine}
@@ -388,9 +412,9 @@ function WeekChart({ data }: { data: DayBucket[] }) {
             style={{
               flex: 1,
               textAlign: "center",
-              fontSize: 10,
-              fontWeight: d.isToday ? 700 : 500,
-              color: d.isToday ? "#252630" : "#8E8D9B",
+              fontSize: 9,
+              fontWeight: d.isToday ? 800 : 600,
+              color: d.isToday ? "#252630" : "#C2C0CB",
             }}
           >
             {d.label}
@@ -415,9 +439,6 @@ function SkillCard({
   onOpen: () => void;
 }) {
   const skill = SKILLS[skillId];
-  // 8-digit hex: hex + "1A" ≈ 10% alpha background tint.
-  const tintBg = `${skill.color}1A`;
-  const isStarted = triedCount > 0;
   return (
     <button
       type="button"
@@ -427,59 +448,74 @@ function SkillCard({
         flexDirection: "column",
         alignItems: "flex-start",
         gap: 0,
-        background: "#FFFFFF",
-        border: "0.5px solid #EEEEEE",
+        background: skill.bg,
         borderRadius: 16,
         padding: 14,
         cursor: "pointer",
         textAlign: "left",
+        boxShadow: "var(--shadow-level-1)",
+        position: "relative",
+        overflow: "hidden",
+        isolation: "isolate",
       }}
       className="transition-opacity active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
-      <span
-        aria-hidden
+      <Blobs variant="tile" color={skill.blob} />
+      <div
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 11,
-          background: tintBg,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: skill.color,
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          width: "100%",
         }}
       >
-        <ActivityIcon
-          iconName={skill.iconName}
-          skill={skillId}
-          size={20}
-          strokeWidth={2.25}
-          style={{ color: skill.color }}
-        />
-      </span>
-      <p
-        style={{
-          marginTop: 10,
-          fontSize: 13,
-          fontWeight: 700,
-          color: "#252630",
-          letterSpacing: "-0.005em",
-          lineHeight: 1.2,
-        }}
-      >
-        {skill.label}
-      </p>
-      <p
-        style={{
-          marginTop: 4,
-          fontSize: 11,
-          fontWeight: 400,
-          color: isStarted ? "#8E8D9B" : "#C2C0CB",
-          lineHeight: 1.4,
-        }}
-      >
-        {isStarted ? `${triedCount} of 8 tried` : "Not started yet"}
-      </p>
+        <span
+          aria-hidden
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            background: skill.blob,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: skill.iconColor,
+          }}
+        >
+          <ActivityIcon
+            iconName={skill.iconName}
+            skill={skillId}
+            size={20}
+            strokeWidth={2.25}
+            style={{ color: skill.iconColor }}
+          />
+        </span>
+        <p
+          style={{
+            marginTop: 10,
+            fontSize: 13,
+            fontWeight: 700,
+            color: skill.iconColor,
+            letterSpacing: "-0.005em",
+            lineHeight: 1.2,
+          }}
+        >
+          {skill.label}
+        </p>
+        <p
+          style={{
+            marginTop: 4,
+            fontSize: 11,
+            fontWeight: 500,
+            color: skill.mid,
+            lineHeight: 1.4,
+          }}
+        >
+          {triedCount} of 8 tried
+        </p>
+      </div>
     </button>
   );
 }
@@ -495,7 +531,6 @@ function RecentRow({ row, now }: { row: ActivityLogRow; now: Date }) {
   );
   if (!activity) return null;
   const skill = SKILLS[activity.skill];
-  const tintBg = `${skill.color}1A`;
   const rel = relativeShortDate(row.completed_at, now);
 
   return (
@@ -504,7 +539,7 @@ function RecentRow({ row, now }: { row: ActivityLogRow; now: Date }) {
         display: "flex",
         alignItems: "flex-start",
         gap: 12,
-        padding: "12px 0",
+        padding: "14px 0",
       }}
     >
       <span
@@ -513,7 +548,7 @@ function RecentRow({ row, now }: { row: ActivityLogRow; now: Date }) {
           width: 38,
           height: 38,
           borderRadius: 11,
-          background: tintBg,
+          background: skill.bg,
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
