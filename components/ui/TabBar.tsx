@@ -44,12 +44,16 @@ export default function TabBar({
     <nav
       aria-label="Primary"
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg-elevated",
+        "fixed inset-x-0 bottom-0 z-40 bg-bg-elevated",
         "pb-[env(safe-area-inset-bottom)]",
         className,
       )}
+      style={{
+        boxShadow: "var(--shadow-level-2)",
+        height: `calc(76px + env(safe-area-inset-bottom, 0px))`,
+      }}
     >
-      <ul className="mx-auto flex w-full max-w-[540px] items-stretch justify-around pt-2.5 pb-2">
+      <ul className="mx-auto flex h-[76px] w-full max-w-[540px] items-stretch justify-around pt-2.5">
         {tabs.slice(0, 4).map((tab) => {
           const isActive = tab.key === activeKey;
           const Icon = tab.icon;
@@ -89,7 +93,7 @@ export default function TabBar({
                     />
                     <span
                       style={{
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: 700,
                         lineHeight: 1,
                         color: ACTIVE_FG,
