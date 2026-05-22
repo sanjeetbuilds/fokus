@@ -1,68 +1,84 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-import SkillIcon from "@/components/SkillIcon";
+import ActivityIcon from "@/components/activity/ActivityIcon";
+import ActivitiesSheet from "@/components/activity/ActivitiesSheet";
 import AppHeader from "@/components/layout/AppHeader";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
+import { SKILLS, SKILL_KEYS } from "@/lib/content/skills";
 import type { ActivityLogRow } from "@/lib/supabase/queries";
 import { useActivityLog } from "@/lib/use-activity-log";
 import { useChild } from "@/lib/use-child";
+import type { SkillKey } from "@/types";
+
+const TOTAL_ACTIVITIES = ACTIVITIES.length;
 
 /**
  * Track — parent-facing record of what they've done with their child.
  *
- *   header  "What we've done together."          24-26 / 700 ink
- *   subhead "With {name}."                       14 / 400 muted
+ *   "What we've done together." 24 / 700 ink
+ *   "With {name}."              13 / 400 muted
  *
  *   ┌── Explored ────┐  ┌── Done this month ──┐
- *   │   12           │  │   3                 │
- *   │   explored     │  │   done              │
- *   │   of 64        │  │   this month        │
- *   └─ skill yellow ─┘  └─ skill periwinkle ──┘
  *
- *   RECENT
- *   list of activity_log rows, most recent first, optional parent_note
+ *   This week
+ *   ┌── 7-day bar chart ─────────────────┐
  *
- * Empty state (zero rows):
- *   Both stat cards show 0. Below them, a quiet centred message points
- *   to /today (the per-skill exploration surface lives in Library).
+ *   By skill
+ *   2x4 grid of skill cards
  *
- * All data on this screen derives from a single useActivityLog query.
+ *   Recent
+ *   list of activity_log rows (uncapped)
+ *
+ * Empty state (zero rows): both stat cards show 0; everything below
+ * is replaced by a centred "Nothing yet." block linking to /.
  */
 export default function TrackPage() {
   const { child, loading: childLoading } = useChild();
   const { rows, loading: rowsLoading } = useActivityLog();
 
-  const stats = useMemo(() => computeStats(rows), [rows]);
-  const loaded = !childLoading && !rowsLoading;
+  const [openSkill, setOpenSkill] = useState<SkillKey | null>(null);
+
   const childName = child?.name ?? "your child";
+  const loaded = !childLoading && !rowsLoading;
   const isEmpty = rows.length === 0;
+
+  const stats = useMemo(() => computeStats(rows), [rows]);
+  const weekData = useMemo(() => computeWeek(rows, new Date()), [rows]);
+  const triedBySkill = useMemo(() => {
+    const m = new Map<SkillKey, Set<string>>();
+    for (const k of SKILL_KEYS) m.set(k, new Set());
+    for (const r of rows) {
+      const skill = getActivityById(r.activity_id)?.skill;
+      if (skill) m.get(skill)?.add(r.activity_id);
+    }
+    return m;
+  }, [rows]);
 
   return (
     <main className="mx-auto flex min-h-[100svh] max-w-[640px] flex-col bg-bg pb-[calc(env(safe-area-inset-bottom)+96px)] pt-[calc(env(safe-area-inset-top)+8px)]">
       <AppHeader />
 
-      <div className="px-6 pt-1">
+      <div className="px-5 pt-2">
         <h1
           style={{
             paddingTop: 6,
-            fontSize: 50,
-            fontWeight: 800,
+            fontSize: 24,
+            fontWeight: 700,
             color: "#252630",
-            letterSpacing: "-0.035em",
-            lineHeight: 1.05,
-            marginBottom: 8,
+            letterSpacing: "-0.02em",
+            lineHeight: 1.2,
           }}
         >
-          What we&apos;ve
-          <br />
-          done together
+          What we&apos;ve done together.
         </h1>
         <p
           style={{
-            fontSize: 14,
+            marginTop: 4,
+            fontSize: 13,
+            fontWeight: 400,
             color: "#8E8D9B",
             lineHeight: 1.5,
           }}
@@ -79,62 +95,79 @@ export default function TrackPage() {
           </p>
         ) : (
           <>
-            <div style={{ marginTop: 24 }}>
+            <div style={{ marginTop: 18 }}>
               <StatCards
                 exploredCount={stats.distinctExplored}
                 doneThisMonth={stats.doneThisMonth}
               />
             </div>
 
-            {!isEmpty ? (
-              <div style={{ marginTop: 32 }}>
-                <SectionHeader>Recent</SectionHeader>
-                <ul
+            {isEmpty ? (
+              <EmptyState />
+            ) : (
+              <>
+                <SectionLabel style={{ marginTop: 20 }}>
+                  This week
+                </SectionLabel>
+                <div style={{ marginTop: 8 }}>
+                  <WeekChart data={weekData} />
+                </div>
+
+                <SectionLabel style={{ marginTop: 20 }}>By skill</SectionLabel>
+                <div
                   style={{
-                    marginTop: 12,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 16,
+                    marginTop: 8,
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 10,
                   }}
                 >
-                  {rows.slice(0, 10).map((row) => (
-                    <li key={row.id}>
-                      <RecentRow row={row} />
+                  {SKILL_KEYS.map((k) => (
+                    <SkillCard
+                      key={k}
+                      skillId={k}
+                      triedCount={triedBySkill.get(k)?.size ?? 0}
+                      onOpen={() => setOpenSkill(k)}
+                    />
+                  ))}
+                </div>
+
+                <SectionLabel style={{ marginTop: 20 }}>Recent</SectionLabel>
+                <ul
+                  style={{
+                    marginTop: 8,
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                  }}
+                >
+                  {rows.map((row, i) => (
+                    <li
+                      key={row.id}
+                      style={{
+                        borderBottom:
+                          i === rows.length - 1
+                            ? undefined
+                            : "0.5px solid #F0F0F0",
+                      }}
+                    >
+                      <RecentRow row={row} now={new Date()} />
                     </li>
                   ))}
                 </ul>
-              </div>
-            ) : (
-              <div
-                style={{
-                  marginTop: 32,
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 15,
-                    color: "#8E8D9B",
-                    lineHeight: 1.5,
-                    textAlign: "center",
-                    maxWidth: 320,
-                  }}
-                >
-                  Nothing yet.{" "}
-                  <Link
-                    href="/"
-                    style={{ color: "#252630", fontWeight: 700 }}
-                  >
-                    Today&apos;s activity
-                  </Link>{" "}
-                  is waiting for you.
-                </p>
-              </div>
+              </>
             )}
           </>
         )}
       </div>
+
+      <ActivitiesSheet
+        open={openSkill !== null}
+        onClose={() => setOpenSkill(null)}
+        skillId={openSkill}
+        activityLog={rows}
+        fromContext="track"
+      />
     </main>
   );
 }
@@ -150,32 +183,19 @@ interface ComputedStats {
 
 function computeStats(rows: ActivityLogRow[]): ComputedStats {
   const distinctIds = new Set<string>();
-
   const now = new Date();
   const monthY = now.getUTCFullYear();
   const monthM = now.getUTCMonth();
   let doneThisMonth = 0;
-
   for (const r of rows) {
     distinctIds.add(r.activity_id);
-
     const d = new Date(r.completed_at);
     if (d.getUTCFullYear() === monthY && d.getUTCMonth() === monthM) {
       doneThisMonth += 1;
     }
   }
-
-  return {
-    distinctExplored: distinctIds.size,
-    doneThisMonth,
-  };
+  return { distinctExplored: distinctIds.size, doneThisMonth };
 }
-
-// ============================================================
-// Stat cards
-// ============================================================
-
-const TOTAL_ACTIVITIES = ACTIVITIES.length;
 
 function StatCards({
   exploredCount,
@@ -189,7 +209,7 @@ function StatCards({
       style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
-        gap: 12,
+        gap: 10,
       }}
     >
       <StatCard
@@ -197,14 +217,12 @@ function StatCards({
         number={exploredCount}
         firstLine="explored"
         secondLine={`of ${TOTAL_ACTIVITIES}`}
-        decoration="wave"
       />
       <StatCard
         background="#9CA5FF"
         number={doneThisMonth}
         firstLine="done"
         secondLine="this month"
-        decoration="circles"
       />
     </div>
   );
@@ -215,205 +233,424 @@ function StatCard({
   number,
   firstLine,
   secondLine,
-  decoration,
 }: {
   background: string;
   number: number;
   firstLine: string;
   secondLine: string;
-  decoration: "wave" | "circles";
 }) {
   return (
     <div
       style={{
         background,
-        borderRadius: 22,
-        padding: 18,
+        borderRadius: 18,
+        padding: 16,
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 6,
-        minHeight: 130,
+        gap: 8,
+        minHeight: 110,
         justifyContent: "space-between",
-        position: "relative",
-        overflow: "hidden",
       }}
     >
-      {/* Decorative SVG overlay from reference. Pointer-events:none
-          so card stays tappable; opacity is set on the SVG paths. */}
-      {decoration === "wave" ? (
-        <svg
-          aria-hidden
-          viewBox="0 0 170 38"
-          width="170"
-          height="38"
-          preserveAspectRatio="none"
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            pointerEvents: "none",
-            width: "100%",
-          }}
-        >
-          <path
-            d="M0 24C18 10 30 32 48 22C66 12 76 34 96 22C116 10 128 32 148 22C158 16 164 20 170 18"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            fill="none"
-            opacity="0.35"
-          />
-        </svg>
-      ) : (
-        <svg
-          aria-hidden
-          viewBox="0 0 90 90"
-          width="90"
-          height="90"
-          style={{
-            position: "absolute",
-            top: -10,
-            right: -10,
-            pointerEvents: "none",
-            opacity: 0.14,
-          }}
-        >
-          <circle cx="70" cy="20" r="28" stroke="white" strokeWidth="2" fill="none" />
-          <circle cx="55" cy="50" r="20" stroke="white" strokeWidth="2" fill="none" />
-          <circle cx="80" cy="65" r="15" stroke="white" strokeWidth="2" fill="none" />
-        </svg>
-      )}
       <span
         style={{
-          fontSize: 36,
+          fontSize: 34,
           fontWeight: 800,
           color: "#FFFFFF",
-          letterSpacing: "-0.025em",
+          letterSpacing: "-0.03em",
           lineHeight: 1,
-          position: "relative",
         }}
       >
         {number}
       </span>
       <span
         style={{
-          fontSize: 12,
-          fontWeight: 600,
-          color: "rgba(255,255,255,0.92)",
+          fontSize: 11,
+          fontWeight: 500,
+          color: "rgba(255,255,255,0.75)",
           lineHeight: 1.3,
-          position: "relative",
         }}
       >
         {firstLine}
         <br />
-        <span style={{ color: "rgba(255,255,255,0.7)" }}>{secondLine}</span>
+        {secondLine}
       </span>
     </div>
   );
 }
 
 // ============================================================
-// Recent rows
+// This week — bar chart
 // ============================================================
 
-function RecentRow({ row }: { row: ActivityLogRow }) {
+interface DayBucket {
+  /** Monday-based label: M T W T F S S */
+  label: string;
+  count: number;
+  isToday: boolean;
+}
+
+/**
+ * Returns 7 buckets, Monday → Sunday, counting activity_log rows that
+ * land on each day of the current week (computed in the local
+ * timezone — the user's "today" is what matters here).
+ */
+function computeWeek(rows: ActivityLogRow[], now: Date): DayBucket[] {
+  // ISO week: Monday is day 1. JS getDay() returns 0 (Sun)..6 (Sat).
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  const dow = (today.getDay() + 6) % 7; // 0=Mon..6=Sun
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - dow);
+
+  const labels = ["M", "T", "W", "T", "F", "S", "S"];
+  const buckets: DayBucket[] = labels.map((label, i) => {
+    const day = new Date(monday);
+    day.setDate(monday.getDate() + i);
+    const isToday = day.getTime() === today.getTime();
+    return { label, count: 0, isToday };
+  });
+
+  for (const r of rows) {
+    const d = new Date(r.completed_at);
+    d.setHours(0, 0, 0, 0);
+    const diff = Math.floor(
+      (d.getTime() - monday.getTime()) / 86_400_000,
+    );
+    if (diff >= 0 && diff < 7) {
+      buckets[diff]!.count += 1;
+    }
+  }
+  return buckets;
+}
+
+function WeekChart({ data }: { data: DayBucket[] }) {
+  const max = Math.max(1, ...data.map((d) => d.count));
+  return (
+    <div
+      style={{
+        background: "#F7F7F5",
+        borderRadius: 18,
+        padding: 16,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          height: 72,
+          gap: 4,
+        }}
+      >
+        {data.map((d, i) => {
+          // Min 8px so the bar still reads on a zero-day.
+          const heightPx = Math.max(8, Math.round((d.count / max) * 72));
+          const fill = d.isToday
+            ? "#3D7A5C"
+            : d.count > 0
+              ? "#D4EDE0"
+              : "#EEEEEE";
+          return (
+            <div
+              key={i}
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                height: "100%",
+              }}
+            >
+              <div
+                aria-label={`${d.count} activit${d.count === 1 ? "y" : "ies"} on day ${i + 1}`}
+                style={{
+                  width: "100%",
+                  height: heightPx,
+                  background: fill,
+                  borderRadius: 5,
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          marginTop: 8,
+          display: "flex",
+          gap: 4,
+        }}
+      >
+        {data.map((d, i) => (
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              textAlign: "center",
+              fontSize: 10,
+              fontWeight: d.isToday ? 700 : 500,
+              color: d.isToday ? "#252630" : "#8E8D9B",
+            }}
+          >
+            {d.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// By skill grid card
+// ============================================================
+
+function SkillCard({
+  skillId,
+  triedCount,
+  onOpen,
+}: {
+  skillId: SkillKey;
+  triedCount: number;
+  onOpen: () => void;
+}) {
+  const skill = SKILLS[skillId];
+  // 8-digit hex: hex + "1A" ≈ 10% alpha background tint.
+  const tintBg = `${skill.color}1A`;
+  const isStarted = triedCount > 0;
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: 0,
+        background: "#FFFFFF",
+        border: "0.5px solid #EEEEEE",
+        borderRadius: 16,
+        padding: 14,
+        cursor: "pointer",
+        textAlign: "left",
+      }}
+      className="transition-opacity active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    >
+      <span
+        aria-hidden
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 11,
+          background: tintBg,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: skill.color,
+        }}
+      >
+        <ActivityIcon
+          iconName={skill.iconName}
+          skill={skillId}
+          size={20}
+          strokeWidth={2.25}
+          style={{ color: skill.color }}
+        />
+      </span>
+      <p
+        style={{
+          marginTop: 10,
+          fontSize: 13,
+          fontWeight: 700,
+          color: "#252630",
+          letterSpacing: "-0.005em",
+          lineHeight: 1.2,
+        }}
+      >
+        {skill.label}
+      </p>
+      <p
+        style={{
+          marginTop: 4,
+          fontSize: 11,
+          fontWeight: 400,
+          color: isStarted ? "#8E8D9B" : "#C2C0CB",
+          lineHeight: 1.4,
+        }}
+      >
+        {isStarted ? `${triedCount} of 8 tried` : "Not started yet"}
+      </p>
+    </button>
+  );
+}
+
+// ============================================================
+// Recent row
+// ============================================================
+
+function RecentRow({ row, now }: { row: ActivityLogRow; now: Date }) {
   const activity = useMemo(
     () => getActivityById(row.activity_id) ?? null,
     [row.activity_id],
   );
-
-  if (!activity) {
-    return (
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-        <span
-          aria-hidden
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 14,
-            background: "#E5E3DA",
-            flexShrink: 0,
-          }}
-        />
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={recentTopRowStyle}>
-            <p style={recentTitleStyle}>Unknown activity</p>
-            <p style={recentDateStyle}>{formatDate(row.completed_at)}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (!activity) return null;
+  const skill = SKILLS[activity.skill];
+  const tintBg = `${skill.color}1A`;
+  const rel = relativeShortDate(row.completed_at, now);
 
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-      <SkillIcon
-        skillId={activity.skill}
-        size="sm"
-        iconName={activity.iconName}
-      />
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 12,
+        padding: "12px 0",
+      }}
+    >
+      <span
+        aria-hidden
+        style={{
+          width: 38,
+          height: 38,
+          borderRadius: 11,
+          background: tintBg,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: skill.color,
+          flexShrink: 0,
+        }}
+      >
+        <ActivityIcon
+          iconName={activity.iconName}
+          skill={activity.skill}
+          size={20}
+          strokeWidth={2.25}
+          style={{ color: skill.color }}
+        />
+      </span>
       <div style={{ minWidth: 0, flex: 1 }}>
-        <div style={recentTopRowStyle}>
-          <p style={recentTitleStyle}>{activity.title}</p>
-          <p style={recentDateStyle}>{formatDate(row.completed_at)}</p>
-        </div>
+        <p
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: "#252630",
+            letterSpacing: "-0.005em",
+            lineHeight: 1.3,
+          }}
+        >
+          {activity.title}
+        </p>
+        <p
+          style={{
+            marginTop: 2,
+            fontSize: 12,
+            fontWeight: 400,
+            color: "#8E8D9B",
+            lineHeight: 1.4,
+          }}
+        >
+          {skill.label} · {activity.duration} min
+        </p>
         {row.parent_note ? (
           <p
             style={{
-              marginTop: 8,
-              paddingLeft: 12,
-              borderLeft: "1px solid #E5E3DA",
-              fontSize: 14,
+              marginTop: 4,
+              fontSize: 12,
               fontStyle: "italic",
               color: "#8E8D9B",
-              lineHeight: 1.55,
+              lineHeight: 1.5,
             }}
           >
             {row.parent_note}
           </p>
         ) : null}
       </div>
+      <span
+        style={{
+          fontSize: 12,
+          fontWeight: 400,
+          color: "#8E8D9B",
+          flexShrink: 0,
+          marginLeft: "auto",
+        }}
+      >
+        {rel}
+      </span>
     </div>
   );
 }
 
-const recentTopRowStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "baseline",
-  justifyContent: "space-between",
-  gap: 12,
-};
+// ============================================================
+// Empty state
+// ============================================================
 
-const recentTitleStyle: React.CSSProperties = {
-  fontSize: 15,
-  fontWeight: 700,
-  color: "#252630",
-  letterSpacing: "-0.005em",
-  lineHeight: 1.35,
-};
-
-const recentDateStyle: React.CSSProperties = {
-  fontSize: 13,
-  color: "#8E8D9B",
-  flexShrink: 0,
-  lineHeight: 1.4,
-};
+function EmptyState() {
+  return (
+    <div
+      style={{
+        marginTop: 32,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 4,
+        textAlign: "center",
+      }}
+    >
+      <p
+        style={{
+          fontSize: 16,
+          fontWeight: 600,
+          color: "#252630",
+        }}
+      >
+        Nothing yet.
+      </p>
+      <p
+        style={{
+          fontSize: 14,
+          fontWeight: 400,
+          color: "#8E8D9B",
+        }}
+      >
+        Today&apos;s activity is waiting.
+      </p>
+      <Link
+        href="/"
+        style={{
+          marginTop: 8,
+          fontSize: 14,
+          fontWeight: 600,
+          color: "#252630",
+          textDecoration: "none",
+        }}
+      >
+        Go to Today →
+      </Link>
+    </div>
+  );
+}
 
 // ============================================================
 // Shared
 // ============================================================
 
-function SectionHeader({ children }: { children: React.ReactNode }) {
+function SectionLabel({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
   return (
     <p
       style={{
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: 700,
         color: "#8E8D9B",
+        letterSpacing: "0.07em",
         textTransform: "uppercase",
-        letterSpacing: "0.05em",
+        ...style,
       }}
     >
       {children}
@@ -421,9 +658,20 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
   );
 }
 
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", {
+function relativeShortDate(iso: string, now: Date): string {
+  const then = new Date(iso);
+  if (Number.isNaN(then.getTime())) return "";
+  const startOfThen = new Date(then);
+  startOfThen.setHours(0, 0, 0, 0);
+  const startOfNow = new Date(now);
+  startOfNow.setHours(0, 0, 0, 0);
+  const days = Math.floor(
+    (startOfNow.getTime() - startOfThen.getTime()) / 86_400_000,
+  );
+  if (days <= 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days} days ago`;
+  return then.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
   });
