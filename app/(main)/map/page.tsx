@@ -197,12 +197,14 @@ function StatCards({
         number={exploredCount}
         firstLine="explored"
         secondLine={`of ${TOTAL_ACTIVITIES}`}
+        decoration="wave"
       />
       <StatCard
         background="#9CA5FF"
         number={doneThisMonth}
         firstLine="done"
         secondLine="this month"
+        decoration="circles"
       />
     </div>
   );
@@ -213,11 +215,13 @@ function StatCard({
   number,
   firstLine,
   secondLine,
+  decoration,
 }: {
   background: string;
   number: number;
   firstLine: string;
   secondLine: string;
+  decoration: "wave" | "circles";
 }) {
   return (
     <div
@@ -231,8 +235,56 @@ function StatCard({
         gap: 6,
         minHeight: 130,
         justifyContent: "space-between",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
+      {/* Decorative SVG overlay from reference. Pointer-events:none
+          so card stays tappable; opacity is set on the SVG paths. */}
+      {decoration === "wave" ? (
+        <svg
+          aria-hidden
+          viewBox="0 0 170 38"
+          width="170"
+          height="38"
+          preserveAspectRatio="none"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            pointerEvents: "none",
+            width: "100%",
+          }}
+        >
+          <path
+            d="M0 24C18 10 30 32 48 22C66 12 76 34 96 22C116 10 128 32 148 22C158 16 164 20 170 18"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.35"
+          />
+        </svg>
+      ) : (
+        <svg
+          aria-hidden
+          viewBox="0 0 90 90"
+          width="90"
+          height="90"
+          style={{
+            position: "absolute",
+            top: -10,
+            right: -10,
+            pointerEvents: "none",
+            opacity: 0.14,
+          }}
+        >
+          <circle cx="70" cy="20" r="28" stroke="white" strokeWidth="2" fill="none" />
+          <circle cx="55" cy="50" r="20" stroke="white" strokeWidth="2" fill="none" />
+          <circle cx="80" cy="65" r="15" stroke="white" strokeWidth="2" fill="none" />
+        </svg>
+      )}
       <span
         style={{
           fontSize: 36,
@@ -240,6 +292,7 @@ function StatCard({
           color: "#FFFFFF",
           letterSpacing: "-0.025em",
           lineHeight: 1,
+          position: "relative",
         }}
       >
         {number}
@@ -250,6 +303,7 @@ function StatCard({
           fontWeight: 600,
           color: "rgba(255,255,255,0.92)",
           lineHeight: 1.3,
+          position: "relative",
         }}
       >
         {firstLine}
