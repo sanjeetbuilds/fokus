@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils/cn";
 export type TabItem = {
   key: string;
   label: string;
-  icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number; strokeWidth?: number }>;
+  icon: ComponentType<
+    SVGProps<SVGSVGElement> & { size?: number; strokeWidth?: number }
+  >;
   onClick?: () => void;
 };
 
@@ -18,11 +20,20 @@ export interface TabBarProps {
 }
 
 /**
- * Bottom nav: icon stacked over label. Active item renders in brand
- * ink #252630; inactive items in the warm muted gray-lt #C2C0CB.
- * Selection is communicated via color + weight; periwinkle is reserved
- * for in-content brand accents elsewhere.
+ * Bottom nav with the green-pill treatment.
+ *
+ *   Active:   icon + label inline inside a #EAF6EF pill, both in
+ *             the deeper green #3D7A5C. No label below — the pill
+ *             carries the name.
+ *   Inactive: icon only, #C2C0CB. Label below in 10/600 #C2C0CB.
+ *
+ * Inactive items keep matching vertical padding so the row height
+ * doesn't shift when selection changes.
  */
+const ACTIVE_BG = "#EAF6EF";
+const ACTIVE_FG = "#3D7A5C";
+const INACTIVE = "#C2C0CB";
+
 export default function TabBar({
   tabs,
   activeKey,
@@ -38,7 +49,7 @@ export default function TabBar({
         className,
       )}
     >
-      <ul className="mx-auto flex w-full max-w-[540px] items-start justify-around pt-2.5">
+      <ul className="mx-auto flex w-full max-w-[540px] items-stretch justify-around pt-2.5 pb-2">
         {tabs.slice(0, 4).map((tab) => {
           const isActive = tab.key === activeKey;
           const Icon = tab.icon;
@@ -47,39 +58,77 @@ export default function TabBar({
               <button
                 type="button"
                 aria-current={isActive ? "page" : undefined}
+                aria-label={tab.label}
                 onClick={() => {
                   tab.onClick?.();
                   onChange?.(tab.key);
                 }}
                 className={cn(
-                  "flex h-[68px] w-full flex-col items-center justify-start gap-[3px] select-none",
+                  "flex w-full flex-col items-center justify-center gap-1 select-none",
+                  "transition-colors duration-fast ease-out",
                   "focus-visible:outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-accent",
                 )}
               >
-                <span
-                  aria-hidden
-                  className="transition-all duration-fast ease-out"
-                  style={{
-                    color: isActive ? "#252630" : "#C2C0CB",
-                    opacity: 1,
-                  }}
-                >
-                  <Icon
-                    size={22}
-                    strokeWidth={2}
-                    aria-hidden
-                    stroke="currentColor"
-                  />
-                </span>
-                <span
-                  className="text-[11px] leading-none transition-colors duration-fast ease-out"
-                  style={{
-                    color: isActive ? "#252630" : "#C2C0CB",
-                    fontWeight: isActive ? 700 : 500,
-                  }}
-                >
-                  {tab.label}
-                </span>
+                {isActive ? (
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      background: ACTIVE_BG,
+                      color: ACTIVE_FG,
+                      padding: "7px 14px",
+                      borderRadius: 22,
+                    }}
+                  >
+                    <Icon
+                      size={20}
+                      strokeWidth={2}
+                      aria-hidden
+                      stroke="currentColor"
+                    />
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        color: ACTIVE_FG,
+                      }}
+                    >
+                      {tab.label}
+                    </span>
+                  </span>
+                ) : (
+                  <>
+                    <span
+                      aria-hidden
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "7px 10px",
+                        color: INACTIVE,
+                      }}
+                    >
+                      <Icon
+                        size={20}
+                        strokeWidth={2}
+                        aria-hidden
+                        stroke="currentColor"
+                      />
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 600,
+                        lineHeight: 1,
+                        color: INACTIVE,
+                      }}
+                    >
+                      {tab.label}
+                    </span>
+                  </>
+                )}
               </button>
             </li>
           );
