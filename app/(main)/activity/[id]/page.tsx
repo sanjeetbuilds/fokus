@@ -4,7 +4,7 @@ import { ChevronDown, ChevronLeft, ChevronUp } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useMemo, useState } from "react";
 
-import SkillIcon from "@/components/SkillIcon";
+import ActivityIcon from "@/components/activity/ActivityIcon";
 import Wordmark from "@/components/shared/Wordmark";
 import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
@@ -178,56 +178,40 @@ function ActivityDetailBody() {
 function ActivityHeader({ activity }: { activity: Activity }) {
   const skill = SKILLS[activity.skill];
   const [minAge, maxAge] = activity.ageRange;
-  // 8-digit hex: hex + "14" ≈ 8% alpha wash. Browsers support #RRGGBBAA.
-  const tint = `${skill.color}14`;
   return (
     <header
       style={{
         // Bleed past main's px-5 (20px) so the zone spans full width.
         margin: "0 -20px 28px -20px",
-        padding: "32px 24px 28px 24px",
-        background: tint,
+        padding: "20px 24px 24px 24px",
+        background: skill.bg,
       }}
     >
-      {/* Animated skill aura; three expanding rings, a soft glow,
-          and three orbiting dots, all tinted with the skill colour
-          via --aura-color. Reference: onboarding slide 3 + skill
-          detail. Honours prefers-reduced-motion. */}
-      <div
-        className="fokus-aura"
-        style={
-          { ["--aura-color" as string]: skill.color } as React.CSSProperties
-        }
+      <span
+        aria-hidden
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: 14,
+          background: skill.blob,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: skill.iconColor,
+        }}
       >
-        <span aria-hidden className="fokus-aura-glow" />
-        <span aria-hidden className="fokus-aura-ring" />
-        <span aria-hidden className="fokus-aura-ring d2" />
-        <span aria-hidden className="fokus-aura-ring d3" />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <SkillIcon
-            skillId={activity.skill}
-            size="lg"
-            iconName={activity.iconName}
-          />
-        </div>
-        <div aria-hidden className="fokus-aura-orbits">
-          <span className="fokus-aura-orb o1" />
-          <span className="fokus-aura-orb o2" />
-          <span className="fokus-aura-orb o3" />
-        </div>
-      </div>
+        <ActivityIcon
+          iconName={activity.iconName}
+          skill={activity.skill}
+          size={40}
+          strokeWidth={2.25}
+          style={{ color: skill.iconColor }}
+        />
+      </span>
 
       <h1
         style={{
-          marginTop: 28,
+          marginTop: 20,
           fontSize: 32,
           fontWeight: 700,
           color: "#252630",
@@ -250,7 +234,7 @@ function ActivityHeader({ activity }: { activity: Activity }) {
         <span style={{ color: "#C8C8C8", padding: "0 6px" }}>·</span>
         {activity.duration} min
         <span style={{ color: "#C8C8C8", padding: "0 6px" }}>·</span>
-        ages {minAge}-{maxAge}
+        Ages {minAge} to {maxAge}
       </p>
     </header>
   );
