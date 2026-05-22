@@ -33,7 +33,7 @@ interface SizeSpec {
 }
 
 const SIZES: Record<WordmarkSize, SizeSpec> = {
-  sm: { fontSize: 14, dotSize: 4, dotMargin: 1, dotOffset: -1 },
+  sm: { fontSize: 16, dotSize: 5, dotMargin: 2, dotOffset: -1 },
   md: { fontSize: 20, dotSize: 5, dotMargin: 2, dotOffset: -2 },
   lg: { fontSize: 32, dotSize: 8, dotMargin: 2, dotOffset: -3 },
   xl: { fontSize: 48, dotSize: 12, dotMargin: 2, dotOffset: -3 },

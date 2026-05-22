@@ -9,10 +9,11 @@ const HOLD_MS = 2500;
 const FADE_MS = 250;
 
 /**
- * Round-6 cold-open splash. White background, centered: a pulsing accent
- * dot, the Plus Jakarta Sans 800 "fokus." wordmark, and an italic two-line tagline.
- * Holds HOLD_MS, fades for FADE_MS, then unmounts. Per-session via
- * sessionStorage so warm reloads skip it.
+ * Cold-open splash. White background, brand mark sitting slightly
+ * above the vertical centre (35vh top padding so it falls at roughly
+ * 40% of the viewport), with the tagline in a calm regular-weight
+ * gray below it. Holds HOLD_MS, fades for FADE_MS, then unmounts.
+ * Per-session via sessionStorage so warm reloads skip it.
  *
  * Routing happens in OnboardingGate; we don't navigate here. The gate's
  * decision (no parent → /intro / parent without child → /onboarding / else
@@ -67,45 +68,31 @@ export default function SplashGate({ children }: { children: ReactNode }) {
         role="status"
         aria-label="Loading Fokus"
         aria-hidden={phase === "fading"}
-        className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-bg"
+        className="fixed inset-0 z-[60] flex flex-col items-center bg-bg"
         style={{
           opacity: phase === "fading" ? 0 : 1,
           transition: `opacity ${FADE_MS}ms ease-out`,
           pointerEvents: phase === "fading" ? "none" : "auto",
+          paddingTop: "35vh",
         }}
       >
-        <span
-          aria-hidden
-          className="block rounded-full"
-          style={{
-            width: 12,
-            height: 12,
-            background: "var(--accent)",
-            animation: "fokusSplashPulse 2s ease-in-out infinite",
-          }}
-        />
-        <div style={{ marginTop: 24 }}>
-          <Wordmark size="xl" />
-        </div>
+        <Wordmark size="xl" />
         <p
-          className="text-center italic text-ink-secondary"
           style={{
             marginTop: 16,
-            fontSize: 17,
+            fontSize: 16,
             fontWeight: 400,
+            fontStyle: "normal",
+            color: "#8E8D9B",
             lineHeight: 1.5,
+            letterSpacing: 0,
+            textAlign: "center",
           }}
         >
           ten minutes a day,
           <br />
           with your child.
         </p>
-        <style jsx global>{`
-          @keyframes fokusSplashPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(0.85); }
-          }
-        `}</style>
       </div>
     </>
   );
