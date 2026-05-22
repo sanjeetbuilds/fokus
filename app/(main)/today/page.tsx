@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import ActivityIcon from "@/components/activity/ActivityIcon";
 import AppHeader from "@/components/layout/AppHeader";
+import Blobs from "@/components/shared/Blobs";
 import WelcomeModal from "@/components/today/WelcomeModal";
 import { ACTIVITIES, getActivityById } from "@/lib/content/activities";
 import { SKILLS } from "@/lib/content/skills";
@@ -265,9 +266,9 @@ function ChildRow({ child }: { child: ChildRow }) {
       <div
         aria-hidden
         style={{
-          width: 36,
-          height: 36,
-          borderRadius: 18,
+          width: 40,
+          height: 40,
+          borderRadius: 20,
           background: child.photo_url ? "transparent" : "#252630",
           backgroundImage: child.photo_url
             ? `url(${child.photo_url})`
@@ -278,7 +279,7 @@ function ChildRow({ child }: { child: ChildRow }) {
           alignItems: "center",
           justifyContent: "center",
           color: "#FFFFFF",
-          fontSize: 14,
+          fontSize: 16,
           fontWeight: 700,
           flexShrink: 0,
         }}
@@ -288,7 +289,7 @@ function ChildRow({ child }: { child: ChildRow }) {
       <div className="min-w-0 flex-1">
         <p
           style={{
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: 700,
             color: "#252630",
             lineHeight: 1.2,
@@ -299,11 +300,11 @@ function ChildRow({ child }: { child: ChildRow }) {
         </p>
         <p
           style={{
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: 400,
             color: "#8E8D9B",
             lineHeight: 1.4,
-            marginTop: 1,
+            marginTop: 2,
           }}
         >
           Age {age} · {pronouns}
@@ -376,11 +377,16 @@ function HeroCard({
     <article
       style={{
         background: skill.color,
-        borderRadius: 22,
+        borderRadius: 24,
         padding: 18,
         color: "#FFFFFF",
+        position: "relative",
+        overflow: "hidden",
+        isolation: "isolate",
       }}
     >
+      <Blobs variant="hero" />
+      <div style={{ position: "relative", zIndex: 1 }}>
       {/* Top row: skill chip + swap button */}
       <div
         style={{
@@ -517,8 +523,8 @@ function HeroCard({
       <div
         style={{
           marginTop: 14,
-          background: "rgba(255,255,255,0.18)",
-          borderRadius: 14,
+          background: "rgba(0,0,0,0.12)",
+          borderRadius: 13,
           padding: "12px 14px",
         }}
       >
@@ -550,7 +556,7 @@ function HeroCard({
         </p>
       </div>
 
-      {/* Start CTA; pill, dark, inline-flex (not full width) */}
+      {/* Start CTA; pill, on-skill, inline-flex (not full width) */}
       <Link
         href={`/activity/${activity.id}?from=today`}
         style={{
@@ -558,7 +564,7 @@ function HeroCard({
           display: "inline-flex",
           alignItems: "center",
           gap: 7,
-          background: "#252630",
+          background: "rgba(0,0,0,0.18)",
           color: "#FFFFFF",
           padding: "11px 20px",
           borderRadius: 999,
@@ -572,6 +578,7 @@ function HeroCard({
         Start
         <ArrowRight size={14} strokeWidth={2.25} aria-hidden />
       </Link>
+      </div>
     </article>
   );
 }
@@ -589,7 +596,7 @@ function MetaPill({
         display: "inline-flex",
         alignItems: "center",
         gap: 5,
-        background: "rgba(255,255,255,0.22)",
+        background: "rgba(0,0,0,0.12)",
         borderRadius: 999,
         padding: "5px 10px",
         fontSize: 11,
@@ -622,26 +629,38 @@ function OtherIdeaTile({ activity }: { activity: Activity }) {
         display: "flex",
         flexDirection: "column",
         gap: 0,
-        background: "#F7F7F5",
-        border: "0.5px solid #EEEEEE",
-        borderRadius: 16,
+        background: skill.bg,
+        borderRadius: 18,
         padding: 14,
         textDecoration: "none",
         color: "inherit",
+        boxShadow: "var(--shadow-level-1)",
+        position: "relative",
+        overflow: "hidden",
+        isolation: "isolate",
       }}
       className="transition-opacity active:opacity-80"
     >
+      <Blobs variant="tile" color={skill.blob} />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
       <span
         aria-hidden
         style={{
           width: 36,
           height: 36,
           borderRadius: 11,
-          background: skill.color,
+          background: skill.blob,
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#FFFFFF",
+          color: skill.iconColor,
         }}
       >
         <ActivityIcon
@@ -649,6 +668,7 @@ function OtherIdeaTile({ activity }: { activity: Activity }) {
           skill={activity.skill}
           size={18}
           strokeWidth={2.25}
+          style={{ color: skill.iconColor }}
         />
       </span>
       <p
@@ -656,7 +676,7 @@ function OtherIdeaTile({ activity }: { activity: Activity }) {
           marginTop: 10,
           fontSize: 13,
           fontWeight: 700,
-          color: "#252630",
+          color: skill.iconColor,
           lineHeight: 1.2,
           letterSpacing: "-0.005em",
         }}
@@ -668,7 +688,7 @@ function OtherIdeaTile({ activity }: { activity: Activity }) {
           marginTop: 4,
           fontSize: 11,
           fontWeight: 400,
-          color: "#8E8D9B",
+          color: skill.mid,
           lineHeight: 1.4,
           display: "-webkit-box",
           WebkitLineClamp: 2,
@@ -684,7 +704,7 @@ function OtherIdeaTile({ activity }: { activity: Activity }) {
           display: "inline-flex",
           alignItems: "center",
           gap: 4,
-          background: "#EEEEEE",
+          background: "#F0F0EE",
           borderRadius: 8,
           padding: "3px 8px",
           fontSize: 10,
@@ -696,6 +716,7 @@ function OtherIdeaTile({ activity }: { activity: Activity }) {
         <Clock size={10} strokeWidth={2.25} aria-hidden />
         {activity.duration} min
       </span>
+      </div>
     </Link>
   );
 }
@@ -724,9 +745,9 @@ function LastSessionBlock({
     <section
       style={{
         background: "#FFFFFF",
-        border: "0.5px solid #EEEEEE",
         borderRadius: 18,
         padding: 14,
+        boxShadow: "var(--shadow-level-1)",
       }}
     >
       <div
@@ -738,7 +759,7 @@ function LastSessionBlock({
       >
         <p
           style={{
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: 700,
             color: "#8E8D9B",
             letterSpacing: "0.07em",
@@ -771,11 +792,11 @@ function LastSessionBlock({
             width: 36,
             height: 36,
             borderRadius: 11,
-            background: skill.color,
+            background: skill.bg,
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#FFFFFF",
+            color: skill.color,
             flexShrink: 0,
           }}
         >
@@ -784,6 +805,7 @@ function LastSessionBlock({
             skill={activity.skill}
             size={18}
             strokeWidth={2.25}
+            style={{ color: skill.color }}
           />
         </span>
         <div style={{ minWidth: 0, flex: 1 }}>

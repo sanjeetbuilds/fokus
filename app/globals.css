@@ -4,6 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Elevation tokens. Two levels only, per the design polish spec.
+   ============================================================ */
+
+:root {
+  --shadow-level-1:
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    0 0 0 0.5px rgba(0, 0, 0, 0.04);
+  --shadow-level-2: 0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
