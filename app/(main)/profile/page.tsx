@@ -155,11 +155,11 @@ export default function ProfilePage() {
           className="text-ink"
           style={{
             paddingTop: 6,
-            fontSize: 50,
-            fontWeight: 800,
-            lineHeight: 1.05,
-            letterSpacing: "-0.035em",
-            marginBottom: 28,
+            fontSize: 24,
+            fontWeight: 700,
+            lineHeight: 1.2,
+            letterSpacing: "-0.02em",
+            marginBottom: 24,
           }}
         >
           Profile
@@ -193,7 +193,8 @@ export default function ProfilePage() {
           className="w-full text-left transition-opacity disabled:opacity-50"
           style={{
             padding: "16px 20px",
-            fontSize: 16,
+            fontSize: 15,
+            fontWeight: 500,
             color: "#252630",
             background: "transparent",
             border: "none",
@@ -219,7 +220,8 @@ export default function ProfilePage() {
           className="w-full text-left transition-opacity disabled:opacity-50"
           style={{
             padding: "16px 20px",
-            fontSize: 16,
+            fontSize: 15,
+            fontWeight: 500,
             color: "#252630",
             background: "transparent",
             border: "none",
@@ -236,7 +238,8 @@ export default function ProfilePage() {
             marginTop: 24,
             padding: "12px 20px",
             fontSize: 14,
-            color: "#C44",
+            fontWeight: 400,
+            color: "#C44040",
             background: "transparent",
             border: "none",
           }}
@@ -300,8 +303,8 @@ function ChildCard({
           backgroundSize: "cover",
           backgroundPosition: "center",
           color: "#FFFFFF",
-          fontSize: 36,
-          fontWeight: 700,
+          fontSize: 32,
+          fontWeight: 800,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -316,10 +319,10 @@ function ChildCard({
         className="text-ink"
         style={{
           marginTop: 16,
-          fontSize: 28,
-          fontWeight: 800,
-          letterSpacing: "-0.025em",
-          lineHeight: 1.15,
+          fontSize: 24,
+          fontWeight: 700,
+          letterSpacing: "-0.02em",
+          lineHeight: 1.2,
         }}
       >
         {child.name}
@@ -328,6 +331,7 @@ function ChildCard({
         style={{
           marginTop: 4,
           fontSize: 14,
+          fontWeight: 400,
           color: "#8E8D9B",
           lineHeight: 1.4,
         }}
@@ -337,11 +341,11 @@ function ChildCard({
       <button
         type="button"
         onClick={onEdit}
-        className="transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
+        className="transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
         style={{
           marginTop: 12,
           fontSize: 14,
-          fontWeight: 700,
+          fontWeight: 600,
           color: "#252630",
           background: "transparent",
           border: "none",
@@ -358,18 +362,19 @@ function ChildCard({
 
 const bodyStyle: React.CSSProperties = {
   fontSize: 14,
+  fontWeight: 400,
   color: "#252630",
-  lineHeight: 1.5,
+  lineHeight: 1.55,
 };
 
 function Divider() {
   return (
     <hr
       style={{
-        marginTop: 28,
-        marginBottom: 28,
+        marginTop: 24,
+        marginBottom: 24,
         border: 0,
-        borderTop: "1px solid #E5E3DA",
+        borderTop: "0.5px solid #F0F0F0",
       }}
     />
   );
@@ -383,14 +388,14 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section style={{ marginBottom: 24 }}>
+    <section style={{ marginBottom: 20 }}>
       <p
         style={{
-          fontSize: 13,
+          fontSize: 10,
           fontWeight: 700,
           color: "#8E8D9B",
           textTransform: "uppercase",
-          letterSpacing: "0.05em",
+          letterSpacing: "0.08em",
           marginBottom: 8,
         }}
       >
