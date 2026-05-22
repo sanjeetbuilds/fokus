@@ -11,11 +11,11 @@ import { getCurrentChild } from "@/lib/supabase/queries";
  * only branching this gate cares about is whether the parent has
  * onboarded their child yet.
  *
- *   /onboarding  — the form that creates the row
- *   /intro       — the optional 3-slide explainer (no auto-redirect to
+ *   /onboarding ; the form that creates the row
+ *   /intro      ; the optional 3-slide explainer (no auto-redirect to
  *                  here anymore; left reachable for parents who want
  *                  to revisit it)
- *   /sign-in, /auth/*, /api/*, /dev/*  — middleware handles them, but
+ *   /sign-in, /auth/*, /api/*, /dev/* ; middleware handles them, but
  *                  list here so the gate is a no-op if a request slips
  *                  through with a session
  */

@@ -11,7 +11,7 @@ const FLAG_KEY = "show_welcome_modal";
  * One-time welcome modal shown on the very first /today open after
  * onboarding. Sunset gradient, three short paragraphs framing the app,
  * a single dark CTA that commits the parent to taking action. No close
- * affordance on purpose — the CTA is the only way out.
+ * affordance on purpose; the CTA is the only way out.
  *
  * The modal fires when sessionStorage flag `show_welcome_modal === "true"`
  * is present; on dismiss we both clear the flag and persist
@@ -40,7 +40,7 @@ export default function WelcomeModal({
     try {
       want = window.sessionStorage.getItem(FLAG_KEY) === "true";
     } catch {
-      /* private browsing — modal just won't fire */
+      /* private browsing; modal just won't fire */
     }
     if (want) setOpen(true);
   }, [alreadySeen]);
@@ -130,7 +130,7 @@ export default function WelcomeModal({
               Here&apos;s how this works.
             </h2>
 
-            {/* Hero line (LARGEST — the thesis of the app) */}
+            {/* Hero line (LARGEST; the thesis of the app) */}
             <p
               className="mt-7 text-center"
               style={{
@@ -157,7 +157,7 @@ export default function WelcomeModal({
               </p>
             </div>
 
-            {/* Primary CTA — clear action */}
+            {/* Primary CTA; clear action */}
             <button
               type="button"
               onClick={() => void dismiss()}

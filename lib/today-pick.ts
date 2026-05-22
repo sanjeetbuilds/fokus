@@ -7,7 +7,7 @@ import type { Activity, SkillKey } from "@/types";
  * and the same swap permutation on any device. No personalisation.
  */
 
-// Fixed rotation order per spec — (day-of-year) mod 8.
+// Fixed rotation order per spec; (day-of-year) mod 8.
 export const SKILL_ROTATION: readonly SkillKey[] = [
   "curiosity",
   "language",
@@ -33,7 +33,7 @@ export function dayOfYear(d: Date): number {
   return Math.floor((now - start) / 86_400_000);
 }
 
-/** YYYYMMDD as a single integer — used as the date seed. */
+/** YYYYMMDD as a single integer; used as the date seed. */
 export function dateSeed(d: Date): number {
   return (
     d.getUTCFullYear() * 10_000 +
@@ -46,7 +46,7 @@ export function todaysSkill(d: Date): SkillKey {
   return SKILL_ROTATION[dayOfYear(d) % SKILL_ROTATION.length]!;
 }
 
-/** Mulberry32 PRNG — deterministic from a 32-bit seed. */
+/** Mulberry32 PRNG; deterministic from a 32-bit seed. */
 function mulberry32(seed: number): () => number {
   let s = seed >>> 0;
   return () => {
@@ -98,7 +98,7 @@ export function todaysSwapOrder(
  * Pick a random untried activity, excluding the current hero. If every
  * activity has been tried, fall back to a random pick from the full
  * deck excluding the current hero. `rand` is injectable so tests can
- * pin the choice — defaults to Math.random.
+ * pin the choice; defaults to Math.random.
  */
 export function pickRandomSwap(
   current: Activity,

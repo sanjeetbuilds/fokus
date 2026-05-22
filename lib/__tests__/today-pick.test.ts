@@ -14,7 +14,7 @@ import {
 
 const utc = (s: string) => new Date(`${s}T12:00:00Z`);
 
-describe("today-pick — date math", () => {
+describe("today-pick; date math", () => {
   it("dayOfYear is 1-based and stable across the year", () => {
     expect(dayOfYear(utc("2026-01-01"))).toBe(1);
     expect(dayOfYear(utc("2026-12-31"))).toBe(365);
@@ -25,7 +25,7 @@ describe("today-pick — date math", () => {
   });
 });
 
-describe("today-pick — skill rotation", () => {
+describe("today-pick; skill rotation", () => {
   it("rotates through all 8 skills in fixed order across 8 days", () => {
     const start = utc("2026-01-01");
     const seen: string[] = [];
@@ -47,7 +47,7 @@ describe("today-pick — skill rotation", () => {
   });
 });
 
-describe("today-pick — hero activity", () => {
+describe("today-pick; hero activity", () => {
   it("the same date always returns the same hero activity", () => {
     const a = todaysHeroActivity(utc("2026-05-22"), ACTIVITIES);
     const b = todaysHeroActivity(utc("2026-05-22"), ACTIVITIES);
@@ -61,7 +61,7 @@ describe("today-pick — hero activity", () => {
   });
 });
 
-describe("today-pick — swap order", () => {
+describe("today-pick; swap order", () => {
   it("permutes every activity exactly once", () => {
     const d = utc("2026-05-22");
     const order = todaysSwapOrder(d, ACTIVITIES);
@@ -83,7 +83,7 @@ describe("today-pick — swap order", () => {
   });
 });
 
-describe("today-pick — pickRandomSwap", () => {
+describe("today-pick; pickRandomSwap", () => {
   it("skips tried ids and never returns the current activity", () => {
     const d = utc("2026-05-22");
     const current = todaysHeroActivity(d, ACTIVITIES);
@@ -118,7 +118,7 @@ describe("today-pick — pickRandomSwap", () => {
   });
 });
 
-describe("today-pick — otherIdeasForToday", () => {
+describe("today-pick; otherIdeasForToday", () => {
   it("returns exactly 2 ideas, excluding the current hero", () => {
     const d = utc("2026-05-22");
     const hero = todaysHeroActivity(d, ACTIVITIES);

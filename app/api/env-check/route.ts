@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 /**
  * Runtime env probe. Returns presence booleans for the Supabase env
  * vars plus a short prefix of the URL so you can confirm it's pointing
- * at the right project. The actual values are not leaked — anon key is
+ * at the right project. The actual values are not leaked; anon key is
  * already public, but we still don't echo it for log hygiene.
  *
  * Usage:

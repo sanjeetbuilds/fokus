@@ -16,7 +16,7 @@ import { useChild } from "@/lib/use-child";
 import type { Activity, ActivityExample } from "@/types";
 
 /**
- * Activity detail — three-part structure, no redundancy.
+ * Activity detail; three-part structure, no redundancy.
  *
  *   HEADER       lg SkillIcon, title (32/800), meta row
  *   DIVIDER
@@ -189,7 +189,7 @@ function ActivityHeader({ activity }: { activity: Activity }) {
         background: tint,
       }}
     >
-      {/* Animated skill aura — three expanding rings, a soft glow,
+      {/* Animated skill aura; three expanding rings, a soft glow,
           and three orbiting dots, all tinted with the skill colour
           via --aura-color. Reference: onboarding slide 3 + skill
           detail. Honours prefers-reduced-motion. */}

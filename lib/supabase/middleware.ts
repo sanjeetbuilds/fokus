@@ -4,10 +4,10 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Public paths that don't require a Supabase session.
  *
- *   /sign-in          — the magic-link form itself
- *   /auth/*           — the magic-link callback
- *   /api/*            — diagnostic + future server endpoints
- *   /dev/*            — local dev tools
+ *   /sign-in         ; the magic-link form itself
+ *   /auth/*          ; the magic-link callback
+ *   /api/*           ; diagnostic + future server endpoints
+ *   /dev/*           ; local dev tools
  *
  * Everything else (including /intro and /onboarding) requires auth.
  * Static assets are already excluded by the root middleware matcher.
@@ -96,7 +96,7 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   } catch (err) {
     // The previous "pass through on any error" was a bypass: it let
-    // unauthed users reach gated routes. Now we fail closed — log the
+    // unauthed users reach gated routes. Now we fail closed; log the
     // root cause and redirect to /sign-in for any non-public path so
     // a transient Supabase failure can't punch a hole in auth.
     console.error(

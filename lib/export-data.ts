@@ -11,7 +11,7 @@ import {
  * my data". Kept narrow: only the fields the parent explicitly owns
  * (their email, their child's identifying details, every activity
  * they've logged). Supabase-internal columns like the auth user id
- * or row created_at timestamps are excluded — the file is "what we
+ * or row created_at timestamps are excluded; the file is "what we
  * have about you" in plain reading order, not a database dump.
  */
 export interface FokusExport {

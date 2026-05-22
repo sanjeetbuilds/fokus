@@ -24,7 +24,7 @@ import { useChild } from "@/lib/use-child";
  *           {title}, with {name}.                    (16 / 400 muted)
  *
  *   What did you notice?                             (16 / 800 ink)
- *   [textarea — optional reflection]
+ *   [textarea; optional reflection]
  *   [Save note button]                               (only when content)
  *
  *                                                    (above tab bar)
@@ -138,7 +138,7 @@ export default function CompletionPage() {
         </button>
       </div>
 
-      {/* Top section — grouped icon + Done + subtitle, centred in the
+      {/* Top section; grouped icon + Done + subtitle, centred in the
           upper ~45% of the screen. */}
       <section
         className="flex flex-col items-center px-6"
@@ -178,7 +178,7 @@ export default function CompletionPage() {
         </p>
       </section>
 
-      {/* Reflection card — distinct middle block. */}
+      {/* Reflection card; distinct middle block. */}
       <section
         style={{
           marginTop: 40,
@@ -243,7 +243,7 @@ export default function CompletionPage() {
 
       <span aria-hidden className="flex-1" />
 
-      {/* Bottom action — quiet text + arrow, tappable but no button chrome. */}
+      {/* Bottom action; quiet text + arrow, tappable but no button chrome. */}
       <div className="flex flex-col items-center px-6 pt-10">
         <button
           type="button"

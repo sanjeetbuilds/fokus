@@ -31,7 +31,7 @@ export default function SignInPage() {
         return () => window.clearTimeout(t);
       }
     } catch {
-      /* private browsing — flash just won't fire */
+      /* private browsing; flash just won't fire */
     }
   }, []);
 

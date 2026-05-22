@@ -9,7 +9,7 @@ import {
 } from "@/lib/supabase/queries";
 
 /**
- * useActivityLog — the canonical way to read the signed-in parent's
+ * useActivityLog; the canonical way to read the signed-in parent's
  * activity_log anywhere in the app. Backed by a module-level cache so
  * Track, Library "Try again", and any other consumer share a single
  * Supabase round trip per session.
@@ -19,7 +19,7 @@ import {
  * - `rows` is sorted most-recent first (the same order the Supabase
  *   query returns).
  * - `triedActivityIds` is a memoised Set of distinct activity_ids the
- *   parent has at least one log entry for — handy for the Library
+ *   parent has at least one log entry for; handy for the Library
  *   "tried vs untried" decision.
  * - `refetch()` busts the cache and re-queries. Call after a write
  *   (e.g. insertActivityLog) so Track shows the new row right away.

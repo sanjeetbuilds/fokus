@@ -1,5 +1,5 @@
 /**
- * Fokus shared types — mirrors SPEC §5.
+ * Fokus shared types; mirrors SPEC §5.
  *
  * Every persisted record carries:
  *   - id: uuid (Dexie primary key)

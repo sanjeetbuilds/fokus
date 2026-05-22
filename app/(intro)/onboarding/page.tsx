@@ -10,7 +10,7 @@ import { primeChildCache } from "@/lib/use-child";
 import { ageFromDob } from "@/lib/utils/dates";
 
 /**
- * Onboarding — two steps.
+ * Onboarding; two steps.
  *
  *   1. details   name + DOB + privacy line under the name input
  *   2. pronouns  she/he/they radio cards, default "they"
@@ -86,7 +86,7 @@ export default function OnboardingPage() {
       try {
         window.sessionStorage.setItem("show_welcome_modal", "true");
       } catch {
-        /* private browsing — modal just won't show */
+        /* private browsing; modal just won't show */
       }
       router.replace("/today");
     } catch (err) {

@@ -126,7 +126,7 @@ function ActivitiesSheetBody({
 
   return (
     <>
-      {/* Skill header — flat, on white. No colored strip behind it. */}
+      {/* Skill header; flat, on white. No colored strip behind it. */}
       <div
         style={{
           display: "flex",

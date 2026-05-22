@@ -6,7 +6,7 @@ import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { getCurrentChild, type ChildRow } from "@/lib/supabase/queries";
 
 /**
- * useChild — the canonical way to read the signed-in parent's child
+ * useChild; the canonical way to read the signed-in parent's child
  * row anywhere in the app. Backed by a tiny module-level cache so
  * mounting useChild() in three places doesn't fan out into three
  * round trips to Supabase.

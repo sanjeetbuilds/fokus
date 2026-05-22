@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Fokus Tailwind config — maps CSS variables (see styles/tokens.css)
+ * Fokus Tailwind config; maps CSS variables (see styles/tokens.css)
  * to utilities so colors / type / spacing stay in one source of truth.
  *
  * Plus Jakarta Sans, weights 300-800 (300 reserved for quiet
@@ -18,7 +18,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Skill palette — single source of truth, mirrors lib/content/skills.ts.
+        // Skill palette; single source of truth, mirrors lib/content/skills.ts.
         // Reference-remapped: amber / purple / coral / green dominate;
         // emotional shifted to a warmer salmon to stay distinguishable
         // from creativity's coral.

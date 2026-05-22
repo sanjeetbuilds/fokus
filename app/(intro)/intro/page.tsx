@@ -9,8 +9,8 @@ import Wordmark from "@/components/shared/Wordmark";
 
 /**
  * Round-6 intro: three light-background narrative screens with line-art
- * illustrations on a soft accent-tinted circle. No setup form here —
- * pressing "Set up Fokus →" on screen 3 routes to /onboarding, which
+ * illustrations on a soft accent-tinted circle. No setup form here;
+ * pressing "Set up Fokus" on screen 3 routes to /onboarding, which
  * captures the 20-second form (name + age + English).
  *
  * The previous five-slide intro (which embedded the setup form on slide 5
@@ -205,7 +205,7 @@ function Slide0() {
             strokeWidth="1.75"
             strokeLinecap="round"
           />
-          {/* Labels — one centered text with middots so spacing always reads */}
+          {/* Labels; one centered text with middots so spacing always reads */}
           <text
             x="60"
             y="80"

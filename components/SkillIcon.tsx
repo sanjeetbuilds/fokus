@@ -38,7 +38,7 @@ const SIZE: Record<SkillIconSize, { box: number; icon: number }> = {
  *
  * No shadows, no borders, no gradients. If a screen wants a skill-tinted
  * tile that isn't an icon (e.g. a tinted card surface), it should use
- * the raw skill color from lib/content/skills.ts directly — SkillIcon is
+ * the raw skill color from lib/content/skills.ts directly; SkillIcon is
  * specifically for the icon-in-squircle motif.
  */
 export default function SkillIcon({

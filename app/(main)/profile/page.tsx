@@ -99,7 +99,7 @@ export default function ProfilePage() {
     setDeleting(true);
     try {
       // 1. Photo cleanup. Prompt 3 wires the actual bucket; for now
-      //    the call is defensive — if photo_url exists it'll resolve
+      //    the call is defensive; if photo_url exists it'll resolve
       //    to {parentId}/{childId}.jpg under child-photos. Swallow
       //    storage errors so a missing bucket / missing file doesn't
       //    block account deletion.
@@ -133,7 +133,7 @@ export default function ProfilePage() {
           "true",
         );
       } catch {
-        /* private browsing — flash just won't fire */
+        /* private browsing; flash just won't fire */
       }
 
       // 5. Sign out. AuthGate's SIGNED_OUT handler redirects to

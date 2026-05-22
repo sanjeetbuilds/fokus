@@ -1,5 +1,5 @@
 /**
- * Icon generator — runs once at build time to produce the three PNGs
+ * Icon generator; runs once at build time to produce the three PNGs
  * referenced by the manifest. Source is a hand-authored SVG so the design
  * stays version-controlled; PNGs are committed (small files) so the build
  * doesn't depend on sharp at runtime.
@@ -17,7 +17,7 @@ function makeSvg({ size, padding }: { size: number; padding: number }): string {
   const inner = size - padding * 2;
   // Letter is roughly 60% of the inner box height.
   const letterFontPx = Math.round(inner * 0.62);
-  // Center-optical shift — sans-serif capitals sit slightly low without it.
+  // Center-optical shift; sans-serif capitals sit slightly low without it.
   const baseline = size / 2 + letterFontPx * 0.34;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
@@ -53,7 +53,7 @@ const TARGETS: IconTarget[] = [
 async function main() {
   const outDir = path.join(process.cwd(), "public", "icons");
 
-  // Ship the master SVG too — useful for Android Chrome (supports SVG icons)
+  // Ship the master SVG too; useful for Android Chrome (supports SVG icons)
   // and for re-rendering at any future size without re-running this script.
   const svgMaster = makeSvg({ size: 512, padding: 0 });
   writeFileSync(path.join(outDir, "icon.svg"), svgMaster, "utf8");

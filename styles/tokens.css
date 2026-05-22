@@ -10,7 +10,7 @@
      #E5E3DA via --line. Cards, inputs, pills now pull from that
      warm beige instead of the colder #EEEEEE we had been using.
    - Ink #252630 (reference --dark).
-   - Periwinkle #9CA5FF is the brand accent — used on the active
+   - Periwinkle #9CA5FF is the brand accent; used on the active
      bottom-tab label and small text accents. CTAs are ink, not
      periwinkle (the reference also uses dark CTAs).
    - 8-skill palette is preserved from the cleanup pass.
@@ -20,7 +20,7 @@
   /* ---- Surfaces ---- */
   --bg: #FFFFFF;
   --bg-elevated: #FFFFFF;
-  --bg-input: #FBFAF7;            /* surface tint — warm wash on inputs */
+  --bg-input: #FBFAF7;            /* surface tint; warm wash on inputs */
   --bg-alt: #E5E3DA;              /* warm pill / fill */
   --bg-overlay: rgba(37, 38, 48, 0.55);
   --surface-tint: #FBFAF7;        /* barely-perceptible warm white */
@@ -34,7 +34,7 @@
   --line: #E5E3DA;          /* reference --gray-bd, warm beige */
   --line-subtle: #EFEDE4;   /* lighter beige, used in textarea bg */
 
-  /* ---- Brand accent — periwinkle ---- */
+  /* ---- Brand accent; periwinkle ---- */
   --accent: #9CA5FF;        /* reference --purple */
   --accent-pressed: #7C86F0;
   --accent-bg: #EEF0FF;
@@ -76,18 +76,18 @@
   --font-sans: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
 
   /* Reference type scale */
-  --text-display: 3.125rem;    /* 50px — pg-title */
-  --text-title-1: 2.375rem;    /* 38px — obs-h, setup-h */
-  --text-title-2: 1.75rem;     /* 28px — child-name, stat2 */
-  --text-title-3: 1.375rem;    /* 22px — sec-h, sc-val */
-  --text-headline: 1.125rem;   /* 18px — di-name, brand */
-  --text-body: 1rem;           /* 16px — f-inp, cta */
+  --text-display: 3.125rem;    /* 50px; pg-title */
+  --text-title-1: 2.375rem;    /* 38px; obs-h, setup-h */
+  --text-title-2: 1.75rem;     /* 28px; child-name, stat2 */
+  --text-title-3: 1.375rem;    /* 22px; sec-h, sc-val */
+  --text-headline: 1.125rem;   /* 18px; di-name, brand */
+  --text-body: 1rem;           /* 16px; f-inp, cta */
   --text-body-large: 1.0625rem;/* 17px */
   --text-callout: 0.9375rem;   /* 15px */
   --text-subhead: 0.875rem;    /* 14px */
-  --text-footnote: 0.8125rem;  /* 13px — pill, sec-act, di-time */
-  --text-caption: 0.75rem;     /* 12px — sc-lbl */
-  --text-micro: 0.6875rem;     /* 11px — f-lbl, sp-eyebrow */
+  --text-footnote: 0.8125rem;  /* 13px; pill, sec-act, di-time */
+  --text-caption: 0.75rem;     /* 12px; sc-lbl */
+  --text-micro: 0.6875rem;     /* 11px; f-lbl, sp-eyebrow */
 
   /* ---- Spacing ---- */
   --space-1: 4px;

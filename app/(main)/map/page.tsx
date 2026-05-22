@@ -16,7 +16,7 @@ import type { SkillKey } from "@/types";
 const TOTAL_ACTIVITIES = ACTIVITIES.length;
 
 /**
- * Track — parent-facing record of what they've done with their child.
+ * Track; parent-facing record of what they've done with their child.
  *
  *   "What we've done together." 24 / 700 ink
  *   "With {name}."              13 / 400 muted
@@ -280,7 +280,7 @@ function StatCard({
 }
 
 // ============================================================
-// This week — bar chart
+// This week; bar chart
 // ============================================================
 
 interface DayBucket {
@@ -293,7 +293,7 @@ interface DayBucket {
 /**
  * Returns 7 buckets, Monday → Sunday, counting activity_log rows that
  * land on each day of the current week (computed in the local
- * timezone — the user's "today" is what matters here).
+ * timezone; the user's "today" is what matters here).
  */
 function computeWeek(rows: ActivityLogRow[], now: Date): DayBucket[] {
   // ISO week: Monday is day 1. JS getDay() returns 0 (Sun)..6 (Sat).

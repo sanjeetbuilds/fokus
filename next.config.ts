@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
 };
 
 /**
- * PWA config — workbox-backed via next-pwa.
+ * PWA config; workbox-backed via next-pwa.
  *
  *   - dest: 'public'          → emits sw.js + workbox-*.js so the browser
  *                                serves them from the static root.
@@ -30,7 +30,7 @@ const pwaWrapper = withPWA({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
-  // Cache the activities library and skill metadata as static assets — they
+  // Cache the activities library and skill metadata as static assets; they
   // ship in the JS bundle, so Workbox's default precache already covers them.
   // No runtime caching rules needed beyond that.
   buildExcludes: [/middleware-manifest\.json$/],

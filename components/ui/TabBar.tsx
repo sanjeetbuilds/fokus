@@ -23,7 +23,7 @@ export interface TabBarProps {
  * Bottom nav with the green-pill treatment.
  *
  *   Active:   icon + label inline inside a #EAF6EF pill, both in
- *             the deeper green #3D7A5C. No label below — the pill
+ *             the deeper green #3D7A5C. No label below; the pill
  *             carries the name.
  *   Inactive: icon only, #C2C0CB. Label below in 10/600 #C2C0CB.
  *

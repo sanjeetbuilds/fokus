@@ -55,7 +55,7 @@ function writeSwapState(state: SwapState): void {
   try {
     window.localStorage.setItem(SWAP_KEY, JSON.stringify(state));
   } catch {
-    /* private browsing — silently ignore */
+    /* private browsing; silently ignore */
   }
 }
 
@@ -63,7 +63,7 @@ function writeSwapState(state: SwapState): void {
 warnMissingHooks(ACTIVITIES);
 
 /**
- * Today screen — daily briefing.
+ * Today screen; daily briefing.
  *
  *   AppHeader (Fokus wordmark)
  *   Child row (avatar + name + age/pronouns, bare)
@@ -86,7 +86,7 @@ export default function TodayPage() {
   const todayDate = useMemo(() => new Date(), []);
   const todayIso = useMemo(() => todayIsoDate(), []);
 
-  // Default hero — same on any device given the date.
+  // Default hero; same on any device given the date.
   const defaultHero = useMemo(
     () => todaysHeroActivity(todayDate, ACTIVITIES),
     [todayDate],
@@ -477,7 +477,7 @@ function HeroCard({
         {taglineText}
       </p>
 
-      {/* First-time context line — sits between tagline and meta pills */}
+      {/* First-time context line; sits between tagline and meta pills */}
       {isFirstTime ? (
         <p
           style={{
@@ -513,7 +513,7 @@ function HeroCard({
         </MetaPill>
       </div>
 
-      {/* What this builds — 2-line clamp of hiddenCurriculum */}
+      {/* What this builds; 2-line clamp of hiddenCurriculum */}
       <div
         style={{
           marginTop: 14,
@@ -550,7 +550,7 @@ function HeroCard({
         </p>
       </div>
 
-      {/* Start CTA — pill, dark, inline-flex (not full width) */}
+      {/* Start CTA; pill, dark, inline-flex (not full width) */}
       <Link
         href={`/activity/${activity.id}?from=today`}
         style={{

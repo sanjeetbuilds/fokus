@@ -1,6 +1,6 @@
 /**
  * Per-activity Lucide icon names. Resolved at render in
- * components/activity/ActivityIcon.tsx — that file owns the master
+ * components/activity/ActivityIcon.tsx; that file owns the master
  * lookup map so we ship only the icons we actually use.
  *
  * Keys are Activity ids ("cu1" .. "de8").
@@ -19,7 +19,7 @@ export const ACTIVITY_ICONS: Record<string, string> = {
   // -------------------- Language --------------------
   la1: "MessageCircle",
   // "Image" (a generic photo-frame glyph) read as a broken-image placeholder
-  // on cards, so swap to ScanSearch — closer to the activity's intent of
+  // on cards, so swap to ScanSearch; closer to the activity's intent of
   // examining a picture together.
   la2: "ScanSearch",
   la3: "BookOpen",
