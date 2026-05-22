@@ -165,4 +165,10 @@ export interface Activity {
    * iconName if the activity's name doesn't resolve.
    */
   iconName: string;
+  /**
+   * Per-activity Tabler icon name (e.g. "ti-tools"). Resolved at render
+   * via components/activity/TablerIcon.tsx. Used by the unified
+   * ActivityRow surface (Library bottom sheet + Track recent list).
+   */
+  icon: string;
 }

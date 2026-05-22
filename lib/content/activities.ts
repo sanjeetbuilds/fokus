@@ -3,6 +3,7 @@ import type { Activity, SkillKey } from "@/types";
 import { ACTIVITY_EXAMPLES } from "./activity-examples";
 import { ACTIVITY_HOOKS } from "./activity-hooks";
 import { ACTIVITY_ICONS } from "./activity-icons";
+import { ACTIVITY_TABLER_ICONS } from "./activity-tabler-icons";
 
 /**
  * The Fokus activity library: 64 activities, 8 per skill, content
@@ -12,7 +13,9 @@ import { ACTIVITY_ICONS } from "./activity-icons";
  * in sibling files and are merged in at module load. Keeping them
  * separate keeps this file scannable as a content catalog.
  */
-const ACTIVITIES_BASE: Array<Omit<Activity, "example" | "iconName" | "hook">> = [
+const ACTIVITIES_BASE: Array<
+  Omit<Activity, "example" | "iconName" | "hook" | "icon">
+> = [
   // ============================================================
   // CURIOSITY
   // ============================================================
@@ -1414,7 +1417,11 @@ export const ACTIVITIES: Activity[] = ACTIVITIES_BASE.map((a) => {
   if (!hook) {
     throw new Error(`Missing hook for activity "${a.id}".`);
   }
-  return { ...a, example, iconName, hook };
+  const icon = ACTIVITY_TABLER_ICONS[a.id];
+  if (!icon) {
+    throw new Error(`Missing Tabler icon for activity "${a.id}".`);
+  }
+  return { ...a, example, iconName, hook, icon };
 });
 
 // ---------- helpers ----------
