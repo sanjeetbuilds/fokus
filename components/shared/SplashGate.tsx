@@ -2,6 +2,8 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+import Wordmark from "@/components/shared/Wordmark";
+
 const SESSION_KEY = "fokus_splash_shown";
 const HOLD_MS = 2500;
 const FADE_MS = 250;
@@ -82,18 +84,9 @@ export default function SplashGate({ children }: { children: ReactNode }) {
             animation: "fokusSplashPulse 2s ease-in-out infinite",
           }}
         />
-        <p
-          className="text-ink"
-          style={{
-            marginTop: 24,
-            fontSize: 36,
-            fontWeight: 700,
-            letterSpacing: "-0.01em",
-            lineHeight: 1,
-          }}
-        >
-          fokus.
-        </p>
+        <div style={{ marginTop: 24 }}>
+          <Wordmark size="xl" />
+        </div>
         <p
           className="text-center italic text-ink-secondary"
           style={{

@@ -1,78 +1,90 @@
 import { cn } from "@/lib/utils/cn";
 
-type Size = "sm" | "md" | "hero";
+/**
+ * The Fokus wordmark.
+ *
+ * Renders the brand mark as the lowercase word "fokus" followed by a
+ * small dot. Same letterforms and spacing everywhere it appears in
+ * the app; size and on-dark/on-light variant are the only knobs.
+ *
+ *   size      sm 14 / md 20 / lg 32 / xl 48 px text
+ *   variant   default = #252630 ink + #9CA5FF periwinkle dot
+ *             dark    = #FFFFFF text  + #7FE5D4 bright-teal dot
+ *
+ * noDot is retained for the one screen (activity detail header) that
+ * wants the wordmark without the accent; kept as a back-compat prop
+ * rather than a documented size variant.
+ */
+export type WordmarkSize = "sm" | "md" | "lg" | "xl";
+export type WordmarkVariant = "default" | "dark";
 
 export interface WordmarkProps {
-  size?: Size;
-  /** Hide the small dot mark before the F. Default: shown. */
+  size: WordmarkSize;
+  variant?: WordmarkVariant;
   noDot?: boolean;
   className?: string;
-  /**
-   * Override the colour scheme. Default `brand` is the canonical wordmark:
-   * ink letterforms with a single accent-blue dot. Reads as a proper
-   * brand mark instead of plain text. `inverse` for accent-bg surfaces.
-   */
-  tone?: "brand" | "inverse";
 }
 
-const SIZES: Record<Size, { text: string; dot: string; gap: string; offset: string }> = {
-  // sm: top of every main screen header
-  sm: {
-    text: "text-[19px] font-extrabold uppercase tracking-[0.04em]",
-    dot: "h-1.5 w-1.5",
-    gap: "gap-2",
-    offset: "translate-y-[-1px]",
-  },
-  // md: onboarding final / install splash
-  md: {
-    text: "text-[24px] font-extrabold uppercase tracking-[0.04em]",
-    dot: "h-2 w-2",
-    gap: "gap-2.5",
-    offset: "translate-y-[-2px]",
-  },
-  // hero: marketing-scale (kept for the /dev/identity preview)
-  hero: {
-    text: "text-[64px] font-extrabold uppercase tracking-[0.02em] leading-none",
-    dot: "h-3 w-3",
-    gap: "gap-4",
-    offset: "translate-y-[-4px]",
-  },
+interface SizeSpec {
+  fontSize: number;
+  dotSize: number;
+  dotMargin: number;
+  dotOffset: number;
+}
+
+const SIZES: Record<WordmarkSize, SizeSpec> = {
+  sm: { fontSize: 14, dotSize: 4, dotMargin: 1, dotOffset: -1 },
+  md: { fontSize: 20, dotSize: 5, dotMargin: 2, dotOffset: -2 },
+  lg: { fontSize: 32, dotSize: 8, dotMargin: 2, dotOffset: -3 },
+  xl: { fontSize: 48, dotSize: 12, dotMargin: 2, dotOffset: -3 },
 };
 
-const TONE_CLASS: Record<NonNullable<WordmarkProps["tone"]>, { text: string; dot: string }> = {
-  brand: { text: "text-ink", dot: "bg-accent" },
-  inverse: { text: "text-white", dot: "bg-white" },
+const VARIANTS: Record<
+  WordmarkVariant,
+  { textColor: string; dotColor: string }
+> = {
+  default: { textColor: "#252630", dotColor: "#9CA5FF" },
+  dark: { textColor: "#FFFFFF", dotColor: "#7FE5D4" },
 };
 
-/**
- * Fokus wordmark: Plus Jakarta Sans 800, uppercase, ink letterforms
- * with a single accent-blue dot offset to the cap-height baseline.
- */
 export default function Wordmark({
-  size = "sm",
+  size,
+  variant = "default",
   noDot = false,
   className,
-  tone = "brand",
 }: WordmarkProps) {
   const s = SIZES[size];
-  const t = TONE_CLASS[tone];
+  const v = VARIANTS[variant];
+
   return (
     <span
-      className={cn(
-        "inline-flex items-center select-none",
-        s.gap,
-        t.text,
-        className,
-      )}
+      className={cn("inline-flex items-baseline select-none", className)}
       aria-label="Fokus"
+      style={{
+        fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+        fontWeight: 800,
+        fontSize: s.fontSize,
+        letterSpacing: "-0.035em",
+        lineHeight: 1,
+        color: v.textColor,
+      }}
     >
-      {!noDot ? (
+      <span>fokus</span>
+      {noDot ? null : (
         <span
           aria-hidden
-          className={cn("inline-block rounded-full", s.dot, s.offset, t.dot)}
+          style={{
+            display: "inline-block",
+            width: s.dotSize,
+            height: s.dotSize,
+            borderRadius: "50%",
+            background: v.dotColor,
+            marginLeft: s.dotMargin,
+            transform: `translateY(${s.dotOffset}px)`,
+            flexShrink: 0,
+          }}
         />
-      ) : null}
-      <span>Fokus</span>
+      )}
     </span>
   );
 }
