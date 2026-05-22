@@ -20,18 +20,20 @@ export interface TabBarProps {
 }
 
 /**
- * Bottom nav with the green-pill treatment.
+ * Bottom nav with the dark-pill treatment.
  *
- *   Active:   icon + label inline inside a #EAF6EF pill, both in
- *             the deeper green #3D7A5C. No label below; the pill
- *             carries the name.
- *   Inactive: icon only, #C2C0CB. Label below in 10/600 #C2C0CB.
+ *   Active:   #252630 pill containing the icon (20px white, stroke 2)
+ *             + the label (13/700 white, -0.005em tracking). The pill
+ *             carries the name; no label appears below.
+ *   Inactive: icon-only at 20px #C2C0CB (stroke 1.75) with the label
+ *             10/600 #C2C0CB centred 2px beneath.
  *
- * Inactive items keep matching vertical padding so the row height
- * doesn't shift when selection changes.
+ * Each tab cell uses matching vertical padding so the nav row height
+ * doesn't shift when selection changes. The pill bg + label fade in
+ * via CSS transitions on each tab cell so a switch reads as a
+ * continuous animation rather than a hard swap.
  */
-const ACTIVE_BG = "#EAF6EF";
-const ACTIVE_FG = "#3D7A5C";
+const ACTIVE_BG = "#252630";
 const INACTIVE = "#C2C0CB";
 
 export default function TabBar({
@@ -44,21 +46,41 @@ export default function TabBar({
     <nav
       aria-label="Primary"
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 bg-bg-elevated",
-        "pb-[env(safe-area-inset-bottom)]",
+        "fixed inset-x-0 bottom-0 z-50 bg-white",
         className,
       )}
       style={{
-        boxShadow: "var(--shadow-level-2)",
-        height: `calc(76px + env(safe-area-inset-bottom, 0px))`,
+        borderTop: "0.5px solid rgba(0,0,0,0.07)",
+        boxShadow: "0 -1px 0 rgba(0,0,0,0.04)",
+        paddingTop: 10,
+        paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 10px)",
+        paddingLeft: 16,
+        paddingRight: 16,
       }}
     >
-      <ul className="mx-auto flex h-[76px] w-full max-w-[540px] items-stretch justify-around pt-2.5">
+      <ul
+        className="mx-auto flex w-full max-w-[540px] items-center"
+        style={{
+          listStyle: "none",
+          padding: 0,
+          margin: 0,
+          justifyContent: "space-around",
+        }}
+      >
         {tabs.slice(0, 4).map((tab) => {
           const isActive = tab.key === activeKey;
           const Icon = tab.icon;
           return (
-            <li key={tab.key} className="min-w-[60px]">
+            <li
+              key={tab.key}
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: 48,
+              }}
+            >
               <button
                 type="button"
                 aria-current={isActive ? "page" : undefined}
@@ -67,10 +89,19 @@ export default function TabBar({
                   tab.onClick?.();
                   onChange?.(tab.key);
                 }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  background: "transparent",
+                  border: "none",
+                  padding: 0,
+                }}
                 className={cn(
-                  "flex w-full flex-col items-center justify-center gap-1 select-none",
-                  "transition-colors duration-fast ease-out",
-                  "focus-visible:outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-accent",
+                  "select-none",
+                  "focus-visible:outline-none focus-visible:rounded-full",
+                  "focus-visible:ring-2 focus-visible:ring-[#252630] focus-visible:ring-offset-2",
                 )}
               >
                 {isActive ? (
@@ -80,9 +111,11 @@ export default function TabBar({
                       alignItems: "center",
                       gap: 6,
                       background: ACTIVE_BG,
-                      color: ACTIVE_FG,
-                      padding: "7px 14px",
-                      borderRadius: 22,
+                      color: "#FFFFFF",
+                      padding: "9px 16px",
+                      borderRadius: 999,
+                      transition:
+                        "background-color 200ms ease-out, padding 200ms ease-out",
                     }}
                   >
                     <Icon
@@ -93,30 +126,40 @@ export default function TabBar({
                     />
                     <span
                       style={{
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: 700,
                         lineHeight: 1,
-                        color: ACTIVE_FG,
+                        letterSpacing: "-0.005em",
+                        color: "#FFFFFF",
+                        animation:
+                          "fokusTabLabelIn 200ms ease-out both",
                       }}
                     >
                       {tab.label}
                     </span>
                   </span>
                 ) : (
-                  <>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 3,
+                      padding: "7px 12px",
+                    }}
+                  >
                     <span
                       aria-hidden
                       style={{
                         display: "inline-flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        padding: "7px 10px",
                         color: INACTIVE,
                       }}
                     >
                       <Icon
                         size={20}
-                        strokeWidth={2}
+                        strokeWidth={1.75}
                         aria-hidden
                         stroke="currentColor"
                       />
@@ -126,18 +169,26 @@ export default function TabBar({
                         fontSize: 10,
                         fontWeight: 600,
                         lineHeight: 1,
+                        letterSpacing: "0.01em",
                         color: INACTIVE,
+                        marginTop: 2,
                       }}
                     >
                       {tab.label}
                     </span>
-                  </>
+                  </span>
                 )}
               </button>
             </li>
           );
         })}
       </ul>
+      <style jsx global>{`
+        @keyframes fokusTabLabelIn {
+          0% { opacity: 0; transform: translateX(-8px); }
+          100% { opacity: 1; transform: translateX(0); }
+        }
+      `}</style>
     </nav>
   );
 }
