@@ -25,15 +25,19 @@ import {
   IconChartBar,
   IconCheckbox,
   IconChess,
+  IconClockHour8,
   IconCloud,
   IconCoin,
+  IconDoorEnter,
   IconDroplet,
   IconEar,
   IconEraser,
+  IconEyeSearch,
   IconFlag,
   IconFlame,
   IconGrid3x3,
   IconHandFinger,
+  IconHeartHandshake,
   IconHistory,
   IconHome,
   IconHourglass,
@@ -94,15 +98,19 @@ const ICONS: Record<string, ComponentType<IconProps>> = {
   "ti-chart-bar": IconChartBar,
   "ti-checkbox": IconCheckbox,
   "ti-chess": IconChess,
+  "ti-clock-hour-8": IconClockHour8,
   "ti-cloud": IconCloud,
   "ti-coin": IconCoin,
+  "ti-door-enter": IconDoorEnter,
   "ti-droplet": IconDroplet,
   "ti-ear": IconEar,
   "ti-eraser": IconEraser,
+  "ti-eye-search": IconEyeSearch,
   "ti-flag": IconFlag,
   "ti-flame": IconFlame,
   "ti-grid-3x3": IconGrid3x3,
   "ti-hand-finger": IconHandFinger,
+  "ti-heart-handshake": IconHeartHandshake,
   "ti-history": IconHistory,
   "ti-home": IconHome,
   "ti-hourglass": IconHourglass,
@@ -164,7 +172,7 @@ export default function TablerIcon({
   const Icon = ICONS[name];
   if (!Icon) {
     // Fail soft: render a faded question mark rather than crashing the
-    // row. Should never fire in practice — the activities loader throws
+    // row. Should never fire in practice; the activities loader throws
     // if an activity is missing a Tabler icon.
     return (
       <IconQuestionMark

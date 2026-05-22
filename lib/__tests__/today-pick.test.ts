@@ -26,17 +26,16 @@ describe("today-pick; date math", () => {
 });
 
 describe("today-pick; skill rotation", () => {
-  it("rotates through all 8 skills in fixed order across 8 days", () => {
+  it("rotates through all 9 skills in fixed order across 9 days", () => {
     const start = utc("2026-01-01");
     const seen: string[] = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 9; i++) {
       const d = new Date(start);
       d.setUTCDate(start.getUTCDate() + i);
       seen.push(todaysSkill(d));
     }
-    // dayOfYear(2026-01-01) === 1 → starts at SKILL_ROTATION[1] (language).
-    // We just need to confirm the 8 consecutive days hit every skill exactly once.
-    expect(new Set(seen).size).toBe(8);
+    // We just need to confirm 9 consecutive days hit every skill exactly once.
+    expect(new Set(seen).size).toBe(9);
     expect(seen.sort()).toEqual([...SKILL_ROTATION].sort());
   });
 
@@ -108,9 +107,11 @@ describe("today-pick; pickRandomSwap", () => {
     const tried = new Set([current.id]);
     const seen = new Set<string>();
     // Walk a deterministic sequence of rands across the full pool.
+    // Mid-of-bucket sampling: (k + 0.5) / n avoids FP rounding that
+    // can collapse k/n*n back to (k-1).0… for some pool sizes.
     const pool = ACTIVITIES.filter((a) => a.id !== current.id);
-    for (let i = 0; i < pool.length; i++) {
-      const r = i / pool.length;
+    for (let k = 0; k < pool.length; k++) {
+      const r = (k + 0.5) / pool.length;
       seen.add(pickRandomSwap(current, ACTIVITIES, tried, () => r).id);
     }
     // Should cover every untried activity at least once.

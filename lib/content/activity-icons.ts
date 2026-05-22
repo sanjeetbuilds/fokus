@@ -39,6 +39,16 @@ export const ACTIVITY_ICONS: Record<string, string> = {
   em7: "Heart",
   em8: "Sparkle",
 
+  // -------------------- Perspective --------------------
+  pe1: "BookMarked",
+  pe2: "HelpCircle",
+  pe3: "Search",
+  pe4: "RotateCcw",
+  pe5: "Calendar",
+  pe6: "Home",
+  pe7: "MessageCircleQuestion",
+  pe8: "Heart",
+
   // -------------------- Thinking --------------------
   th1: "Search",
   th2: "GitBranch",

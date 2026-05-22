@@ -45,6 +45,16 @@ export const ACTIVITY_TABLER_ICONS: Record<string, string> = {
   em7: "ti-book-2",              // story feelings
   em8: "ti-stars",               // gratitude three
 
+  // Perspective
+  pe1: "ti-book",                // the other side of the story
+  pe2: "ti-question-mark",       // three reasons
+  pe3: "ti-eye-search",          // feelings detective
+  pe4: "ti-arrows-exchange",     // the switch
+  pe5: "ti-clock-hour-8",        // their whole day
+  pe6: "ti-door-enter",          // first day anywhere
+  pe7: "ti-message-question",    // ask don't tell
+  pe8: "ti-heart-handshake",     // what they want
+
   // Thinking clarity
   th1: "ti-question-mark",       // how do we know?
   th2: "ti-arrows-split",        // two reasons game

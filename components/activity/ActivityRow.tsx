@@ -19,10 +19,9 @@ export interface ActivityRowTriedMeta {
 export interface ActivityRowProps {
   activity: Activity;
   /**
-   * 'default' — untried; shows the activity hook on the subtitle line.
-   * 'tried'   — shows "Done N time(s) · last dd MMM" in green.
-   *
-   * The caller decides which variant to pass based on activity_log.
+   * 'default' renders the activity hook on the subtitle line.
+   * 'tried' replaces the hook with "Done N time(s) · last dd MMM"
+   * in green. The caller picks the variant based on activity_log.
    */
   variant: ActivityRowVariant;
   /** Required when variant === 'tried'. Ignored otherwise. */
@@ -244,6 +243,7 @@ const SHORT_LABEL: Record<SkillKey, string> = {
   curiosity: "Curiosity",
   language: "Language",
   emotional: "Emotional",
+  perspective: "Perspective",
   thinking: "Thinking",
   resilience: "Resilience",
   creativity: "Creativity",

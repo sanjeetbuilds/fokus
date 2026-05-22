@@ -14,6 +14,7 @@ export type SkillKey =
   | "curiosity"
   | "language"
   | "emotional"
+  | "perspective"
   | "thinking"
   | "resilience"
   | "creativity"

@@ -120,15 +120,35 @@ function LibraryBody() {
               gap: 12,
             }}
           >
-            {tilesForTab.map((k) => (
-              <SkillTile
-                key={k}
-                skillId={k}
-                variant={tab === "tried" ? "tried" : "all"}
-                triedCount={triedBySkill.get(k)?.size ?? 0}
-                onClick={() => setOpenSkill(k)}
-              />
-            ))}
+            {tilesForTab.map((k, i) => {
+              // 9 skills means the final row has one orphan tile. Span
+              // both columns and centre with max-width 50% so it doesn't
+              // stretch full-width.
+              const isOddLast =
+                i === tilesForTab.length - 1 && tilesForTab.length % 2 === 1;
+              return (
+                <div
+                  key={k}
+                  style={
+                    isOddLast
+                      ? {
+                          gridColumn: "1 / -1",
+                          maxWidth: "calc(50% - 6px)",
+                          margin: "0 auto",
+                          width: "100%",
+                        }
+                      : undefined
+                  }
+                >
+                  <SkillTile
+                    skillId={k}
+                    variant={tab === "tried" ? "tried" : "all"}
+                    triedCount={triedBySkill.get(k)?.size ?? 0}
+                    onClick={() => setOpenSkill(k)}
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

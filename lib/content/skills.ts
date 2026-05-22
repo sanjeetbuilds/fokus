@@ -74,6 +74,18 @@ export const SKILLS: Record<SkillKey, SkillDefinition> = {
     mid: "#A02858",
     firstTimeNote: "Works best in calm moments together.",
   },
+  perspective: {
+    label: "Perspective",
+    description: "Seeing through someone else's eyes.",
+    iconName: "Users",
+    color: "#8C64A0",
+    bg: "#F0E8F4",
+    blob: "rgba(140,100,160,0.16)",
+    iconColor: "#3A1A4C",
+    mid: "#5C2E78",
+    firstTimeNote:
+      "Best after a small disagreement or in a quiet moment together.",
+  },
   thinking: {
     label: "Thinking clarity",
     description:

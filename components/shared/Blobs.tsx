@@ -1,5 +1,5 @@
 /**
- * Decorative blob layer — depth without literal illustration.
+ * Decorative blob layer; depth without literal illustration.
  *
  * Three variants, all absolutely positioned, pointer-events:none,
  * z-index 0. Place inside a positioned (relative) parent and put
@@ -16,7 +16,7 @@ export type BlobVariant = "tile" | "stat" | "hero";
 
 export interface BlobsProps {
   variant: BlobVariant;
-  /** Required for the "tile" variant — the skill's blob rgba. */
+  /** Required for the "tile" variant; the skill's blob rgba. */
   color?: string;
 }
 

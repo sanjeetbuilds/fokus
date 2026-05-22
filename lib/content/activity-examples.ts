@@ -303,6 +303,99 @@ export const ACTIVITY_EXAMPLES: Record<string, ActivityExample> = {
     closing: "Most days, three is harder than it sounds. The pause IS the practice.",
   },
 
+  // -------------------- PERSPECTIVE --------------------
+
+  pe1: {
+    setup: "Reading Cinderella again at bedtime.",
+    exchange: [
+      { speaker: "you", line: "What if the stepmother told this story?" },
+      { speaker: "child", line: "She'd say Cinderella was lazy." },
+      { speaker: "you", line: "Maybe. What else might she say?" },
+      { speaker: "child", line: "That she really wanted her own daughters to be happy." },
+    ],
+    closing: "Same events. Different inside. That's the whole skill.",
+  },
+
+  pe2: {
+    setup: "{childName} mentions a friend was rude at lunch.",
+    exchange: [
+      { speaker: "child", line: "Aarav was so mean today." },
+      { speaker: "you", line: "What might be a reason?" },
+      { speaker: "child", line: "He doesn't like me anymore." },
+      { speaker: "you", line: "Could be. What's another reason?" },
+      { speaker: "child", line: "Maybe his mama yelled at him this morning." },
+    ],
+    closing: "Three reasons. None proved. But you held more than one.",
+  },
+
+  pe3: {
+    setup: "Park bench, watching a woman scroll her phone.",
+    exchange: [
+      { speaker: "you", line: "How do you think she's feeling?" },
+      { speaker: "child", line: "Worried." },
+      { speaker: "you", line: "How can you tell?" },
+      { speaker: "child", line: "Her shoulders are up. She's reading the phone fast." },
+    ],
+    closing: "We don't know if you're right. But you read her body.",
+  },
+
+  pe4: {
+    setup: "After a small argument about screen time.",
+    exchange: [
+      { speaker: "you", line: "Okay, switch. Why am I wrong?" },
+      { speaker: "child", line: "You said no screens but I finished homework." },
+      { speaker: "you", line: "Good. Switch again. Why might I say no anyway?" },
+      { speaker: "child", line: "Because too much screen makes your eyes hurt the next day." },
+    ],
+    closing: "Two real reasons, both yours. Most fights are like that.",
+  },
+
+  pe5: {
+    setup: "Walking home, talking about {childName}'s teacher.",
+    exchange: [
+      { speaker: "you", line: "What did Ms. Sharma do this morning before school?" },
+      { speaker: "child", line: "Drank chai. Got the kids ready." },
+      { speaker: "you", line: "What was hard about her day?" },
+      { speaker: "child", line: "Some kids didn't listen. She had to repeat everything." },
+    ],
+    closing: "Same school day. Two completely different insides.",
+  },
+
+  pe6: {
+    setup: "At the playground after a new boy joins.",
+    exchange: [
+      { speaker: "you", line: "What's the new kid not knowing right now?" },
+      { speaker: "child", line: "He doesn't know which game we play." },
+      { speaker: "you", line: "What does he feel?" },
+      { speaker: "child", line: "Shy. Maybe scared we don't want him." },
+      { speaker: "you", line: "What would help?" },
+      { speaker: "child", line: "I could ask his name." },
+    ],
+    closing: "You went and asked. That was the help.",
+  },
+
+  pe7: {
+    setup: "Mama walks into the kitchen looking tired.",
+    exchange: [
+      { speaker: "child", line: "Why is mama like that?" },
+      { speaker: "you", line: "I won't say. How do you think she's feeling? What's the clue?" },
+      { speaker: "child", line: "She's slow. Her face is flat. Tired?" },
+      { speaker: "you", line: "Good guess. What might help?" },
+      { speaker: "child", line: "I'll make space on the sofa." },
+    ],
+    closing: "You read her. You didn't need me to translate.",
+  },
+
+  pe8: {
+    setup: "Dinner table, baba is reading the newspaper.",
+    exchange: [
+      { speaker: "child", line: "Baba's water glass is empty." },
+      { speaker: "you", line: "What does that mean?" },
+      { speaker: "child", line: "He'll want more soon. I'll bring it." },
+    ],
+    closing: "Care that's just noticing. Nobody needed to ask.",
+  },
+
   // -------------------- THINKING --------------------
 
   th1: {

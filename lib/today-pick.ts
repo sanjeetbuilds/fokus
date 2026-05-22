@@ -7,11 +7,12 @@ import type { Activity, SkillKey } from "@/types";
  * and the same swap permutation on any device. No personalisation.
  */
 
-// Fixed rotation order per spec; (day-of-year) mod 8.
+// Fixed rotation order per spec; (day-of-year) mod 9.
 export const SKILL_ROTATION: readonly SkillKey[] = [
   "curiosity",
   "language",
   "emotional",
+  "perspective",
   "thinking",
   "resilience",
   "creativity",

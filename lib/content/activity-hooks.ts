@@ -42,6 +42,16 @@ export const ACTIVITY_HOOKS: Record<string, string> = {
   em7: "Read the feelings in a story.",
   em8: "Name three specific moments from today.",
 
+  // Perspective
+  pe1: "Retell a familiar story from another point of view.",
+  pe2: "Find three reasons why someone acted that way.",
+  pe3: "Watch a stranger and guess what they feel.",
+  pe4: "After a fight, argue the other side honestly.",
+  pe5: "Imagine someone else's whole day morning to night.",
+  pe6: "Imagine being new and what you would feel.",
+  pe7: "Ask your child what someone is feeling, don't tell.",
+  pe8: "Guess what someone needs before they ask.",
+
   // Thinking clarity
   th1: "Ask how do we know that.",
   th2: "Find two reasons before picking one.",
