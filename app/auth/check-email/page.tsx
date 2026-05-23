@@ -72,6 +72,9 @@ function CheckEmailBody() {
               aria-hidden
               style={{
                 position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
                 width: 80,
                 height: 80,
                 borderRadius: "50%",
@@ -91,7 +94,7 @@ function CheckEmailBody() {
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#207838",
-                zIndex: 1,
+                zIndex: 2,
               }}
             >
               <IconMail size={24} stroke={2} aria-hidden />

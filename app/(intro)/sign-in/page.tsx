@@ -134,7 +134,6 @@ export default function SignInPage() {
             marginTop: 24,
             display: "flex",
             flexDirection: "column",
-            flex: 1,
           }}
         >
           <input
@@ -155,29 +154,29 @@ export default function SignInPage() {
               fontWeight: 500,
               color: "#252630",
               outline: "none",
-              transition: "background 150ms ease-out, border-color 150ms ease-out",
+              transition:
+                "background 150ms ease, border-color 150ms ease",
               width: "100%",
             }}
           />
-          {errorMessage ? (
-            <p
-              style={{
-                marginTop: 8,
-                fontSize: 12,
-                color: "#B85738",
-                lineHeight: 1.45,
-              }}
-            >
-              {errorMessage}
-            </p>
-          ) : null}
-
-          <span aria-hidden style={{ flex: 1, minHeight: 24 }} />
+          <p
+            style={{
+              marginTop: 8,
+              fontSize: 12,
+              fontWeight: 400,
+              color: errorMessage ? "#B85738" : "#8E8D9B",
+              lineHeight: 1.45,
+            }}
+          >
+            {errorMessage ??
+              "We'll send a quick link to sign you in. No password."}
+          </p>
 
           <button
             type="submit"
             disabled={!canSubmit}
             style={{
+              marginTop: 32,
               width: "100%",
               background: "#252630",
               color: "#FFFFFF",
@@ -187,8 +186,8 @@ export default function SignInPage() {
               fontWeight: 700,
               border: "none",
               cursor: canSubmit ? "pointer" : "not-allowed",
-              opacity: canSubmit ? 1 : 0.4,
-              transition: "opacity 150ms ease-out",
+              opacity: canSubmit ? 1 : 0.35,
+              transition: "opacity 150ms ease",
             }}
             className="active:opacity-90"
           >
@@ -196,7 +195,7 @@ export default function SignInPage() {
           </button>
           <p
             style={{
-              marginTop: 10,
+              marginTop: 12,
               fontSize: 10,
               fontWeight: 400,
               color: "#C2C0CB",

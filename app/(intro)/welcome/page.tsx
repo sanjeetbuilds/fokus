@@ -309,8 +309,9 @@ function IntroScreen({
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
+          justifyContent: "flex-start",
           alignItems: "center",
+          paddingTop: "30vh",
         }}
       >
         {/* Icon zone */}
@@ -328,6 +329,9 @@ function IntroScreen({
             aria-hidden
             style={{
               position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
               width: 80,
               height: 80,
               borderRadius: "50%",
@@ -347,7 +351,7 @@ function IntroScreen({
               alignItems: "center",
               justifyContent: "center",
               color: config.iconColor,
-              zIndex: 1,
+              zIndex: 2,
             }}
           >
             <Icon size={26} stroke={2} aria-hidden />
