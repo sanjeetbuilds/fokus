@@ -1,26 +1,23 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 
 import Wordmark from "@/components/shared/Wordmark";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 
 /**
- * Sign-in via Supabase magic link. Single email field; Supabase emails
- * a one-time link, the link routes back to /auth/callback, the callback
- * exchanges the code for a session, and the user lands on /.
- *
- * If a sessionStorage flag from the just-deleted account flow is
- * present, a brief "Account deleted." flash is shown above the form
- * for ~3 seconds, then it self-dismisses.
+ * Sign-in: single email field. Submits to Supabase magic-link OTP,
+ * then navigates to /auth/check-email?email=... on success so the
+ * "we sent you a link" surface is its own dedicated screen.
  */
 export default function SignInPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">(
-    "idle",
-  );
+  const [state, setState] = useState<"idle" | "sending" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [deletedFlash, setDeletedFlash] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     try {
@@ -35,14 +32,14 @@ export default function SignInPage() {
     }
   }, []);
 
+  const trimmed = email.trim();
+  const canSubmit = trimmed.length > 0 && state !== "sending";
+
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const trimmed = email.trim();
-    if (!trimmed || state === "sending") return;
-
+    if (!canSubmit) return;
     setState("sending");
     setErrorMessage(null);
-
     try {
       const supabase = getSupabaseBrowser();
       const redirectTo =
@@ -58,7 +55,7 @@ export default function SignInPage() {
         setState("error");
         return;
       }
-      setState("sent");
+      router.push(`/auth/check-email?email=${encodeURIComponent(trimmed)}`);
     } catch (err) {
       console.error("[/sign-in] signInWithOtp:", err);
       setErrorMessage("Couldn't send the link. Try again in a moment.");
@@ -67,20 +64,37 @@ export default function SignInPage() {
   };
 
   return (
-    <main className="relative flex min-h-[100svh] flex-col bg-bg">
-      <header className="flex items-center justify-between px-6 pt-[calc(env(safe-area-inset-top)+16px)]">
+    <main
+      style={{
+        position: "relative",
+        minHeight: "100svh",
+        background: "#FFFFFF",
+        color: "#252630",
+        fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100svh",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 50px)",
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
+          paddingLeft: 20,
+          paddingRight: 20,
+        }}
+      >
         <Wordmark size="sm" />
-        <span aria-hidden className="h-9 w-9" />
-      </header>
 
-      <div className="flex flex-1 flex-col px-6 pt-[60px]">
         {deletedFlash ? (
           <div
             aria-live="polite"
-            className="mb-6 rounded-[10px] px-4 py-3"
             style={{
+              marginTop: 16,
               background: "#FBFAF7",
               border: "1px solid #E5E3DA",
+              borderRadius: 10,
+              padding: "12px 14px",
               fontSize: 14,
               color: "#252630",
               lineHeight: 1.45,
@@ -89,135 +103,112 @@ export default function SignInPage() {
             Account deleted.
           </div>
         ) : null}
+
         <h1
-          className="text-ink"
           style={{
-            fontSize: 28,
-            fontWeight: 700,
+            marginTop: 24,
+            fontSize: 24,
+            fontWeight: 800,
+            color: "#252630",
+            letterSpacing: "-0.025em",
             lineHeight: 1.15,
-            letterSpacing: "-0.02em",
           }}
         >
-          Welcome to Fokus.
+          What&apos;s your email?
         </h1>
         <p
-          className="mt-3"
           style={{
-            fontSize: 15,
-            fontWeight: 300,
-            lineHeight: 1.6,
+            marginTop: 10,
+            fontSize: 13,
+            fontWeight: 400,
             color: "#8E8D9B",
+            lineHeight: 1.55,
           }}
         >
-          One activity a day, with your child.
-          <br />
-          Sign in to get started.
+          We&apos;ll send a quick link to sign you in. No password to remember.
         </p>
 
-        {state === "sent" ? (
-          <div className="mt-10">
+        <form
+          onSubmit={onSubmit}
+          style={{
+            marginTop: 24,
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+          }}
+        >
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder="you@example.com"
+            autoComplete="email"
+            autoFocus
+            style={{
+              background: focused ? "#FFFFFF" : "#F7F7F5",
+              border: `1px solid ${focused ? "#9CA5FF" : "transparent"}`,
+              borderRadius: 14,
+              padding: "14px 16px",
+              fontSize: 16,
+              fontWeight: 500,
+              color: "#252630",
+              outline: "none",
+              transition: "background 150ms ease-out, border-color 150ms ease-out",
+              width: "100%",
+            }}
+          />
+          {errorMessage ? (
             <p
               style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: "#252630",
-                lineHeight: 1.4,
+                marginTop: 8,
+                fontSize: 12,
+                color: "#B85738",
+                lineHeight: 1.45,
               }}
             >
-              Check your email.
+              {errorMessage}
             </p>
-            <p
-              className="mt-2"
-              style={{ fontSize: 14, color: "#8E8D9B", lineHeight: 1.5 }}
-            >
-              We sent a link to {email.trim()}. Open it on this device to
-              finish signing in.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setState("idle");
-                setErrorMessage(null);
-              }}
-              className="mt-6 text-[14px] underline"
-              style={{ color: "#6B5B95" }}
-            >
-              Use a different email
-            </button>
-          </div>
-        ) : (
-          <form className="mt-10 flex flex-col gap-6" onSubmit={onSubmit}>
-            <div>
-              <p
-                className="mb-2"
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "#8E8D9B",
-                }}
-              >
-                Email
-              </p>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                autoComplete="email"
-                autoFocus
-                className="h-[50px] w-full rounded-[6px] border bg-bg-elevated px-4 text-[18px] text-ink"
-                style={{ borderColor: "#E5E3DA", borderWidth: 1 }}
-              />
-              {errorMessage ? (
-                <p
-                  className="mt-2"
-                  style={{
-                    fontSize: 13,
-                    color: "#B85738",
-                    lineHeight: 1.45,
-                  }}
-                >
-                  {errorMessage}
-                </p>
-              ) : (
-                <p
-                  className="mt-2"
-                  style={{
-                    fontSize: 12,
-                    color: "#8E8D9B",
-                    lineHeight: 1.45,
-                  }}
-                >
-                  We&apos;ll send a link to your inbox. No password.
-                </p>
-              )}
-            </div>
+          ) : null}
 
-            <div className="flex flex-col items-center gap-3">
-              <button
-                type="submit"
-                disabled={state === "sending" || email.trim().length === 0}
-                className="h-[56px] w-full rounded-[6px] text-[16px] font-bold text-white transition-opacity disabled:opacity-50"
-                style={{ background: "#252630" }}
-              >
-                {state === "sending" ? "Sending…" : "Send link"}
-              </button>
-              <p
-                style={{
-                  fontSize: 12,
-                  fontWeight: 400,
-                  color: "#C2C0CB",
-                  textAlign: "center",
-                  lineHeight: 1.5,
-                }}
-              >
-                Your data stays private. Only you can see it.
-              </p>
-            </div>
-          </form>
-        )}
+          <span aria-hidden style={{ flex: 1, minHeight: 24 }} />
+
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            style={{
+              width: "100%",
+              background: "#252630",
+              color: "#FFFFFF",
+              borderRadius: 999,
+              padding: 12,
+              fontSize: 13,
+              fontWeight: 700,
+              border: "none",
+              cursor: canSubmit ? "pointer" : "not-allowed",
+              opacity: canSubmit ? 1 : 0.4,
+              transition: "opacity 150ms ease-out",
+            }}
+            className="active:opacity-90"
+          >
+            {state === "sending" ? "Sending…" : "Send my link"}
+          </button>
+          <p
+            style={{
+              marginTop: 10,
+              fontSize: 10,
+              fontWeight: 400,
+              color: "#C2C0CB",
+              textAlign: "center",
+              lineHeight: 1.4,
+            }}
+          >
+            Your child&apos;s data stays private.
+            <br />
+            Only you can see it.
+          </p>
+        </form>
       </div>
     </main>
   );
