@@ -48,7 +48,7 @@ function PrimaryBtn({ label, onClick }: { label: string; onClick: () => void }) 
       background: '#252630',
       borderRadius: 999,
       padding: '16px 20px',
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: 700,
       color: '#ffffff',
       border: 'none',
@@ -108,7 +108,7 @@ function Tag({ label, color }: { label: string; color: string }) {
 }
 
 const HL: React.CSSProperties = {
-  fontSize: 36,
+  fontSize: 42,
   fontWeight: 800,
   color: '#252630',
   letterSpacing: '-0.035em',
@@ -118,14 +118,12 @@ const HL: React.CSSProperties = {
 };
 
 const SUB: React.CSSProperties = {
-  fontSize: 15,
+  fontSize: 16,
   color: '#8E8D9B',
   lineHeight: 1.65,
   fontWeight: 400,
   fontFamily: FONT,
 };
-
-const ACCENT = '#9CA5FF';
 
 /* skill pills */
 
@@ -148,9 +146,9 @@ function SkillPills() {
         <span key={s.label} style={{
           background: s.bg,
           color: s.color,
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 700,
-          padding: '5px 11px',
+          padding: '6px 12px',
           borderRadius: 999,
           fontFamily: FONT,
         }}>{s.label}</span>
@@ -162,17 +160,18 @@ function SkillPills() {
 /* screens */
 
 function SplashScreen({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
+  const COLOR = '#F4C84A';
   return (
     <div style={PAGE}>
       <Wordmark size="sm" />
       <Spacer />
       <div style={{ paddingBottom: 24 }}>
-        <Tag label="For parents of 5 to 10 year olds" color={ACCENT} />
-        <Rule color={ACCENT} />
+        <Tag label="For parents of 5 to 10 year olds" color={COLOR} />
+        <Rule color={COLOR} />
         <div style={HL}>
           ten minutes<br />
           a day,<br />
-          <span style={{ color: ACCENT }}>with your<br />child.</span>
+          <span style={{ color: COLOR }}>with your<br />child.</span>
         </div>
         <div style={SUB}>
           The skills school doesn&apos;t teach.<br />
@@ -188,6 +187,7 @@ function SplashScreen({ onNext, onSkip }: { onNext: () => void; onSkip: () => vo
 }
 
 function Intro1({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
+  const COLOR = '#6B5B95';
   return (
     <div style={PAGE}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -200,12 +200,12 @@ function Intro1({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) 
       </div>
       <Spacer />
       <div style={{ paddingBottom: 20 }}>
-        <Tag label="The gap no one talks about" color={ACCENT} />
-        <Rule color={ACCENT} />
+        <Tag label="The gap no one talks about" color={COLOR} />
+        <Rule color={COLOR} />
         <div style={HL}>
           schools teach<br />
           subjects.<br />
-          <span style={{ color: ACCENT }}>not skills.</span>
+          <span style={{ color: COLOR }}>not skills.</span>
         </div>
         <div style={SUB}>
           Critical thinking. Resilience. Emotional
@@ -223,6 +223,7 @@ function Intro1({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) 
 
 function Intro2({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
   const AMBER = '#F4C84A';
+  const GREEN_ACCENT = '#5DC87A';
   return (
     <div style={PAGE}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -238,7 +239,7 @@ function Intro2({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) 
         <Tag label="How fokus works" color={AMBER} />
         <Rule color={AMBER} />
         <div style={{
-          fontSize: 72,
+          fontSize: 80,
           fontWeight: 800,
           color: AMBER,
           letterSpacing: '-0.05em',
@@ -246,9 +247,9 @@ function Intro2({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) 
           marginBottom: 6,
           fontFamily: FONT,
         }}>10</div>
-        <div style={{ ...HL, fontSize: 32, marginBottom: 16 }}>
+        <div style={{ ...HL, fontSize: 36, marginBottom: 16 }}>
           minutes.<br />
-          <span style={{ color: ACCENT }}>one activity.</span><br />
+          <span style={{ color: GREEN_ACCENT }}>one activity.</span><br />
           every day.
         </div>
         <div style={SUB}>
@@ -266,15 +267,16 @@ function Intro2({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) 
 
 function Intro3({ onNext }: { onNext: () => void }) {
   const GREEN = '#5DC87A';
+  const FAINT_RULE = 'rgba(37, 38, 48, 0.15)';
   return (
     <div style={PAGE}>
       <Wordmark size="sm" />
       <Spacer />
       <div style={{ paddingBottom: 16 }}>
         <Tag label="What's inside" color={GREEN} />
-        <Rule color={GREEN} />
+        <Rule color={FAINT_RULE} />
         <div style={{ ...HL, marginBottom: 16 }}>
-          <span style={{ color: ACCENT }}>9 skills.</span><br />
+          <span style={{ color: '#252630' }}>9 skills.</span><br />
           72 small<br />
           things to do<br />
           together.

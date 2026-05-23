@@ -64,7 +64,15 @@ export default function SignInPage() {
 
       <div style={{ marginTop: 40, flexShrink: 0 }}>
         <div style={{
-          fontSize: 36,
+          width: 40,
+          height: 4,
+          borderRadius: 2,
+          background: '#5FB8B0',
+          marginBottom: 16,
+          flexShrink: 0,
+        }} />
+        <div style={{
+          fontSize: 42,
           fontWeight: 800,
           color: '#252630',
           letterSpacing: '-0.035em',
@@ -75,7 +83,7 @@ export default function SignInPage() {
           What&apos;s your<br />email?
         </div>
         <div style={{
-          fontSize: 15,
+          fontSize: 16,
           color: '#8E8D9B',
           lineHeight: 1.65,
           marginBottom: 28,

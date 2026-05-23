@@ -77,7 +77,7 @@ function CheckEmailContent() {
         }}>✓ Link sent</div>
 
         <div style={{
-          fontSize: 32,
+          fontSize: 40,
           fontWeight: 800,
           color: '#252630',
           letterSpacing: '-0.035em',
@@ -87,7 +87,7 @@ function CheckEmailContent() {
         }}>Check your<br />inbox.</div>
 
         <div style={{
-          fontSize: 15,
+          fontSize: 16,
           color: '#8E8D9B',
           lineHeight: 1.65,
           maxWidth: 260,
