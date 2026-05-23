@@ -131,7 +131,7 @@ function ActivityDetailBody() {
           <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
           <span>Back</span>
         </button>
-        <Wordmark size="sm" noDot />
+        <Wordmark size="sm" />
       </div>
 
       <ActivityHeader activity={activity} />

@@ -1,316 +1,187 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import {
-  type CSSProperties,
-  type FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { getSupabaseBrowser } from '@/lib/supabase/client';
+import Wordmark from '@/components/shared/Wordmark';
 
-import { getSupabaseBrowser } from "@/lib/supabase/client";
-
-const INK = "#252630";
-const ACCENT = "#9CA5FF";
-const MUTED = "#8E8D9B";
-const TERTIARY = "#C2C0CB";
-const TINT_FILL = "#F7F7F5";
-const INPUT_BORDER = "#EEEEED";
-
-/**
- * Email entry. Pixel-precise per the approved mockup.
- */
-export default function SignInPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "sending" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [focused, setFocused] = useState(false);
-  const [deletedFlash, setDeletedFlash] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    try {
-      if (window.sessionStorage.getItem("account_deleted_flash") === "true") {
-        window.sessionStorage.removeItem("account_deleted_flash");
-        setDeletedFlash(true);
-        const t = window.setTimeout(() => setDeletedFlash(false), 3000);
-        return () => window.clearTimeout(t);
-      }
-    } catch {
-      /* private browsing; flash just won't fire */
-    }
-  }, []);
-
-  const trimmed = email.trim();
-  const valid = isValidEmail(trimmed);
-  const canSubmit = valid && state !== "sending";
-
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!canSubmit) return;
-    setState("sending");
-    setErrorMessage(null);
-    try {
-      const supabase = getSupabaseBrowser();
-      const redirectTo =
-        typeof window !== "undefined"
-          ? `${window.location.origin}/auth/callback`
-          : undefined;
-      const { error } = await supabase.auth.signInWithOtp({
-        email: trimmed,
-        options: { emailRedirectTo: redirectTo },
-      });
-      if (error) {
-        const msg = error.message?.toLowerCase() ?? "";
-        const status = (error as { status?: number }).status;
-        if (
-          msg.includes("rate limit") ||
-          msg.includes("too many") ||
-          status === 429
-        ) {
-          setErrorMessage(
-            "Too many attempts. Please wait a few minutes before trying again.",
-          );
-        } else {
-          setErrorMessage("Something went wrong. Please try again.");
-        }
-        setState("error");
-        return;
-      }
-      router.push(`/auth/check-email?email=${encodeURIComponent(trimmed)}`);
-    } catch (err) {
-      console.error("[/sign-in] signInWithOtp:", err);
-      setErrorMessage("Couldn't send the link. Try again in a moment.");
-      setState("error");
-    }
-  };
-
-  const onInputFocus = () => {
-    setFocused(true);
-    setTimeout(() => {
-      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 250);
-  };
-
-  return (
-    <main style={SHELL_STYLE}>
-      <form onSubmit={onSubmit} style={CONTAINER_STYLE}>
-        <Wordmark />
-
-        {deletedFlash ? (
-          <div
-            aria-live="polite"
-            style={{
-              marginTop: 16,
-              background: TINT_FILL,
-              borderRadius: 10,
-              padding: "10px 12px",
-              fontSize: 13,
-              color: INK,
-              lineHeight: 1.45,
-            }}
-          >
-            Account deleted.
-          </div>
-        ) : null}
-
-        <div style={{ marginTop: 32, flexShrink: 0 }}>
-          <div
-            style={{
-              fontSize: 28,
-              fontWeight: 800,
-              color: INK,
-              letterSpacing: "-0.025em",
-              lineHeight: 1.12,
-            }}
-          >
-            What&apos;s your
-            <br />
-            email?
-          </div>
-          <div
-            style={{
-              fontSize: 14,
-              color: MUTED,
-              marginTop: 8,
-              lineHeight: 1.5,
-            }}
-          >
-            We&apos;ll send a link to sign you in.
-            <br />
-            No password needed.
-          </div>
-        </div>
-
-        <div style={{ marginTop: 24, flexShrink: 0 }}>
-          <input
-            ref={inputRef}
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onFocus={onInputFocus}
-            onBlur={() => setFocused(false)}
-            placeholder="you@example.com"
-            autoComplete="email"
-            autoFocus
-            style={{
-              width: "100%",
-              background: focused ? "#FFFFFF" : TINT_FILL,
-              border: `1.5px solid ${focused ? ACCENT : INPUT_BORDER}`,
-              borderRadius: 14,
-              padding: 16,
-              // 16px minimum so iOS Safari doesn't auto-zoom the viewport.
-              fontSize: 16,
-              fontWeight: 400,
-              color: INK,
-              outline: "none",
-              transition:
-                "border-color 150ms ease, background 150ms ease",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
-          />
-        </div>
-
-        <div style={{ flex: 1 }} />
-
-        <PrimaryButton
-          label={state === "sending" ? "Sending…" : "Send my link"}
-          disabled={!canSubmit}
-        />
-
-        {errorMessage ? (
-          <div
-            role="alert"
-            aria-live="polite"
-            style={{
-              fontSize: 13,
-              color: "#C44040",
-              textAlign: "center",
-              marginTop: 10,
-              lineHeight: 1.4,
-              padding: "10px 14px",
-              background: "#FEF2F2",
-              borderRadius: 10,
-            }}
-          >
-            {errorMessage}
-          </div>
-        ) : null}
-
-        <div
-          style={{
-            fontSize: 11,
-            color: TERTIARY,
-            textAlign: "center",
-            marginTop: 10,
-            lineHeight: 1.4,
-            flexShrink: 0,
-          }}
-        >
-          Your child&apos;s data stays private.
-          <br />
-          Only you can see it.
-        </div>
-      </form>
-    </main>
-  );
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
-// ============================================================
-// Local shared chrome (kept in this file so each screen owns its
-// exact mockup-matching surface; no shared global to drift from)
-// ============================================================
+export default function SignInPage() {
+  const [email, setEmail] = useState('');
+  const [focused, setFocused] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = getSupabaseBrowser();
 
-const SHELL_STYLE: CSSProperties = {
-  position: "relative",
-  minHeight: "100dvh",
-  background: "#FFFFFF",
-  color: INK,
-  fontFamily: "'Plus Jakarta Sans', sans-serif",
-  overflow: "hidden",
-};
+  const handleSubmit = async () => {
+    if (!isValidEmail(email) || loading) return;
+    setLoading(true);
+    setError(null);
 
-const CONTAINER_STYLE: CSSProperties = {
-  minHeight: "100dvh",
-  display: "flex",
-  flexDirection: "column",
-  paddingLeft: 24,
-  paddingRight: 24,
-  paddingTop: "max(48px, env(safe-area-inset-top))",
-  paddingBottom: "max(24px, env(safe-area-inset-bottom))",
-  background: "#FFFFFF",
-  fontFamily: "'Plus Jakarta Sans', sans-serif",
-  overflow: "hidden",
-};
+    const { error: err } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
 
-function Wordmark() {
+    if (err) {
+      const status = (err as { status?: number }).status;
+      if (
+        err.message.toLowerCase().includes('rate limit') ||
+        err.message.toLowerCase().includes('too many') ||
+        status === 429
+      ) {
+        setError('Too many attempts. Please wait a few minutes before trying again.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+      setLoading(false);
+      return;
+    }
+
+    router.push(
+      `/auth/check-email?email=${encodeURIComponent(email.trim())}`
+    );
+  };
+
+  const valid = isValidEmail(email);
+
   return (
     <div
       style={{
-        display: "inline-flex",
-        alignItems: "baseline",
-        fontSize: 15,
-        fontWeight: 800,
-        color: INK,
-        letterSpacing: "-0.035em",
-        lineHeight: 1,
-        flexShrink: 0,
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '0 24px',
+        paddingTop: 'max(52px, env(safe-area-inset-top))',
+        paddingBottom: 'max(28px, env(safe-area-inset-bottom))',
+        background: '#ffffff',
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        boxSizing: 'border-box',
       }}
     >
-      fokus
-      <span
-        aria-hidden
+      <Wordmark size="sm" />
+
+      <div style={{ marginTop: 36, flexShrink: 0 }}>
+        <div
+          style={{
+            fontSize: 28,
+            fontWeight: 800,
+            color: '#252630',
+            letterSpacing: '-0.025em',
+            lineHeight: 1.12,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+          }}
+        >
+          What&apos;s your
+          <br />
+          email?
+        </div>
+        <div
+          style={{
+            fontSize: 15,
+            color: '#8E8D9B',
+            marginTop: 10,
+            lineHeight: 1.55,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+          }}
+        >
+          We&apos;ll send a link to sign you in.
+          <br />
+          No password needed.
+        </div>
+      </div>
+
+      <div style={{ marginTop: 28, flexShrink: 0 }}>
+        <input
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          placeholder="you@example.com"
+          style={{
+            width: '100%',
+            background: focused ? '#ffffff' : '#F7F7F5',
+            border: `1.5px solid ${focused ? '#9CA5FF' : '#EEEEED'}`,
+            borderRadius: 14,
+            padding: '16px 16px',
+            fontSize: 16,
+            fontWeight: 400,
+            color: '#252630',
+            outline: 'none',
+            transition: 'border-color 150ms ease, background 150ms ease',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
+      <div style={{ flex: 1 }} />
+
+      {error && (
+        <div
+          style={{
+            fontSize: 13,
+            color: '#C44040',
+            textAlign: 'center',
+            marginBottom: 12,
+            lineHeight: 1.4,
+            padding: '10px 14px',
+            background: '#FEF2F2',
+            borderRadius: 10,
+            flexShrink: 0,
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      <button
+        onClick={handleSubmit}
+        disabled={!valid || loading}
         style={{
-          width: 4,
-          height: 4,
-          borderRadius: "50%",
-          background: ACCENT,
-          marginLeft: 1.5,
-          transform: "translateY(-1px)",
-          display: "inline-block",
+          background: '#252630',
+          opacity: !valid || loading ? 0.35 : 1,
+          borderRadius: 999,
+          padding: '15px 20px',
+          textAlign: 'center',
+          fontSize: 15,
+          fontWeight: 700,
+          color: '#ffffff',
+          border: 'none',
+          cursor: !valid || loading ? 'not-allowed' : 'pointer',
+          width: '100%',
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          letterSpacing: '-0.01em',
+          flexShrink: 0,
         }}
-      />
+      >
+        {loading ? 'Sending...' : 'Send my link'}
+      </button>
+
+      <div
+        style={{
+          fontSize: 12,
+          color: '#C2C0CB',
+          textAlign: 'center',
+          marginTop: 12,
+          lineHeight: 1.4,
+          flexShrink: 0,
+        }}
+      >
+        Your child&apos;s data stays private.
+        <br />
+        Only you can see it.
+      </div>
     </div>
   );
-}
-
-function PrimaryButton({
-  label,
-  disabled,
-}: {
-  label: string;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="submit"
-      disabled={disabled}
-      style={{
-        background: INK,
-        opacity: disabled ? 0.35 : 1,
-        borderRadius: 999,
-        padding: 15,
-        textAlign: "center",
-        fontSize: 14,
-        fontWeight: 700,
-        color: "#FFFFFF",
-        flexShrink: 0,
-        letterSpacing: "-0.01em",
-        border: "none",
-        cursor: disabled ? "not-allowed" : "pointer",
-        width: "100%",
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
-      }}
-      className="transition-opacity active:opacity-90"
-    >
-      {label}
-    </button>
-  );
-}
-
-// Simple email shape check; Supabase still validates server-side.
-function isValidEmail(s: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
