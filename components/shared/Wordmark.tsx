@@ -5,12 +5,12 @@ interface WordmarkProps {
 }
 
 export default function Wordmark({ size = 'sm' }: WordmarkProps) {
-  const configs = {
+  const config = {
     sm:  { fontSize: 15, dotSize: 4,  dotMargin: 1.5, dotOffset: -1.5 },
-    lg:  { fontSize: 32, dotSize: 8,  dotMargin: 2,   dotOffset: -3   },
-    xl:  { fontSize: 52, dotSize: 13, dotMargin: 3,   dotOffset: -4   },
+    lg:  { fontSize: 28, dotSize: 7,  dotMargin: 2,   dotOffset: -2.5 },
+    xl:  { fontSize: 48, dotSize: 12, dotMargin: 3,   dotOffset: -4   },
   };
-  const c = configs[size];
+  const c = config[size];
   return (
     <span style={{
       display: 'inline-flex',
