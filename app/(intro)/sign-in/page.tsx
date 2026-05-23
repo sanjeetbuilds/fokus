@@ -63,7 +63,19 @@ export default function SignInPage() {
         options: { emailRedirectTo: redirectTo },
       });
       if (error) {
-        setErrorMessage(error.message);
+        const msg = error.message?.toLowerCase() ?? "";
+        const status = (error as { status?: number }).status;
+        if (
+          msg.includes("rate limit") ||
+          msg.includes("too many") ||
+          status === 429
+        ) {
+          setErrorMessage(
+            "Too many attempts. Please wait a few minutes before trying again.",
+          );
+        } else {
+          setErrorMessage("Something went wrong. Please try again.");
+        }
         setState("error");
         return;
       }
@@ -159,19 +171,6 @@ export default function SignInPage() {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           />
-          {errorMessage ? (
-            <p
-              style={{
-                marginTop: 8,
-                fontSize: 12,
-                fontWeight: 400,
-                color: "#B85738",
-                lineHeight: 1.4,
-              }}
-            >
-              {errorMessage}
-            </p>
-          ) : null}
         </div>
 
         <div style={{ flex: 1 }} />
@@ -180,6 +179,25 @@ export default function SignInPage() {
           label={state === "sending" ? "Sending…" : "Send my link"}
           disabled={!canSubmit}
         />
+
+        {errorMessage ? (
+          <div
+            role="alert"
+            aria-live="polite"
+            style={{
+              fontSize: 13,
+              color: "#C44040",
+              textAlign: "center",
+              marginTop: 10,
+              lineHeight: 1.4,
+              padding: "10px 14px",
+              background: "#FEF2F2",
+              borderRadius: 10,
+            }}
+          >
+            {errorMessage}
+          </div>
+        ) : null}
 
         <div
           style={{
