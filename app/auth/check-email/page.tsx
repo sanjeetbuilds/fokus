@@ -6,10 +6,26 @@ import { Suspense } from "react";
 
 import Wordmark from "@/components/shared/Wordmark";
 
+const INK = "#252630";
+const MUTED = "#8E8D9B";
+const TERTIARY = "#C2C0CB";
+const GREEN_BG = "#E8F9EE";
+const GREEN_FG = "#207838";
+
 /**
- * "Check your inbox" surface; reached after the magic-link OTP is
- * dispatched from /sign-in. Shows a calm confirmation with the
- * destination email and a way back to retry with a different one.
+ * "Check your inbox" surface. Per the approved mockup:
+ *
+ * - Container padding 50/20/20, white bg.
+ * - Brand bar with 24px bottom margin.
+ * - flex:1 spacer.
+ * - Centred icon zone (120 height): 80 rgba(green,0.2) blob behind a
+ *   60 solid #E8F9EE circle holding a 24px green IconMail.
+ * - "Link sent" pill (10/600 #207838 on #E8F9EE) with a 10px check.
+ * - 20/800 headline "Check your inbox."
+ * - 11/400/#8E8D9B subtext with the email bolded in #252630.
+ * - "Use a different email" underlined helper, 11/600/#252630.
+ * - flex:1 spacer.
+ * - Footer 10/#C2C0CB/1.5 "Didn't get it…" line.
  */
 export default function CheckEmailPage() {
   return (
@@ -22,8 +38,7 @@ export default function CheckEmailPage() {
 function CheckEmailBody() {
   const router = useRouter();
   const params = useSearchParams();
-  const emailParam = params?.get("email") ?? "";
-  const email = emailParam.trim();
+  const email = (params?.get("email") ?? "").trim();
 
   return (
     <main
@@ -31,7 +46,7 @@ function CheckEmailBody() {
         position: "relative",
         minHeight: "100svh",
         background: "#FFFFFF",
-        color: "#252630",
+        color: INK,
         fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
       }}
     >
@@ -46,26 +61,30 @@ function CheckEmailBody() {
           paddingRight: 20,
         }}
       >
-        <Wordmark size="sm" />
+        <div style={{ marginBottom: 24 }}>
+          <Wordmark size="sm" />
+        </div>
+
+        <span aria-hidden style={{ flex: 1, minHeight: 0 }} />
 
         <div
           style={{
-            flex: 1,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            textAlign: "center",
           }}
         >
           {/* Icon zone */}
           <div
             style={{
               position: "relative",
-              width: 130,
-              height: 130,
+              height: 120,
+              width: 120,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              marginBottom: 12,
             }}
           >
             <span
@@ -79,7 +98,7 @@ function CheckEmailBody() {
                 height: 80,
                 borderRadius: "50%",
                 background: "rgba(93,200,122,0.20)",
-                zIndex: 0,
+                zIndex: 1,
               }}
             />
             <span
@@ -89,11 +108,11 @@ function CheckEmailBody() {
                 width: 60,
                 height: 60,
                 borderRadius: "50%",
-                background: "#E8F9EE",
+                background: GREEN_BG,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#207838",
+                color: GREEN_FG,
                 zIndex: 2,
               }}
             >
@@ -103,30 +122,29 @@ function CheckEmailBody() {
 
           <span
             style={{
-              marginTop: 8,
               display: "inline-flex",
               alignItems: "center",
               gap: 4,
-              background: "#E8F9EE",
-              color: "#207838",
-              fontSize: 11,
+              background: GREEN_BG,
+              color: GREEN_FG,
+              fontSize: 10,
               fontWeight: 600,
-              padding: "5px 11px",
+              padding: "4px 10px",
               borderRadius: 999,
+              marginBottom: 10,
             }}
           >
-            <IconCheck size={11} stroke={2.5} aria-hidden />
+            <IconCheck size={10} stroke={2.5} aria-hidden />
             Link sent
           </span>
 
           <h1
             style={{
-              marginTop: 14,
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: 800,
-              color: "#252630",
+              color: INK,
               letterSpacing: "-0.025em",
-              textAlign: "center",
+              lineHeight: 1.15,
             }}
           >
             Check your inbox.
@@ -134,18 +152,17 @@ function CheckEmailBody() {
           <p
             style={{
               marginTop: 10,
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: 400,
-              color: "#8E8D9B",
+              color: MUTED,
               lineHeight: 1.55,
-              textAlign: "center",
-              maxWidth: 240,
+              maxWidth: 210,
               marginLeft: "auto",
               marginRight: "auto",
             }}
           >
             Tap the link in the email we just sent to{" "}
-            <span style={{ color: "#252630", fontWeight: 600 }}>
+            <span style={{ color: INK, fontWeight: 700 }}>
               {email || "your inbox"}
             </span>
             . It works on this device.
@@ -155,28 +172,34 @@ function CheckEmailBody() {
             type="button"
             onClick={() => router.push("/sign-in")}
             style={{
-              marginTop: 16,
+              marginTop: 14,
+              display: "inline-flex",
+              alignSelf: "center",
               background: "transparent",
-              color: "#252630",
-              fontSize: 12,
+              color: INK,
+              fontSize: 11,
               fontWeight: 600,
-              padding: "6px 10px",
-              borderRadius: 8,
+              padding: 0,
+              paddingBottom: 1,
               border: "none",
-              borderBottom: "1px solid #E5E3DA",
+              borderBottom: `1px solid ${INK}`,
               cursor: "pointer",
+              fontFamily:
+                "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
             }}
-            className="hover:bg-[#F7F7F5] transition-colors"
+            className="hover:opacity-80 transition-opacity"
           >
             Use a different email
           </button>
         </div>
 
+        <span aria-hidden style={{ flex: 1, minHeight: 0 }} />
+
         <p
           style={{
             fontSize: 10,
             fontWeight: 400,
-            color: "#C2C0CB",
+            color: TERTIARY,
             textAlign: "center",
             lineHeight: 1.5,
           }}

@@ -169,13 +169,20 @@ export default function OnboardingPage() {
 
 function Header({ showSignedIn }: { showSignedIn: boolean }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 24,
+      }}
+    >
       <Wordmark size="sm" />
       {showSignedIn ? (
         <span
           style={{
             background: "#E8F9EE",
-            color: "#207838",
+            color: "#5DC87A",
             fontSize: 9,
             fontWeight: 700,
             letterSpacing: "0.08em",
@@ -226,7 +233,7 @@ function NameStep({
       <p
         style={{
           marginTop: 10,
-          fontSize: 13,
+          fontSize: 11,
           fontWeight: 400,
           color: MUTED,
           lineHeight: 1.55,
@@ -235,7 +242,7 @@ function NameStep({
         First, what&apos;s their name? You can change this later.
       </p>
 
-      <div style={{ marginTop: 24 }}>
+      <div style={{ marginTop: 18 }}>
         <Eyebrow>Child&apos;s name</Eyebrow>
         <WarmInput
           value={name}
@@ -245,8 +252,8 @@ function NameStep({
         />
         <p
           style={{
-            marginTop: 8,
-            fontSize: 11,
+            marginTop: 6,
+            fontSize: 10,
             fontWeight: 400,
             color: MUTED,
             lineHeight: 1.4,
@@ -313,7 +320,7 @@ function DobStep({
       <p
         style={{
           marginTop: 10,
-          fontSize: 13,
+          fontSize: 11,
           fontWeight: 400,
           color: MUTED,
           lineHeight: 1.55,
@@ -322,7 +329,7 @@ function DobStep({
         We use this to pick age-appropriate activities. Rough is fine.
       </p>
 
-      <div style={{ marginTop: 24 }}>
+      <div style={{ marginTop: 18 }}>
         <Eyebrow>Date of birth</Eyebrow>
         <input
           type="date"
@@ -334,8 +341,8 @@ function DobStep({
         />
         <p
           style={{
-            marginTop: 8,
-            fontSize: 11,
+            marginTop: 6,
+            fontSize: 10,
             fontWeight: 400,
             color: ageError ? "#B85738" : MUTED,
             lineHeight: 1.4,
@@ -403,7 +410,7 @@ function PronounsStep({
       <p
         style={{
           marginTop: 10,
-          fontSize: 13,
+          fontSize: 11,
           fontWeight: 400,
           color: MUTED,
           lineHeight: 1.55,
@@ -490,12 +497,13 @@ const WARM_INPUT_STYLE: React.CSSProperties = {
   width: "100%",
   background: TINT_FILL,
   border: "1px solid transparent",
-  borderRadius: 14,
-  padding: "14px 16px",
-  fontSize: 16,
+  borderRadius: 12,
+  padding: "12px 14px",
+  fontSize: 12,
   fontWeight: 500,
   color: INK,
   outline: "none",
+  fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
 };
 
 function WarmInput({
@@ -534,7 +542,7 @@ function Eyebrow({ children }: { children: ReactNode }) {
     <p
       style={{
         marginBottom: 6,
-        fontSize: 11,
+        fontSize: 9,
         fontWeight: 700,
         color: MUTED,
         letterSpacing: "0.08em",
@@ -594,13 +602,16 @@ function PrimaryButton({
         background: INK,
         color: "#FFFFFF",
         borderRadius: 999,
-        padding: 12,
-        fontSize: 13,
+        padding: 10,
+        fontSize: 11,
         fontWeight: 700,
+        textAlign: "center",
         border: "none",
         cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.4 : 1,
-        transition: "opacity 150ms ease-out",
+        opacity: disabled ? 0.35 : 1,
+        transition: "opacity 150ms ease",
+        fontFamily:
+          "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
       }}
       className="active:opacity-90"
     >
@@ -624,11 +635,13 @@ function SecondaryButton({
         background: "transparent",
         color: INK,
         borderRadius: 999,
-        padding: "12px 18px",
-        fontSize: 13,
+        padding: "10px 16px",
+        fontSize: 11,
         fontWeight: 700,
         border: `1.5px solid ${HAIR}`,
         cursor: "pointer",
+        fontFamily:
+          "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
       }}
       className="transition-opacity active:opacity-80"
     >

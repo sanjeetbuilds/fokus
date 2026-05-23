@@ -6,10 +6,29 @@ import { useEffect, useState, type FormEvent } from "react";
 import Wordmark from "@/components/shared/Wordmark";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 
+const INK = "#252630";
+const ACCENT = "#9CA5FF";
+const MUTED = "#8E8D9B";
+const TERTIARY = "#C2C0CB";
+const TINT_FILL = "#F7F7F5";
+
 /**
- * Sign-in: single email field. Submits to Supabase magic-link OTP,
- * then navigates to /auth/check-email?email=... on success so the
- * "we sent you a link" surface is its own dedicated screen.
+ * Email entry. Per the approved mockup:
+ *
+ * - Container padding 50/20/20, white bg.
+ * - Brand bar with 24px bottom margin.
+ * - Content top-aligned (NOT centred): 20px gap to headline.
+ * - Headline 22/800/-0.025em/1.15.
+ * - Subtext 11/400/#8E8D9B/1.55, 10px gap.
+ * - Input wrap 18px below the subtext. Input #F7F7F5 fill, 12/14
+ *   padding, 12px text, focus border #9CA5FF + white bg.
+ * - flex:1 spacer pushes the button to the bottom.
+ * - Button 10px padding, 11/700/white on #252630, disabled opacity
+ *   0.35 (NOT a gray bg).
+ * - Footer 9px/#C2C0CB/1.4, 10px gap below button.
+ *
+ * On submit, navigates to /auth/check-email?email=... so the
+ * "link sent" surface is its own dedicated screen.
  */
 export default function SignInPage() {
   const router = useRouter();
@@ -69,11 +88,12 @@ export default function SignInPage() {
         position: "relative",
         minHeight: "100svh",
         background: "#FFFFFF",
-        color: "#252630",
+        color: INK,
         fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
       }}
     >
-      <div
+      <form
+        onSubmit={onSubmit}
         style={{
           display: "flex",
           flexDirection: "column",
@@ -84,19 +104,21 @@ export default function SignInPage() {
           paddingRight: 20,
         }}
       >
-        <Wordmark size="sm" />
+        {/* Brand bar */}
+        <div style={{ marginBottom: 24 }}>
+          <Wordmark size="sm" />
+        </div>
 
         {deletedFlash ? (
           <div
             aria-live="polite"
             style={{
-              marginTop: 16,
-              background: "#FBFAF7",
-              border: "1px solid #E5E3DA",
+              marginBottom: 16,
+              background: TINT_FILL,
               borderRadius: 10,
-              padding: "12px 14px",
-              fontSize: 14,
-              color: "#252630",
+              padding: "10px 12px",
+              fontSize: 12,
+              color: INK,
               lineHeight: 1.45,
             }}
           >
@@ -104,38 +126,35 @@ export default function SignInPage() {
           </div>
         ) : null}
 
-        <h1
-          style={{
-            marginTop: 24,
-            fontSize: 24,
-            fontWeight: 800,
-            color: "#252630",
-            letterSpacing: "-0.025em",
-            lineHeight: 1.15,
-          }}
-        >
-          What&apos;s your email?
-        </h1>
-        <p
-          style={{
-            marginTop: 10,
-            fontSize: 13,
-            fontWeight: 400,
-            color: "#8E8D9B",
-            lineHeight: 1.55,
-          }}
-        >
-          We&apos;ll send a quick link to sign you in. No password to remember.
-        </p>
+        {/* Content, top-aligned */}
+        <div style={{ marginTop: 20 }}>
+          <h1
+            style={{
+              fontSize: 22,
+              fontWeight: 800,
+              color: INK,
+              letterSpacing: "-0.025em",
+              lineHeight: 1.15,
+            }}
+          >
+            What&apos;s your email?
+          </h1>
+          <p
+            style={{
+              marginTop: 10,
+              fontSize: 11,
+              fontWeight: 400,
+              color: MUTED,
+              lineHeight: 1.55,
+            }}
+          >
+            We&apos;ll send a quick link to sign you in. No password to
+            remember.
+          </p>
+        </div>
 
-        <form
-          onSubmit={onSubmit}
-          style={{
-            marginTop: 24,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        {/* Input wrap */}
+        <div style={{ marginTop: 18 }}>
           <input
             type="email"
             value={email}
@@ -146,69 +165,78 @@ export default function SignInPage() {
             autoComplete="email"
             autoFocus
             style={{
-              background: focused ? "#FFFFFF" : "#F7F7F5",
-              border: `1px solid ${focused ? "#9CA5FF" : "transparent"}`,
-              borderRadius: 14,
-              padding: "14px 16px",
-              fontSize: 16,
+              width: "100%",
+              background: focused ? "#FFFFFF" : TINT_FILL,
+              border: `1px solid ${focused ? ACCENT : "transparent"}`,
+              borderRadius: 12,
+              padding: "12px 14px",
+              fontSize: 12,
               fontWeight: 500,
-              color: "#252630",
+              color: INK,
               outline: "none",
               transition:
                 "background 150ms ease, border-color 150ms ease",
-              width: "100%",
+              fontFamily:
+                "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
             }}
           />
-          <p
-            style={{
-              marginTop: 8,
-              fontSize: 12,
-              fontWeight: 400,
-              color: errorMessage ? "#B85738" : "#8E8D9B",
-              lineHeight: 1.45,
-            }}
-          >
-            {errorMessage ??
-              "We'll send a quick link to sign you in. No password."}
-          </p>
+          {errorMessage ? (
+            <p
+              style={{
+                marginTop: 8,
+                fontSize: 11,
+                fontWeight: 400,
+                color: "#B85738",
+                lineHeight: 1.45,
+              }}
+            >
+              {errorMessage}
+            </p>
+          ) : null}
+        </div>
 
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            style={{
-              marginTop: 32,
-              width: "100%",
-              background: "#252630",
-              color: "#FFFFFF",
-              borderRadius: 999,
-              padding: 12,
-              fontSize: 13,
-              fontWeight: 700,
-              border: "none",
-              cursor: canSubmit ? "pointer" : "not-allowed",
-              opacity: canSubmit ? 1 : 0.35,
-              transition: "opacity 150ms ease",
-            }}
-            className="active:opacity-90"
-          >
-            {state === "sending" ? "Sending…" : "Send my link"}
-          </button>
-          <p
-            style={{
-              marginTop: 12,
-              fontSize: 10,
-              fontWeight: 400,
-              color: "#C2C0CB",
-              textAlign: "center",
-              lineHeight: 1.4,
-            }}
-          >
-            Your child&apos;s data stays private.
-            <br />
-            Only you can see it.
-          </p>
-        </form>
-      </div>
+        {/* Spacer pushes the button to the bottom */}
+        <span aria-hidden style={{ flex: 1, minHeight: 16 }} />
+
+        {/* Button */}
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          style={{
+            width: "100%",
+            background: INK,
+            color: "#FFFFFF",
+            borderRadius: 999,
+            padding: 10,
+            fontSize: 11,
+            fontWeight: 700,
+            textAlign: "center",
+            border: "none",
+            cursor: canSubmit ? "pointer" : "not-allowed",
+            opacity: canSubmit ? 1 : 0.35,
+            transition: "opacity 150ms ease",
+            fontFamily:
+              "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+          }}
+          className="active:opacity-90"
+        >
+          {state === "sending" ? "Sending…" : "Send my link"}
+        </button>
+
+        {/* Footer */}
+        <p
+          style={{
+            marginTop: 10,
+            fontSize: 9,
+            fontWeight: 400,
+            color: TERTIARY,
+            textAlign: "center",
+            lineHeight: 1.4,
+          }}
+        >
+          Your child&apos;s data stays private. Only you can see it.
+        </p>
+      </form>
     </main>
   );
 }

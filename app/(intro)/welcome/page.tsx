@@ -299,99 +299,91 @@ function IntroScreen({
 }) {
   const Icon = config.icon;
   return (
-    <div style={FRAME}>
-      <div style={{ marginTop: 50 }}>
+    <div style={INTRO_FRAME}>
+      <div style={{ marginBottom: 24 }}>
         <Wordmark size="sm" />
       </div>
 
+      <span aria-hidden style={{ flex: 1, minHeight: 0 }} />
+
+      {/* Icon zone */}
       <div
         style={{
-          flex: 1,
+          position: "relative",
+          height: 120,
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
           alignItems: "center",
-          paddingTop: "30vh",
+          justifyContent: "center",
+          marginBottom: 12,
         }}
       >
-        {/* Icon zone */}
-        <div
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            background: config.blob,
+            zIndex: 1,
+          }}
+        />
+        <span
+          aria-hidden
           style={{
             position: "relative",
-            width: 120,
-            height: 120,
+            width: 60,
+            height: 60,
+            borderRadius: "50%",
+            background: config.circleBg,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            color: config.iconColor,
+            zIndex: 2,
           }}
         >
-          <span
-            aria-hidden
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 80,
-              height: 80,
-              borderRadius: "50%",
-              background: config.blob,
-              zIndex: 0,
-            }}
-          />
-          <span
-            aria-hidden
-            style={{
-              position: "relative",
-              width: 60,
-              height: 60,
-              borderRadius: "50%",
-              background: config.circleBg,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: config.iconColor,
-              zIndex: 2,
-            }}
-          >
-            <Icon size={26} stroke={2} aria-hidden />
-          </span>
-        </div>
-
-        <h1
-          style={{
-            marginTop: 12,
-            fontSize: 24,
-            fontWeight: 800,
-            color: INK,
-            letterSpacing: "-0.025em",
-            lineHeight: 1.15,
-            textAlign: "center",
-          }}
-        >
-          {config.headline}
-        </h1>
-        <p
-          style={{
-            marginTop: 10,
-            fontSize: 13,
-            fontWeight: 400,
-            color: MUTED,
-            lineHeight: 1.55,
-            textAlign: "center",
-            maxWidth: 240,
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          {config.subhead}
-        </p>
+          <Icon size={24} stroke={2} aria-hidden />
+        </span>
       </div>
 
-      <Dots active={step} />
-      <div style={{ marginTop: 12 }}>
-        <PrimaryButton onClick={onContinue}>{config.buttonLabel}</PrimaryButton>
+      <h1
+        style={{
+          fontSize: 22,
+          fontWeight: 800,
+          color: INK,
+          letterSpacing: "-0.025em",
+          lineHeight: 1.15,
+          textAlign: "center",
+        }}
+      >
+        {config.headline}
+      </h1>
+      <p
+        style={{
+          marginTop: 10,
+          fontSize: 11,
+          fontWeight: 400,
+          color: MUTED,
+          lineHeight: 1.55,
+          textAlign: "center",
+          maxWidth: 200,
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      >
+        {config.subhead}
+      </p>
+
+      <span aria-hidden style={{ flex: 1, minHeight: 0 }} />
+
+      <div style={{ marginBottom: 12 }}>
+        <Dots active={step} />
       </div>
+      <PrimaryButton onClick={onContinue}>{config.buttonLabel}</PrimaryButton>
     </div>
   );
 }
@@ -409,6 +401,21 @@ const FRAME: React.CSSProperties = {
   paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
   paddingLeft: 20,
   paddingRight: 20,
+};
+
+// Per mockup: padding 50/20/20, flex column. The intro screens use
+// flex:1 spacers above + below the icon-headline-subtext block so it
+// floats at vertical centre regardless of viewport height.
+const INTRO_FRAME: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  minHeight: "100svh",
+  paddingTop: "calc(env(safe-area-inset-top, 0px) + 50px)",
+  paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
+  paddingLeft: 20,
+  paddingRight: 20,
+  fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
 };
 
 function Dots({ active }: { active: number }) {
@@ -456,11 +463,14 @@ function PrimaryButton({
         background: INK,
         color: "#FFFFFF",
         borderRadius: 999,
-        padding: 12,
-        fontSize: 13,
+        padding: 10,
+        fontSize: 11,
         fontWeight: 700,
+        textAlign: "center",
         border: "none",
         cursor: "pointer",
+        fontFamily:
+          "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
       }}
       className="transition-opacity active:opacity-90"
     >
