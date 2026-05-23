@@ -13,19 +13,11 @@ const GREEN_BG = "#E8F9EE";
 const GREEN_FG = "#207838";
 
 /**
- * "Check your inbox" surface. Per the approved mockup:
+ * "Check your inbox" surface. Layout shape matches the welcome flow:
+ * header / content block (margin-top 48) / spacer / bottom footer.
  *
- * - Container padding 50/20/20, white bg.
- * - Brand bar with 24px bottom margin.
- * - flex:1 spacer.
- * - Centred icon zone (120 height): 80 rgba(green,0.2) blob behind a
- *   60 solid #E8F9EE circle holding a 24px green IconMail.
- * - "Link sent" pill (10/600 #207838 on #E8F9EE) with a 10px check.
- * - 20/800 headline "Check your inbox."
- * - 11/400/#8E8D9B subtext with the email bolded in #252630.
- * - "Use a different email" underlined helper, 11/600/#252630.
- * - flex:1 spacer.
- * - Footer 10/#C2C0CB/1.5 "Didn't get it…" line.
+ * Icon: 80x80 wrapper, 80x80 same-size blob at rgba(green,0.15),
+ * 56x56 solid #E8F9EE circle on top with a 24px IconMail in #207838.
  */
 export default function CheckEmailPage() {
   return (
@@ -44,76 +36,79 @@ function CheckEmailBody() {
     <main
       style={{
         position: "relative",
-        minHeight: "100svh",
+        minHeight: "100dvh",
         background: "#FFFFFF",
         color: INK,
         fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+        overflow: "hidden",
       }}
     >
       <div
         style={{
+          position: "relative",
           display: "flex",
           flexDirection: "column",
-          minHeight: "100svh",
-          paddingTop: "calc(env(safe-area-inset-top, 0px) + 50px)",
-          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
-          paddingLeft: 20,
-          paddingRight: 20,
+          minHeight: "100dvh",
+          paddingLeft: 24,
+          paddingRight: 24,
+          paddingTop:
+            "max(48px, calc(env(safe-area-inset-top, 0px) + 24px))",
+          paddingBottom:
+            "max(32px, calc(env(safe-area-inset-bottom, 0px) + 16px))",
         }}
       >
-        <div style={{ marginBottom: 24 }}>
-          <Wordmark size="sm" />
-        </div>
+        {/* Header */}
+        <Wordmark size="sm" />
 
-        <span aria-hidden style={{ flex: 1, minHeight: 0 }} />
-
+        {/* Content block, anchored 48 below header, centred horizontally */}
         <div
           style={{
+            marginTop: 48,
+            flex: 0,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             textAlign: "center",
           }}
         >
-          {/* Icon zone */}
+          {/* Icon zone: 80 wrapper, 80 same-size blob, 56 solid circle */}
           <div
             style={{
               position: "relative",
-              height: 120,
-              width: 120,
+              width: 80,
+              height: 80,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              marginBottom: 12,
+              marginBottom: 24,
             }}
           >
             <span
               aria-hidden
               style={{
                 position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
+                top: 0,
+                left: 0,
                 width: 80,
                 height: 80,
                 borderRadius: "50%",
-                background: "rgba(93,200,122,0.20)",
-                zIndex: 1,
+                background: "rgba(93,200,122,0.15)",
+                zIndex: 0,
               }}
             />
             <span
               aria-hidden
               style={{
                 position: "relative",
-                width: 60,
-                height: 60,
+                zIndex: 1,
+                width: 56,
+                height: 56,
                 borderRadius: "50%",
                 background: GREEN_BG,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 color: GREEN_FG,
-                zIndex: 2,
               }}
             >
               <IconMail size={24} stroke={2} aria-hidden />
@@ -127,20 +122,20 @@ function CheckEmailBody() {
               gap: 4,
               background: GREEN_BG,
               color: GREEN_FG,
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 600,
-              padding: "4px 10px",
+              padding: "5px 11px",
               borderRadius: 999,
-              marginBottom: 10,
+              marginBottom: 12,
             }}
           >
-            <IconCheck size={10} stroke={2.5} aria-hidden />
+            <IconCheck size={11} stroke={2.5} aria-hidden />
             Link sent
           </span>
 
           <h1
             style={{
-              fontSize: 20,
+              fontSize: 26,
               fontWeight: 800,
               color: INK,
               letterSpacing: "-0.025em",
@@ -151,17 +146,17 @@ function CheckEmailBody() {
           </h1>
           <p
             style={{
-              marginTop: 10,
-              fontSize: 11,
+              marginTop: 12,
+              fontSize: 14,
               fontWeight: 400,
               color: MUTED,
               lineHeight: 1.55,
-              maxWidth: 210,
+              maxWidth: 280,
               marginLeft: "auto",
               marginRight: "auto",
             }}
           >
-            Tap the link in the email we just sent to{" "}
+            Tap the link we just sent to{" "}
             <span style={{ color: INK, fontWeight: 700 }}>
               {email || "your inbox"}
             </span>
@@ -172,12 +167,11 @@ function CheckEmailBody() {
             type="button"
             onClick={() => router.push("/sign-in")}
             style={{
-              marginTop: 14,
+              marginTop: 16,
               display: "inline-flex",
-              alignSelf: "center",
               background: "transparent",
               color: INK,
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: 600,
               padding: 0,
               paddingBottom: 1,
@@ -193,11 +187,14 @@ function CheckEmailBody() {
           </button>
         </div>
 
-        <span aria-hidden style={{ flex: 1, minHeight: 0 }} />
+        {/* Spacer */}
+        <div style={{ flex: 1, minHeight: 24 }} />
 
+        {/* Bottom footer */}
         <p
           style={{
-            fontSize: 10,
+            flex: 0,
+            fontSize: 12,
             fontWeight: 400,
             color: TERTIARY,
             textAlign: "center",

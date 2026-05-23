@@ -107,21 +107,24 @@ export default function OnboardingPage() {
     <main
       style={{
         position: "relative",
-        minHeight: "100svh",
+        minHeight: "100dvh",
         background: "#FFFFFF",
         color: INK,
         fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+        overflow: "hidden",
       }}
     >
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          minHeight: "100svh",
-          paddingTop: "calc(env(safe-area-inset-top, 0px) + 50px)",
-          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
-          paddingLeft: 20,
-          paddingRight: 20,
+          minHeight: "100dvh",
+          paddingLeft: 24,
+          paddingRight: 24,
+          paddingTop:
+            "max(48px, calc(env(safe-area-inset-top, 0px) + 24px))",
+          paddingBottom:
+            "max(32px, calc(env(safe-area-inset-bottom, 0px) + 16px))",
         }}
       >
         <Header showSignedIn={step === "name"} />
@@ -219,7 +222,7 @@ function NameStep({
     <>
       <h1
         style={{
-          marginTop: 24,
+          marginTop: 48,
           fontSize: 24,
           fontWeight: 800,
           color: INK,
@@ -306,7 +309,7 @@ function DobStep({
     <>
       <h1
         style={{
-          marginTop: 24,
+          marginTop: 48,
           fontSize: 24,
           fontWeight: 800,
           color: INK,
@@ -396,7 +399,7 @@ function PronounsStep({
     <>
       <h1
         style={{
-          marginTop: 24,
+          marginTop: 48,
           fontSize: 24,
           fontWeight: 800,
           color: INK,
@@ -421,7 +424,7 @@ function PronounsStep({
 
       <div
         style={{
-          marginTop: 24,
+          marginTop: 48,
           display: "flex",
           flexDirection: "column",
           gap: 10,
@@ -496,10 +499,11 @@ function PronounsStep({
 const WARM_INPUT_STYLE: React.CSSProperties = {
   width: "100%",
   background: TINT_FILL,
-  border: "1px solid transparent",
-  borderRadius: 12,
-  padding: "12px 14px",
-  fontSize: 12,
+  border: "1.5px solid transparent",
+  borderRadius: 16,
+  padding: "18px 16px",
+  // 16px minimum prevents iOS auto-zoom on focus.
+  fontSize: 16,
   fontWeight: 500,
   color: INK,
   outline: "none",
@@ -608,7 +612,7 @@ function PrimaryButton({
         textAlign: "center",
         border: "none",
         cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.35 : 1,
+        opacity: disabled ? 0.3 : 1,
         transition: "opacity 150ms ease",
         fontFamily:
           "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",

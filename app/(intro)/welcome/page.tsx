@@ -10,6 +10,7 @@ import {
 import { useRouter } from "next/navigation";
 import {
   type ComponentType,
+  type CSSProperties,
   type ReactNode,
   useCallback,
   useEffect,
@@ -28,13 +29,23 @@ const MUTED = "#8E8D9B";
 /**
  * Unauthenticated entry point. Four screens on a shared white canvas:
  *
- *   0  Splash: wordmark + tagline + Continue
- *   1  Intro 1: school icon; "Schools measure what's easy to measure."
- *   2  Intro 2: clock icon;  "Ten minutes. One activity. Every day."
- *   3  Intro 3: sparkles;    "Nine skills. 72 small things."
+ *   0  Splash      wordmark hero + "Continue"
+ *   1  Intro 1     school icon, "easy to measure"
+ *   2  Intro 2     clock icon, "One activity. Every day."
+ *   3  Intro 3     sparkles icon, "72 small things"
  *
- * URL stays /welcome through all four. Get started on screen 3 routes
- * to /sign-in.
+ * URL stays /welcome through all four; back gesture cycles via
+ * history.pushState. Get Started on intro 3 routes to /sign-in.
+ *
+ * Layout shape (every screen):
+ *   Section 1   header (wordmark)
+ *   Section 2   content block (margin-top 48; flex 0)
+ *   Section 3   flex:1 spacer
+ *   Section 4   bottom actions (dots + button; flex 0)
+ *
+ * Container uses min-height 100dvh so the bottom actions track the
+ * keyboard on the email screen (this page never opens the keyboard,
+ * but keeps the same Frame so the layout reads consistently).
  */
 export default function WelcomePage() {
   const router = useRouter();
@@ -117,31 +128,18 @@ export default function WelcomePage() {
   );
 
   if (!hydrated) {
-    return <main style={{ minHeight: "100svh", background: "#FFFFFF" }} />;
+    return <main style={SHELL_STYLE} />;
   }
 
   return (
-    <main
-      style={{
-        position: "relative",
-        minHeight: "100svh",
-        background: "#FFFFFF",
-        color: INK,
-        fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
-        overflow: "hidden",
-      }}
-    >
+    <main style={SHELL_STYLE}>
       <motion.div
         drag="x"
         dragDirectionLock
         dragElastic={0.18}
         dragConstraints={{ left: 0, right: 0 }}
         onDragEnd={onDragEnd}
-        style={{
-          position: "relative",
-          minHeight: "100svh",
-          touchAction: "pan-y",
-        }}
+        style={{ touchAction: "pan-y", minHeight: "100dvh" }}
       >
         <AnimatePresence mode="wait" custom={direction} initial={false}>
           <motion.div
@@ -151,22 +149,27 @@ export default function WelcomePage() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -direction * 32, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              position: "relative",
-              minHeight: "100svh",
-              display: "flex",
-              flexDirection: "column",
-            }}
           >
-            {step === 0 ? (
-              <Splash onContinue={next} />
-            ) : (
-              <IntroScreen
-                config={INTROS[step - 1]!}
+            <Frame>
+              <Header />
+              {step === 0 ? (
+                <SplashBody />
+              ) : (
+                <IntroBody config={INTROS[step - 1]!} />
+              )}
+              <Spacer />
+              <BottomActions
                 step={step}
-                onContinue={step === SCREEN_COUNT - 1 ? goSignIn : next}
+                onPrimary={step === SCREEN_COUNT - 1 ? goSignIn : next}
+                primaryLabel={
+                  step === 0
+                    ? "Continue"
+                    : step === SCREEN_COUNT - 1
+                      ? "Get started"
+                      : "Continue"
+                }
               />
-            )}
+            </Frame>
           </motion.div>
         </AnimatePresence>
       </motion.div>
@@ -175,248 +178,65 @@ export default function WelcomePage() {
 }
 
 // ============================================================
-// Splash (screen 0)
+// Shared layout
 // ============================================================
 
-function Splash({ onContinue }: { onContinue: () => void }) {
-  return (
-    <div style={FRAME}>
-      <div style={{ height: 50, flexShrink: 0 }} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <div
-          style={{
-            paddingTop: "30vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Wordmark size="xl" />
-          <p
-            style={{
-              marginTop: 16,
-              fontSize: 16,
-              fontWeight: 400,
-              color: MUTED,
-              lineHeight: 1.5,
-              textAlign: "center",
-            }}
-          >
-            ten minutes a day,
-            <br />
-            with your child.
-          </p>
-        </div>
-        <span aria-hidden style={{ flex: 1, minHeight: 16 }} />
-        <Dots active={0} />
-        <div style={{ marginTop: 12 }}>
-          <PrimaryButton onClick={onContinue}>Continue</PrimaryButton>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// Intro screens (1, 2, 3)
-// ============================================================
-
-interface IntroConfig {
-  icon: ComponentType<IconProps>;
-  iconColor: string;
-  circleBg: string;
-  blob: string;
-  headline: ReactNode;
-  subhead: string;
-  buttonLabel: string;
-}
-
-const INTROS: IntroConfig[] = [
-  {
-    icon: IconSchool,
-    iconColor: "#252630",
-    circleBg: "#E8F4FF",
-    blob: "rgba(156,165,255,0.20)",
-    headline: (
-      <>
-        Schools
-        <br />
-        measure what&apos;s
-        <br />
-        <span style={{ color: ACCENT }}>easy to measure.</span>
-      </>
-    ),
-    subhead:
-      "Marks. Behaviour. Speed. None of which build the things that actually matter for your child's future.",
-    buttonLabel: "Continue",
-  },
-  {
-    icon: IconClock,
-    iconColor: "#8A6200",
-    circleBg: "#FFF6DC",
-    blob: "rgba(244,200,74,0.20)",
-    headline: (
-      <>
-        Ten minutes.
-        <br />
-        <span style={{ color: ACCENT }}>One activity.</span>
-        <br />
-        Every day.
-      </>
-    ),
-    subhead:
-      "No screens for your child. No scores. Just you and them, ten minutes, the right small thing.",
-    buttonLabel: "Continue",
-  },
-  {
-    icon: IconSparkles,
-    iconColor: "#943200",
-    circleBg: "#FCEEE8",
-    blob: "rgba(232,128,107,0.20)",
-    headline: (
-      <>
-        Nine skills.
-        <br />
-        <span style={{ color: ACCENT }}>72 small things</span>
-        <br />
-        to do together.
-      </>
-    ),
-    subhead:
-      "Curiosity, resilience, perspective, emotional awareness, and more. Built between ages 5 and 10.",
-    buttonLabel: "Get started",
-  },
-];
-
-function IntroScreen({
-  config,
-  step,
-  onContinue,
-}: {
-  config: IntroConfig;
-  step: number;
-  onContinue: () => void;
-}) {
-  const Icon = config.icon;
-  return (
-    <div style={INTRO_FRAME}>
-      <div style={{ marginBottom: 24 }}>
-        <Wordmark size="sm" />
-      </div>
-
-      <span aria-hidden style={{ flex: 1, minHeight: 0 }} />
-
-      {/* Icon zone */}
-      <div
-        style={{
-          position: "relative",
-          height: 120,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 12,
-        }}
-      >
-        <span
-          aria-hidden
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 80,
-            height: 80,
-            borderRadius: "50%",
-            background: config.blob,
-            zIndex: 1,
-          }}
-        />
-        <span
-          aria-hidden
-          style={{
-            position: "relative",
-            width: 60,
-            height: 60,
-            borderRadius: "50%",
-            background: config.circleBg,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: config.iconColor,
-            zIndex: 2,
-          }}
-        >
-          <Icon size={24} stroke={2} aria-hidden />
-        </span>
-      </div>
-
-      <h1
-        style={{
-          fontSize: 22,
-          fontWeight: 800,
-          color: INK,
-          letterSpacing: "-0.025em",
-          lineHeight: 1.15,
-          textAlign: "center",
-        }}
-      >
-        {config.headline}
-      </h1>
-      <p
-        style={{
-          marginTop: 10,
-          fontSize: 11,
-          fontWeight: 400,
-          color: MUTED,
-          lineHeight: 1.55,
-          textAlign: "center",
-          maxWidth: 200,
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      >
-        {config.subhead}
-      </p>
-
-      <span aria-hidden style={{ flex: 1, minHeight: 0 }} />
-
-      <div style={{ marginBottom: 12 }}>
-        <Dots active={step} />
-      </div>
-      <PrimaryButton onClick={onContinue}>{config.buttonLabel}</PrimaryButton>
-    </div>
-  );
-}
-
-// ============================================================
-// Shared chrome
-// ============================================================
-
-const FRAME: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  flex: 1,
-  minHeight: "100svh",
-  paddingTop: "calc(env(safe-area-inset-top, 0px) + 0px)",
-  paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
-  paddingLeft: 20,
-  paddingRight: 20,
-};
-
-// Per mockup: padding 50/20/20, flex column. The intro screens use
-// flex:1 spacers above + below the icon-headline-subtext block so it
-// floats at vertical centre regardless of viewport height.
-const INTRO_FRAME: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  flex: 1,
-  minHeight: "100svh",
-  paddingTop: "calc(env(safe-area-inset-top, 0px) + 50px)",
-  paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
-  paddingLeft: 20,
-  paddingRight: 20,
+const SHELL_STYLE: CSSProperties = {
+  position: "relative",
+  minHeight: "100dvh",
+  background: "#FFFFFF",
+  color: INK,
   fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+  overflow: "hidden",
 };
+
+function Frame({ children }: { children: ReactNode }) {
+  return (
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100dvh",
+        paddingLeft: 24,
+        paddingRight: 24,
+        paddingTop:
+          "max(48px, calc(env(safe-area-inset-top, 0px) + 24px))",
+        paddingBottom:
+          "max(32px, calc(env(safe-area-inset-bottom, 0px) + 16px))",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Header() {
+  return <Wordmark size="sm" />;
+}
+
+function Spacer() {
+  return <div style={{ flex: 1, minHeight: 24 }} />;
+}
+
+function BottomActions({
+  step,
+  onPrimary,
+  primaryLabel,
+}: {
+  step: number;
+  onPrimary: () => void;
+  primaryLabel: string;
+}) {
+  return (
+    <div style={{ flex: 0 }}>
+      <Dots active={step} />
+      <div style={{ marginTop: 16 }}>
+        <PrimaryButton onClick={onPrimary}>{primaryLabel}</PrimaryButton>
+      </div>
+    </div>
+  );
+}
 
 function Dots({ active }: { active: number }) {
   return (
@@ -425,7 +245,7 @@ function Dots({ active }: { active: number }) {
       style={{
         display: "flex",
         justifyContent: "center",
-        gap: 4,
+        gap: 6,
         listStyle: "none",
         padding: 0,
         margin: 0,
@@ -439,7 +259,8 @@ function Dots({ active }: { active: number }) {
             height: 5,
             borderRadius: 3,
             background: i === active ? INK : "#E5E3DA",
-            transition: "width 250ms ease-out, background 250ms ease-out",
+            transition:
+              "width 250ms ease-out, background 250ms ease-out",
           }}
         />
       ))}
@@ -463,8 +284,8 @@ function PrimaryButton({
         background: INK,
         color: "#FFFFFF",
         borderRadius: 999,
-        padding: 10,
-        fontSize: 11,
+        padding: 16,
+        fontSize: 15,
         fontWeight: 700,
         textAlign: "center",
         border: "none",
@@ -479,3 +300,177 @@ function PrimaryButton({
   );
 }
 
+// ============================================================
+// Screen 0 Splash body (content only; Header + BottomActions live
+// in the parent Frame so the layout shape is identical to intros)
+// ============================================================
+
+function SplashBody() {
+  return (
+    <div style={{ marginTop: 48, flex: 0, textAlign: "center" }}>
+      <div style={{ display: "inline-flex" }}>
+        <Wordmark size="xl" />
+      </div>
+      <p
+        style={{
+          marginTop: 16,
+          fontSize: 16,
+          fontWeight: 400,
+          color: MUTED,
+          lineHeight: 1.5,
+        }}
+      >
+        ten minutes a day,
+        <br />
+        with your child.
+      </p>
+    </div>
+  );
+}
+
+// ============================================================
+// Intro screens (1, 2, 3)
+// ============================================================
+
+interface IntroConfig {
+  icon: ComponentType<IconProps>;
+  iconColor: string;
+  circleBg: string;
+  blob: string;
+  headline: ReactNode;
+  subhead: string;
+}
+
+const INTROS: IntroConfig[] = [
+  {
+    icon: IconSchool,
+    iconColor: "#4B5EA6",
+    circleBg: "#EEF0FF",
+    blob: "rgba(156,165,255,0.15)",
+    headline: (
+      <>
+        Schools measure what&apos;s{" "}
+        <span style={{ color: ACCENT }}>easy to measure.</span>
+      </>
+    ),
+    subhead:
+      "Marks. Behaviour. Speed. None of which build the things that actually matter for your child's future.",
+  },
+  {
+    icon: IconClock,
+    iconColor: "#8A6200",
+    circleBg: "#FFF8E7",
+    blob: "rgba(244,200,74,0.15)",
+    headline: (
+      <>
+        Ten minutes.{" "}
+        <span style={{ color: ACCENT }}>One activity.</span>{" "}
+        Every day.
+      </>
+    ),
+    subhead:
+      "No screens for your child. No scores. Just you and them, ten minutes, the right small thing.",
+  },
+  {
+    icon: IconSparkles,
+    iconColor: "#943200",
+    circleBg: "#FFF0EB",
+    blob: "rgba(232,128,107,0.15)",
+    headline: (
+      <>
+        Nine skills.{" "}
+        <span style={{ color: ACCENT }}>72 small things</span>{" "}
+        to do together.
+      </>
+    ),
+    subhead:
+      "Curiosity, resilience, perspective, emotional awareness, and more. Built between ages 5 and 10.",
+  },
+];
+
+function IntroBody({ config }: { config: IntroConfig }) {
+  const Icon = config.icon;
+  return (
+    <div
+      style={{
+        marginTop: 48,
+        flex: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+      }}
+    >
+      {/* Icon zone: 80x80 wrapper, blob same size sitting behind a
+          56 solid circle. Clean edge guaranteed by the inner solid
+          background. */}
+      <div
+        style={{
+          position: "relative",
+          width: 80,
+          height: 80,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 24,
+        }}
+      >
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            background: config.blob,
+            zIndex: 0,
+          }}
+        />
+        <span
+          aria-hidden
+          style={{
+            position: "relative",
+            zIndex: 1,
+            width: 56,
+            height: 56,
+            borderRadius: "50%",
+            background: config.circleBg,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: config.iconColor,
+          }}
+        >
+          <Icon size={24} stroke={2} aria-hidden />
+        </span>
+      </div>
+
+      <h1
+        style={{
+          fontSize: 26,
+          fontWeight: 800,
+          color: INK,
+          letterSpacing: "-0.025em",
+          lineHeight: 1.15,
+          maxWidth: 280,
+        }}
+      >
+        {config.headline}
+      </h1>
+      <p
+        style={{
+          marginTop: 12,
+          fontSize: 14,
+          fontWeight: 400,
+          color: MUTED,
+          lineHeight: 1.55,
+          maxWidth: 260,
+        }}
+      >
+        {config.subhead}
+      </p>
+    </div>
+  );
+}

@@ -43,6 +43,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
   viewportFit: "cover",
   // Round-5 light-mode bg is pure white; status bar matches.
   themeColor: "#FFFFFF",
