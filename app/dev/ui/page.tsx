@@ -374,7 +374,7 @@ export default function UIDevPage() {
               icon={<Sparkles size={32} strokeWidth={1.75} />}
               title="First moment with Aarav starts here"
               description="When you log your first activity, Aarav's map will build itself."
-              cta={<Button>Pick today's moment</Button>}
+              cta={<Button>Pick today&apos;s moment</Button>}
             />
           </div>
           <div className="mt-4 rounded-md border border-line-subtle bg-bg-elevated">

@@ -327,7 +327,7 @@ function PickCard({
   return (
     <Card className="mb-8">
       <p className="text-caption uppercase tracking-[0.08em] text-ink-tertiary">
-        Today's pick
+        Today&apos;s pick
       </p>
       <div className="mt-2 flex items-start justify-between gap-4">
         <h2 className="text-title-1 text-ink">{a.title}</h2>
