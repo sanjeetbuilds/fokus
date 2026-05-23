@@ -4,13 +4,14 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Public paths that don't require a Supabase session.
  *
- *   /sign-in         ; the magic-link form itself
- *   /auth/*          ; the magic-link callback
- *   /api/*           ; diagnostic + future server endpoints
- *   /dev/*           ; local dev tools
- *
- * Everything else (including /intro and /onboarding) requires auth.
- * Static assets are already excluded by the root middleware matcher.
+ *   /welcome          ; splash + intros (the unauthed entry)
+ *   /sign-in          ; the magic-link form
+ *   /auth/callback    ; the magic-link exchange handler (MUST run for
+ *                       authed users too, so it's public but exempt
+ *                       from the auth-aware redirect below)
+ *   /auth/check-email ; "we sent you a link" surface
+ *   /api/*            ; diagnostic + future server endpoints
+ *   /dev/*            ; local dev tools
  */
 function isPublic(pathname: string): boolean {
   return (
@@ -23,20 +24,31 @@ function isPublic(pathname: string): boolean {
 }
 
 /**
- * Canonical Supabase + Next.js middleware: refresh the session cookie
- * on every request, then redirect based on auth state.
+ * Auth-surface paths an already-authed user has no business sitting
+ * on. When the middleware sees a live session here, it does a
+ * server-side child lookup and redirects DIRECTLY to /today or
+ * /onboarding so the user never bounces through "/" and the
+ * client-side OnboardingGate.
  *
- *   no session + non-public path  →  /sign-in
- *   session     + /sign-in        →  /
- *   anything else                 →  pass through
+ * Notably excludes /auth/callback (that route's whole job is to run
+ * exchangeCodeForSession; the user is mid-auth there) and /api / /dev.
+ */
+function isAuthSurface(pathname: string): boolean {
+  return (
+    pathname === "/" ||
+    pathname === "/welcome" ||
+    pathname === "/sign-in" ||
+    pathname === "/auth/check-email"
+  );
+}
+
+/**
+ * Supabase + Next.js middleware. Refreshes the session cookie on
+ * every request, then:
  *
- * Env-var presence is checked up-front: if the build is missing the
- * Supabase URL/anon key the middleware logs a single descriptive line
- * and falls back to "allow only the obviously-public paths". This
- * mirrors what would happen if Supabase itself was down: better to
- * keep /sign-in and /api/env-check reachable than to 500 the whole
- * site, while still refusing to let unauthenticated requests through
- * to gated routes.
+ *   no session  + protected path    →  /welcome
+ *   session     + /auth-surface     →  /today (child) or /onboarding
+ *   anything else                   →  pass through
  */
 export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -82,29 +94,34 @@ export async function updateSession(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // Unauthed user touching a protected path; bounce to /welcome.
     if (!user && !isPublic(pathname)) {
       const redirect = request.nextUrl.clone();
       redirect.pathname = "/welcome";
       return NextResponse.redirect(redirect);
     }
 
-    if (
-      user &&
-      (pathname === "/sign-in" ||
-        pathname === "/welcome" ||
-        pathname === "/auth/check-email")
-    ) {
+    // Authed user landing on an auth surface (/, /welcome, /sign-in,
+    // /auth/check-email). Do the child lookup here and redirect
+    // straight to the final destination so the user never bounces
+    // through "/" while the client-side gate boots.
+    if (user && isAuthSurface(pathname)) {
+      const { data: child } = await supabase
+        .from("child")
+        .select("id")
+        .eq("parent_id", user.id)
+        .maybeSingle();
+
       const redirect = request.nextUrl.clone();
-      redirect.pathname = "/";
+      redirect.pathname = child ? "/today" : "/onboarding";
       return NextResponse.redirect(redirect);
     }
 
     return supabaseResponse;
   } catch (err) {
-    // The previous "pass through on any error" was a bypass: it let
-    // unauthed users reach gated routes. Now we fail closed; log the
-    // root cause and redirect to /sign-in for any non-public path so
-    // a transient Supabase failure can't punch a hole in auth.
+    // Fail closed: any error in the session-refresh path on a
+    // protected route bounces to /welcome with an error code. We
+    // don't trap users on auth surfaces.
     console.error(
       "[supabase middleware] session refresh threw:",
       err instanceof Error ? `${err.name}: ${err.message}\n${err.stack}` : err,
