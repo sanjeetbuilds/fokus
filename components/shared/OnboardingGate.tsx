@@ -23,6 +23,7 @@ function isNoChildAllowed(path: string): boolean {
   return (
     path.startsWith("/onboarding") ||
     path === "/intro" ||
+    path === "/welcome" ||
     path === "/sign-in" ||
     path.startsWith("/auth") ||
     path.startsWith("/api") ||

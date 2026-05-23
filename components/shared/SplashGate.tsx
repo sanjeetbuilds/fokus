@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 
 import Wordmark from "@/components/shared/Wordmark";
@@ -7,6 +8,19 @@ import Wordmark from "@/components/shared/Wordmark";
 const SESSION_KEY = "fokus_splash_shown";
 const HOLD_MS = 2500;
 const FADE_MS = 250;
+
+/**
+ * Public marketing/auth paths that already render their own brand
+ * mark, so the cold-open splash is redundant noise there.
+ */
+function isPublicChrome(path: string | null): boolean {
+  if (!path) return false;
+  return (
+    path === "/welcome" ||
+    path === "/sign-in" ||
+    path.startsWith("/auth")
+  );
+}
 
 /**
  * Cold-open splash. White background, brand mark sitting slightly
@@ -21,12 +35,20 @@ const FADE_MS = 250;
  * place when this gate fades.
  */
 export default function SplashGate({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [phase, setPhase] = useState<
     "checking" | "showing" | "fading" | "gone"
   >("checking");
 
   useEffect(() => {
     if (typeof window === "undefined") {
+      setPhase("gone");
+      return;
+    }
+    // Skip the cold-open on welcome / sign-in / auth callback paths.
+    // Those screens render their own brand mark and the splash would
+    // double up.
+    if (isPublicChrome(pathname)) {
       setPhase("gone");
       return;
     }
@@ -55,7 +77,7 @@ export default function SplashGate({ children }: { children: ReactNode }) {
       window.clearTimeout(fadeTimer);
       window.clearTimeout(goneTimer);
     };
-  }, []);
+  }, [pathname]);
 
   if (phase === "gone" || phase === "checking") {
     return <>{children}</>;

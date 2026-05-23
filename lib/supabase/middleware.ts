@@ -14,6 +14,7 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 function isPublic(pathname: string): boolean {
   return (
+    pathname === "/welcome" ||
     pathname === "/sign-in" ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/api") ||
@@ -49,7 +50,7 @@ export async function updateSession(request: NextRequest) {
     );
     if (!isPublic(pathname)) {
       const redirect = request.nextUrl.clone();
-      redirect.pathname = "/sign-in";
+      redirect.pathname = "/welcome";
       return NextResponse.redirect(redirect);
     }
     return NextResponse.next({ request });
@@ -83,11 +84,16 @@ export async function updateSession(request: NextRequest) {
 
     if (!user && !isPublic(pathname)) {
       const redirect = request.nextUrl.clone();
-      redirect.pathname = "/sign-in";
+      redirect.pathname = "/welcome";
       return NextResponse.redirect(redirect);
     }
 
-    if (user && pathname === "/sign-in") {
+    if (
+      user &&
+      (pathname === "/sign-in" ||
+        pathname === "/welcome" ||
+        pathname === "/auth/check-email")
+    ) {
       const redirect = request.nextUrl.clone();
       redirect.pathname = "/";
       return NextResponse.redirect(redirect);
@@ -105,7 +111,7 @@ export async function updateSession(request: NextRequest) {
     );
     if (!isPublic(pathname)) {
       const redirect = request.nextUrl.clone();
-      redirect.pathname = "/sign-in";
+      redirect.pathname = "/welcome";
       redirect.searchParams.set("error", "session_refresh_failed");
       return NextResponse.redirect(redirect);
     }
