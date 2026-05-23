@@ -2,22 +2,17 @@
 
 import { IconCheck, IconMail } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-
-import Wordmark from "@/components/shared/Wordmark";
+import { type CSSProperties, Suspense } from "react";
 
 const INK = "#252630";
+const ACCENT = "#9CA5FF";
 const MUTED = "#8E8D9B";
 const TERTIARY = "#C2C0CB";
 const GREEN_BG = "#E8F9EE";
 const GREEN_FG = "#207838";
 
 /**
- * "Check your inbox" surface. Layout shape matches the welcome flow:
- * header / content block (margin-top 48) / spacer / bottom footer.
- *
- * Icon: 80x80 wrapper, 80x80 same-size blob at rgba(green,0.15),
- * 56x56 solid #E8F9EE circle on top with a 24px IconMail in #207838.
+ * "Check your inbox" surface. Pixel-precise per the approved mockup.
  */
 export default function CheckEmailPage() {
   return (
@@ -33,153 +28,119 @@ function CheckEmailBody() {
   const email = (params?.get("email") ?? "").trim();
 
   return (
-    <main
-      style={{
-        position: "relative",
-        minHeight: "100dvh",
-        background: "#FFFFFF",
-        color: INK,
-        fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100dvh",
-          paddingLeft: 24,
-          paddingRight: 24,
-          paddingTop:
-            "max(48px, calc(env(safe-area-inset-top, 0px) + 24px))",
-          paddingBottom:
-            "max(32px, calc(env(safe-area-inset-bottom, 0px) + 16px))",
-        }}
-      >
-        {/* Header */}
-        <Wordmark size="sm" />
+    <main style={SHELL_STYLE}>
+      <div style={CONTAINER_STYLE}>
+        <Wordmark />
+        <div style={{ flex: 1 }} />
 
-        {/* Content block, anchored 48 below header, centred horizontally */}
         <div
           style={{
-            marginTop: 48,
-            flex: 0,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             textAlign: "center",
+            flexShrink: 0,
           }}
         >
-          {/* Icon zone: 80 wrapper, 80 same-size blob, 56 solid circle */}
+          {/* Icon zone */}
           <div
             style={{
-              position: "relative",
-              width: 80,
-              height: 80,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              marginBottom: 24,
+              margin: "0 0 16px",
+              position: "relative",
+              height: 80,
+              flexShrink: 0,
             }}
           >
-            <span
-              aria-hidden
+            <div
               style={{
                 position: "absolute",
-                top: 0,
-                left: 0,
                 width: 80,
                 height: 80,
                 borderRadius: "50%",
-                background: "rgba(93,200,122,0.15)",
-                zIndex: 0,
+                background: "rgba(93,200,122,0.12)",
               }}
             />
-            <span
-              aria-hidden
+            <div
               style={{
-                position: "relative",
-                zIndex: 1,
-                width: 56,
-                height: 56,
+                width: 64,
+                height: 64,
                 borderRadius: "50%",
-                background: GREEN_BG,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                position: "relative",
+                zIndex: 2,
+                background: GREEN_BG,
+                flexShrink: 0,
                 color: GREEN_FG,
               }}
             >
-              <IconMail size={24} stroke={2} aria-hidden />
-            </span>
+              <IconMail size={26} stroke={2} aria-hidden />
+            </div>
           </div>
 
-          <span
+          <div
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: 4,
+              gap: 5,
               background: GREEN_BG,
               color: GREEN_FG,
               fontSize: 11,
-              fontWeight: 600,
-              padding: "5px 11px",
+              fontWeight: 700,
+              padding: "5px 12px",
               borderRadius: 999,
-              marginBottom: 12,
+              marginBottom: 14,
             }}
           >
             <IconCheck size={11} stroke={2.5} aria-hidden />
             Link sent
-          </span>
+          </div>
 
-          <h1
+          <div
             style={{
-              fontSize: 26,
+              fontSize: 24,
               fontWeight: 800,
               color: INK,
               letterSpacing: "-0.025em",
-              lineHeight: 1.15,
             }}
           >
             Check your inbox.
-          </h1>
-          <p
+          </div>
+
+          <div
             style={{
-              marginTop: 12,
               fontSize: 14,
-              fontWeight: 400,
               color: MUTED,
+              marginTop: 8,
               lineHeight: 1.55,
-              maxWidth: 280,
-              marginLeft: "auto",
-              marginRight: "auto",
+              maxWidth: 260,
             }}
           >
-            Tap the link we just sent to{" "}
-            <span style={{ color: INK, fontWeight: 700 }}>
+            Tap the link we sent to{" "}
+            <span style={{ fontWeight: 700, color: INK }}>
               {email || "your inbox"}
             </span>
-            . It works on this device.
-          </p>
+            . Open it on this device.
+          </div>
 
           <button
             type="button"
             onClick={() => router.push("/sign-in")}
             style={{
-              marginTop: 16,
-              display: "inline-flex",
-              background: "transparent",
-              color: INK,
+              marginTop: 18,
               fontSize: 13,
               fontWeight: 600,
-              padding: 0,
-              paddingBottom: 1,
+              color: INK,
+              paddingBottom: 2,
+              background: "none",
               border: "none",
-              borderBottom: `1px solid ${INK}`,
+              borderBottom: `1.5px solid ${INK}`,
               cursor: "pointer",
-              fontFamily:
-                "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
             className="hover:opacity-80 transition-opacity"
           >
@@ -187,23 +148,77 @@ function CheckEmailBody() {
           </button>
         </div>
 
-        {/* Spacer */}
-        <div style={{ flex: 1, minHeight: 24 }} />
+        <div style={{ flex: 1 }} />
 
-        {/* Bottom footer */}
-        <p
+        <div
           style={{
-            flex: 0,
-            fontSize: 12,
-            fontWeight: 400,
+            fontSize: 11,
             color: TERTIARY,
             textAlign: "center",
             lineHeight: 1.5,
+            flexShrink: 0,
           }}
         >
           Didn&apos;t get it? Check spam or try again in 60 seconds.
-        </p>
+        </div>
       </div>
     </main>
+  );
+}
+
+// ============================================================
+// Local shared chrome
+// ============================================================
+
+const SHELL_STYLE: CSSProperties = {
+  position: "relative",
+  minHeight: "100dvh",
+  background: "#FFFFFF",
+  color: INK,
+  fontFamily: "'Plus Jakarta Sans', sans-serif",
+  overflow: "hidden",
+};
+
+const CONTAINER_STYLE: CSSProperties = {
+  minHeight: "100dvh",
+  display: "flex",
+  flexDirection: "column",
+  paddingLeft: 24,
+  paddingRight: 24,
+  paddingTop: "max(48px, env(safe-area-inset-top))",
+  paddingBottom: "max(24px, env(safe-area-inset-bottom))",
+  background: "#FFFFFF",
+  fontFamily: "'Plus Jakarta Sans', sans-serif",
+  overflow: "hidden",
+};
+
+function Wordmark() {
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "baseline",
+        fontSize: 15,
+        fontWeight: 800,
+        color: INK,
+        letterSpacing: "-0.035em",
+        lineHeight: 1,
+        flexShrink: 0,
+      }}
+    >
+      fokus
+      <span
+        aria-hidden
+        style={{
+          width: 4,
+          height: 4,
+          borderRadius: "50%",
+          background: ACCENT,
+          marginLeft: 1.5,
+          transform: "translateY(-1px)",
+          display: "inline-block",
+        }}
+      />
+    </div>
   );
 }

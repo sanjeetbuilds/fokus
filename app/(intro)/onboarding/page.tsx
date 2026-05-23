@@ -8,7 +8,6 @@ import {
   useState,
 } from "react";
 
-import Wordmark from "@/components/shared/Wordmark";
 import { useToast } from "@/components/ui/Toast";
 import { insertChild } from "@/lib/supabase/queries";
 import { primeChildCache } from "@/lib/use-child";
@@ -31,8 +30,10 @@ const MAX_AGE = 12;
 const INK = "#252630";
 const ACCENT = "#9CA5FF";
 const MUTED = "#8E8D9B";
+const TERTIARY = "#C2C0CB";
 const HAIR = "#E5E3DA";
 const TINT_FILL = "#F7F7F5";
+const INPUT_BORDER = "#EEEEED";
 
 const PRONOUNS_OPTIONS: { value: Pronouns; label: string; helper: string }[] = [
   { value: "she", label: "She / her", helper: "Refer to your child with she/her." },
@@ -177,18 +178,43 @@ function Header({ showSignedIn }: { showSignedIn: boolean }) {
         display: "flex",
         alignItems: "center",
         gap: 8,
-        marginBottom: 24,
+        flexShrink: 0,
       }}
     >
-      <Wordmark size="sm" />
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "baseline",
+          fontSize: 15,
+          fontWeight: 800,
+          color: INK,
+          letterSpacing: "-0.035em",
+          lineHeight: 1,
+          flexShrink: 0,
+        }}
+      >
+        fokus
+        <span
+          aria-hidden
+          style={{
+            width: 4,
+            height: 4,
+            borderRadius: "50%",
+            background: ACCENT,
+            marginLeft: 1.5,
+            transform: "translateY(-1px)",
+            display: "inline-block",
+          }}
+        />
+      </div>
       {showSignedIn ? (
         <span
           style={{
             background: "#E8F9EE",
-            color: "#5DC87A",
-            fontSize: 9,
+            color: "#207838",
+            fontSize: 10,
             fontWeight: 700,
-            letterSpacing: "0.08em",
+            letterSpacing: "0.06em",
             textTransform: "uppercase",
             padding: "3px 8px",
             borderRadius: 999,
@@ -220,32 +246,35 @@ function NameStep({
 }) {
   return (
     <>
-      <h1
-        style={{
-          marginTop: 48,
-          fontSize: 24,
-          fontWeight: 800,
-          color: INK,
-          letterSpacing: "-0.025em",
-          lineHeight: 1.15,
-        }}
-      >
-        You&apos;re in. Let&apos;s set up{" "}
-        <span style={{ color: ACCENT }}>your child.</span>
-      </h1>
-      <p
-        style={{
-          marginTop: 10,
-          fontSize: 11,
-          fontWeight: 400,
-          color: MUTED,
-          lineHeight: 1.55,
-        }}
-      >
-        First, what&apos;s their name? You can change this later.
-      </p>
+      <div style={{ marginTop: 28, flexShrink: 0 }}>
+        <h1
+          style={{
+            fontSize: 26,
+            fontWeight: 800,
+            color: INK,
+            letterSpacing: "-0.025em",
+            lineHeight: 1.15,
+          }}
+        >
+          You&apos;re in. Let&apos;s
+          <br />
+          set up{" "}
+          <span style={{ color: ACCENT }}>your child.</span>
+        </h1>
+        <p
+          style={{
+            marginTop: 8,
+            fontSize: 14,
+            fontWeight: 400,
+            color: MUTED,
+            lineHeight: 1.5,
+          }}
+        >
+          What&apos;s their name? You can change this later.
+        </p>
+      </div>
 
-      <div style={{ marginTop: 18 }}>
+      <div style={{ marginTop: 24, flexShrink: 0 }}>
         <Eyebrow>Child&apos;s name</Eyebrow>
         <WarmInput
           value={name}
@@ -255,10 +284,10 @@ function NameStep({
         />
         <p
           style={{
-            marginTop: 6,
-            fontSize: 10,
+            marginTop: 8,
+            fontSize: 12,
             fontWeight: 400,
-            color: MUTED,
+            color: TERTIARY,
             lineHeight: 1.4,
           }}
         >
@@ -499,15 +528,15 @@ function PronounsStep({
 const WARM_INPUT_STYLE: React.CSSProperties = {
   width: "100%",
   background: TINT_FILL,
-  border: "1.5px solid transparent",
-  borderRadius: 16,
-  padding: "18px 16px",
+  border: `1.5px solid ${INPUT_BORDER}`,
+  borderRadius: 14,
+  padding: 16,
   // 16px minimum prevents iOS auto-zoom on focus.
   fontSize: 16,
-  fontWeight: 500,
+  fontWeight: 400,
   color: INK,
   outline: "none",
-  fontFamily: "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+  fontFamily: "'Plus Jakarta Sans', sans-serif",
 };
 
 function WarmInput({
@@ -545,8 +574,8 @@ function Eyebrow({ children }: { children: ReactNode }) {
   return (
     <p
       style={{
-        marginBottom: 6,
-        fontSize: 9,
+        marginBottom: 8,
+        fontSize: 11,
         fontWeight: 700,
         color: MUTED,
         letterSpacing: "0.08em",
@@ -606,16 +635,16 @@ function PrimaryButton({
         background: INK,
         color: "#FFFFFF",
         borderRadius: 999,
-        padding: 10,
-        fontSize: 11,
+        padding: 15,
+        fontSize: 14,
         fontWeight: 700,
+        letterSpacing: "-0.01em",
         textAlign: "center",
         border: "none",
         cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.3 : 1,
+        opacity: disabled ? 0.35 : 1,
         transition: "opacity 150ms ease",
-        fontFamily:
-          "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}
       className="active:opacity-90"
     >
@@ -639,13 +668,13 @@ function SecondaryButton({
         background: "transparent",
         color: INK,
         borderRadius: 999,
-        padding: "10px 16px",
-        fontSize: 11,
+        padding: "15px 20px",
+        fontSize: 14,
         fontWeight: 700,
+        letterSpacing: "-0.01em",
         border: `1.5px solid ${HAIR}`,
         cursor: "pointer",
-        fontFamily:
-          "var(--font-jakarta), 'Plus Jakarta Sans', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}
       className="transition-opacity active:opacity-80"
     >
